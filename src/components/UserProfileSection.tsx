@@ -1,72 +1,47 @@
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, LogIn, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 export const UserProfileSection = () => {
-  const [profile, setProfile] = useState<any>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const getProfile = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user) {
-          setProfile(null);
-          return;
-        }
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getSession();
+      return data.session;
+    },
+  });
 
-        // Attendre un court instant pour laisser le trigger créer le profil
-        await new Promise(resolve => setTimeout(resolve, 500));
+  const { data: profile } = useQuery({
+    queryKey: ["profile", session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return null;
+      
+      // Wait for the trigger to create the profile
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
 
-        const { data: existingProfile, error: fetchError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        if (fetchError) {
-          // Réessayer une fois de plus après un délai plus long
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          const { data: retryProfile, error: retryError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (retryError) {
-            console.error('Error fetching profile after retry:', retryError);
-            toast.error('Erreur lors du chargement du profil');
-            return;
-          }
-
-          setProfile(retryProfile);
-        } else {
-          setProfile(existingProfile);
-        }
-      } catch (error) {
-        console.error('Error in getProfile:', error);
-        toast.error('Erreur lors du chargement du profil');
+      if (error) {
+        console.error('Error fetching profile:', error);
+        throw error;
       }
-    };
 
-    getProfile();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        getProfile();
-      } else {
-        setProfile(null);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+      return data;
+    },
+    enabled: !!session?.user?.id,
+    retry: 2,
+    retryDelay: 1000,
+  });
 
   const handleLogout = async () => {
     try {
