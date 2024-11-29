@@ -26,29 +26,8 @@ export const UserProfileSection = () => {
           .single();
 
         if (fetchError) {
-          if (fetchError.code === 'PGRST116') {
-            // Profile doesn't exist yet, create it
-            const { data: newProfile, error: createError } = await supabase
-              .from('profiles')
-              .insert([{
-                id: session.user.id,
-                email: session.user.email,
-                role: 'client'
-              }])
-              .select()
-              .single();
-
-            if (createError) {
-              console.error('Error creating profile:', createError);
-              toast.error('Erreur lors de la création du profil');
-              return;
-            }
-
-            setProfile(newProfile);
-          } else {
-            console.error('Error fetching profile:', fetchError);
-            toast.error('Erreur lors du chargement du profil');
-          }
+          console.error('Error fetching profile:', fetchError);
+          toast.error('Erreur lors du chargement du profil');
           return;
         }
 
