@@ -7,18 +7,29 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
-const ClientDashboard = () => {
+interface ClientDashboardProps {
+  selectedConsulate?: string;
+}
+
+const ClientDashboard = ({ selectedConsulate }: ClientDashboardProps) => {
   const { data: appointments = [], refetch } = useQuery({
-    queryKey: ["appointments"],
+    queryKey: ["appointments", selectedConsulate],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const query = supabase
         .from("appointments")
-        .select("*")
+        .select("*, services(name)")
         .order("date", { ascending: true });
+
+      if (selectedConsulate) {
+        query.eq("consulate_id", selectedConsulate);
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
       return data;
-    }
+    },
+    enabled: !!selectedConsulate
   });
 
   const getStatusBadge = (status: string) => {
@@ -34,6 +45,18 @@ const ClientDashboard = () => {
     }
   };
 
+  if (!selectedConsulate) {
+    return (
+      <Card className="border-none shadow-none">
+        <CardContent className="text-center py-8">
+          <p className="text-muted-foreground">
+            Veuillez sélectionner un consulat pour prendre rendez-vous.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <Card className="border-none shadow-none">
@@ -41,7 +64,7 @@ const ClientDashboard = () => {
           <CardTitle className="text-2xl font-semibold">Nouveau Rendez-vous</CardTitle>
         </CardHeader>
         <CardContent>
-          <AppointmentForm onSuccess={refetch} />
+          <AppointmentForm onSuccess={refetch} selectedConsulate={selectedConsulate} />
         </CardContent>
       </Card>
 
@@ -58,6 +81,9 @@ const ClientDashboard = () => {
               >
                 <div className="space-y-2 mb-4 sm:mb-0">
                   <h3 className="text-lg font-medium">{appointment.title}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Service : {appointment.services?.name}
+                  </p>
                   {appointment.description && (
                     <p className="text-sm text-muted-foreground">{appointment.description}</p>
                   )}
@@ -68,6 +94,11 @@ const ClientDashboard = () => {
                 {getStatusBadge(appointment.status)}
               </div>
             ))}
+            {appointments.length === 0 && (
+              <p className="text-center text-muted-foreground py-4">
+                Vous n'avez pas encore de rendez-vous.
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>

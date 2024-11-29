@@ -12,30 +12,36 @@ export type Database = {
       appointments: {
         Row: {
           client_id: string
+          consulate_id: string | null
           created_at: string
           date: string
           description: string | null
           id: string
+          service_id: string | null
           status: string | null
           title: string
           updated_at: string
         }
         Insert: {
           client_id: string
+          consulate_id?: string | null
           created_at?: string
           date: string
           description?: string | null
           id?: string
+          service_id?: string | null
           status?: string | null
           title: string
           updated_at?: string
         }
         Update: {
           client_id?: string
+          consulate_id?: string | null
           created_at?: string
           date?: string
           description?: string | null
           id?: string
+          service_id?: string | null
           status?: string | null
           title?: string
           updated_at?: string
@@ -48,7 +54,95 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "appointments_consulate_id_fkey"
+            columns: ["consulate_id"]
+            isOneToOne: false
+            referencedRelation: "consulates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      consulate_holidays: {
+        Row: {
+          consulate_id: string | null
+          created_at: string
+          date: string
+          description: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          consulate_id?: string | null
+          created_at?: string
+          date: string
+          description?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          consulate_id?: string | null
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consulate_holidays_consulate_id_fkey"
+            columns: ["consulate_id"]
+            isOneToOne: false
+            referencedRelation: "consulates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consulates: {
+        Row: {
+          address: string
+          city: string
+          country: string
+          created_at: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          timezone: string
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          city: string
+          country: string
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          timezone: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          country?: string
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          timezone?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       notification_history: {
         Row: {
@@ -266,6 +360,36 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration: number
+          id: string
+          max_concurrent: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration?: number
+          id?: string
+          max_concurrent?: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration?: number
+          id?: string
+          max_concurrent?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_devices: {
         Row: {
           created_at: string | null
@@ -312,13 +436,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_appointment_availability: {
-        Args: {
-          appointment_date: string
-          duration_minutes?: number
-        }
-        Returns: boolean
-      }
+      check_appointment_availability:
+        | {
+            Args: {
+              appointment_date: string
+              duration_minutes?: number
+            }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              p_appointment_date: string
+              p_service_id: string
+              p_consulate_id: string
+              p_duration_minutes?: number
+            }
+            Returns: boolean
+          }
     }
     Enums: {
       [_ in never]: never
