@@ -20,16 +20,52 @@ const Index = () => {
 
   useEffect(() => {
     const getProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        setProfile(profileData);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          // Try to get the existing profile
+          const { data: profileData, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (error) {
+            if (error.code === 'PGRST116') {
+              // Profile doesn't exist, create one
+              const { data: newProfile, error: insertError } = await supabase
+                .from('profiles')
+                .insert([
+                  {
+                    id: session.user.id,
+                    email: session.user.email,
+                    role: 'client'
+                  }
+                ])
+                .select()
+                .single();
+
+              if (insertError) {
+                console.error('Error creating profile:', insertError);
+                toast.error('Erreur lors de la création du profil');
+                return;
+              }
+
+              setProfile(newProfile);
+            } else {
+              console.error('Error fetching profile:', error);
+              toast.error('Erreur lors du chargement du profil');
+            }
+          } else {
+            setProfile(profileData);
+          }
+        }
+      } catch (error) {
+        console.error('Error in getProfile:', error);
+        toast.error('Erreur lors du chargement du profil');
       }
     };
+
     getProfile();
   }, []);
 
