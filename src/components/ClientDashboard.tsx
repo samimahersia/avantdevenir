@@ -1,33 +1,25 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import AppointmentForm from "./AppointmentForm";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 const ClientDashboard = () => {
-  const [date, setDate] = useState<Date>();
-  const [title, setTitle] = useState("");
-  const [appointments, setAppointments] = useState([
-    { id: 1, title: "Premier rendez-vous", date: new Date(2024, 3, 15), status: "en_attente" },
-    { id: 2, title: "Deuxième rendez-vous", date: new Date(2024, 3, 20), status: "approuve" }
-  ]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (date && title) {
-      const newAppointment = {
-        id: appointments.length + 1,
-        title,
-        date,
-        status: "en_attente"
-      };
-      setAppointments([...appointments, newAppointment]);
-      setTitle("");
-      setDate(undefined);
+  const { data: appointments = [], refetch } = useQuery({
+    queryKey: ["appointments"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("appointments")
+        .select("*")
+        .order("date", { ascending: true });
+      
+      if (error) throw error;
+      return data;
     }
-  };
+  });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -49,39 +41,7 @@ const ClientDashboard = () => {
           <CardTitle className="text-2xl font-semibold">Nouveau Rendez-vous</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="title" className="text-base">Titre du rendez-vous</Label>
-              <Input
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Entrez le titre du rendez-vous"
-                className="w-full"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-base">Date du rendez-vous</Label>
-              <div className="border rounded-lg p-4 bg-white dark:bg-gray-800">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  className="mx-auto"
-                  required
-                />
-              </div>
-            </div>
-            <Button 
-              type="submit" 
-              disabled={!date || !title}
-              className="w-full sm:w-auto"
-              size="lg"
-            >
-              Demander un rendez-vous
-            </Button>
-          </form>
+          <AppointmentForm onSuccess={refetch} />
         </CardContent>
       </Card>
 
@@ -98,8 +58,11 @@ const ClientDashboard = () => {
               >
                 <div className="space-y-2 mb-4 sm:mb-0">
                   <h3 className="text-lg font-medium">{appointment.title}</h3>
+                  {appointment.description && (
+                    <p className="text-sm text-muted-foreground">{appointment.description}</p>
+                  )}
                   <p className="text-sm text-muted-foreground">
-                    {appointment.date.toLocaleDateString()}
+                    {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
                   </p>
                 </div>
                 {getStatusBadge(appointment.status)}

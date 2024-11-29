@@ -3,20 +3,40 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { toast } from "sonner";
 
 const AdminDashboard = () => {
-  const [appointments, setAppointments] = useState([
-    { id: 1, title: "Premier rendez-vous", date: new Date(2024, 3, 15), status: "en_attente", clientName: "Jean Dupont" },
-    { id: 2, title: "Deuxième rendez-vous", date: new Date(2024, 3, 20), status: "approuve", clientName: "Marie Martin" },
-    { id: 3, title: "Consultation initiale", date: new Date(2024, 3, 25), status: "en_attente", clientName: "Pierre Durant" }
-  ]);
+  const { data: appointments = [], refetch } = useQuery({
+    queryKey: ["admin-appointments"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("appointments")
+        .select("*, profiles(first_name, last_name)")
+        .order("date", { ascending: true });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
 
-  const handleStatusChange = (appointmentId: number, newStatus: string) => {
-    setAppointments(appointments.map(appointment => 
-      appointment.id === appointmentId 
-        ? { ...appointment, status: newStatus }
-        : appointment
-    ));
+  const handleStatusChange = async (appointmentId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from("appointments")
+        .update({ status: newStatus })
+        .eq("id", appointmentId);
+
+      if (error) throw error;
+
+      toast.success(`Rendez-vous ${newStatus === "approuve" ? "approuvé" : "refusé"}`);
+      refetch();
+    } catch (error) {
+      toast.error("Une erreur est survenue");
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -47,12 +67,17 @@ const AdminDashboard = () => {
               >
                 <div className="space-y-2 mb-4 md:mb-0">
                   <h3 className="text-lg font-medium">{appointment.title}</h3>
+                  {appointment.description && (
+                    <p className="text-sm text-muted-foreground">{appointment.description}</p>
+                  )}
                   <div className="space-y-1">
                     <p className="text-sm text-muted-foreground flex items-center gap-2">
-                      <span className="font-medium">Client:</span> {appointment.clientName}
+                      <span className="font-medium">Client:</span> 
+                      {appointment.profiles?.first_name} {appointment.profiles?.last_name}
                     </p>
                     <p className="text-sm text-muted-foreground flex items-center gap-2">
-                      <span className="font-medium">Date:</span> {appointment.date.toLocaleDateString()}
+                      <span className="font-medium">Date:</span>
+                      {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
                     </p>
                   </div>
                 </div>
