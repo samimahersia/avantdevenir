@@ -9,16 +9,35 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
+interface Profile {
+  email: string | null;
+  first_name: string | null;
+  last_name: string | null;
+}
+
+interface Issue {
+  id: string;
+  title: string;
+  description: string | null;
+  status: string;
+  date: string;
+  profiles: Profile;
+}
+
 const TechnicalSupport = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: issues = [], isLoading } = useQuery({
+  const { data: issues = [], isLoading } = useQuery<Issue[]>({
     queryKey: ["appointments", "issues"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("appointments")
         .select(`
-          *,
+          id,
+          title,
+          description,
+          status,
+          date,
           profiles:client_id (
             email,
             first_name,
