@@ -32,7 +32,18 @@ const AdminDashboard = () => {
 
       if (error) throw error;
 
-      toast.success(`Rendez-vous ${newStatus === "approuve" ? "approuvé" : "refusé"}`);
+      // Send email notification
+      const { error: notificationError } = await supabase.functions.invoke("send-appointment-notification", {
+        body: { appointmentId, type: "status_update" }
+      });
+
+      if (notificationError) {
+        console.error("Failed to send notification:", notificationError);
+        toast.error("Le statut a été mis à jour mais l'email n'a pas pu être envoyé");
+      } else {
+        toast.success(`Rendez-vous ${newStatus === "approuve" ? "approuvé" : "refusé"}`);
+      }
+
       refetch();
     } catch (error) {
       toast.error("Une erreur est survenue");

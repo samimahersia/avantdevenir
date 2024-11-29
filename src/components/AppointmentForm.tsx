@@ -33,15 +33,34 @@ const AppointmentForm = ({ onSuccess }: { onSuccess?: () => void }) => {
     }
 
     try {
-      const { error } = await supabase.from("appointments").insert({
-        title,
-        description,
-        date: appointmentDate.toISOString(),
-      });
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+
+      const { data: appointment, error } = await supabase
+        .from("appointments")
+        .insert({
+          title,
+          description,
+          date: appointmentDate.toISOString(),
+          client_id: userData.user.id,
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
-      toast.success("Rendez-vous demandé avec succès");
+      // Send email notification
+      const { error: notificationError } = await supabase.functions.invoke("send-appointment-notification", {
+        body: { appointmentId: appointment.id, type: "new" }
+      });
+
+      if (notificationError) {
+        console.error("Failed to send notification:", notificationError);
+        toast.success("Rendez-vous créé mais l'email n'a pas pu être envoyé");
+      } else {
+        toast.success("Rendez-vous demandé avec succès");
+      }
+
       setTitle("");
       setDescription("");
       setDate(undefined);
