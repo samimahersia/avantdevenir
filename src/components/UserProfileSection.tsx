@@ -19,6 +19,9 @@ export const UserProfileSection = () => {
           return;
         }
 
+        // Attendre un court instant pour laisser le trigger créer le profil
+        await new Promise(resolve => setTimeout(resolve, 500));
+
         const { data: existingProfile, error: fetchError } = await supabase
           .from('profiles')
           .select('*')
@@ -26,12 +29,24 @@ export const UserProfileSection = () => {
           .single();
 
         if (fetchError) {
-          console.error('Error fetching profile:', fetchError);
-          toast.error('Erreur lors du chargement du profil');
-          return;
-        }
+          // Réessayer une fois de plus après un délai plus long
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          const { data: retryProfile, error: retryError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
 
-        setProfile(existingProfile);
+          if (retryError) {
+            console.error('Error fetching profile after retry:', retryError);
+            toast.error('Erreur lors du chargement du profil');
+            return;
+          }
+
+          setProfile(retryProfile);
+        } else {
+          setProfile(existingProfile);
+        }
       } catch (error) {
         console.error('Error in getProfile:', error);
         toast.error('Erreur lors du chargement du profil');
