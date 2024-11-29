@@ -28,3 +28,7 @@ enabled = true
 [[functions]]
 name = "send-appointment-notification"
 verify_jwt = true
+
+[[functions]]
+name = "send-appointment-reminders"
+verify_jwt = true

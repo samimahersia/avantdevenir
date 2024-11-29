@@ -12,10 +12,87 @@ const corsHeaders = {
 
 interface EmailNotification {
   appointmentId: string;
-  type: "new" | "status_update";
+  type: "new" | "status_update" | "reminder";
 }
 
 const supabase = createClient(supabaseUrl!, supabaseKey!);
+
+const getEmailTemplate = (type: string, data: any) => {
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleString("fr-FR", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const templates = {
+    new: {
+      subject: "Confirmation de votre demande de rendez-vous",
+      html: `
+        <h2>Confirmation de votre demande de rendez-vous</h2>
+        <p>Bonjour ${data.clientName},</p>
+        <p>Nous avons bien reçu votre demande de rendez-vous pour le ${formatDate(data.date)}.</p>
+        <p><strong>Détails du rendez-vous :</strong></p>
+        <ul>
+          <li>Titre : ${data.title}</li>
+          ${data.description ? `<li>Description : ${data.description}</li>` : ''}
+        </ul>
+        <p>Nous examinerons votre demande dans les plus brefs délais et vous tiendrons informé(e) de sa validation.</p>
+        <p>Cordialement,<br>L'équipe AvantDeVenir</p>
+      `
+    },
+    approuve: {
+      subject: "Votre rendez-vous a été approuvé",
+      html: `
+        <h2>Rendez-vous confirmé</h2>
+        <p>Bonjour ${data.clientName},</p>
+        <p>Nous avons le plaisir de vous confirmer votre rendez-vous pour le ${formatDate(data.date)}.</p>
+        <p><strong>Détails du rendez-vous :</strong></p>
+        <ul>
+          <li>Titre : ${data.title}</li>
+          ${data.description ? `<li>Description : ${data.description}</li>` : ''}
+        </ul>
+        <p>Nous avons hâte de vous recevoir !</p>
+        <p>Cordialement,<br>L'équipe AvantDeVenir</p>
+      `
+    },
+    refuse: {
+      subject: "Mise à jour de votre demande de rendez-vous",
+      html: `
+        <h2>Mise à jour de votre demande de rendez-vous</h2>
+        <p>Bonjour ${data.clientName},</p>
+        <p>Nous sommes désolés de vous informer que nous ne pourrons pas honorer votre demande de rendez-vous pour le ${formatDate(data.date)}.</p>
+        <p><strong>Détails du rendez-vous :</strong></p>
+        <ul>
+          <li>Titre : ${data.title}</li>
+          ${data.description ? `<li>Description : ${data.description}</li>` : ''}
+        </ul>
+        <p>N'hésitez pas à reprendre rendez-vous à une autre date qui vous conviendrait mieux.</p>
+        <p>Cordialement,<br>L'équipe AvantDeVenir</p>
+      `
+    },
+    reminder: {
+      subject: "Rappel de votre rendez-vous",
+      html: `
+        <h2>Rappel de votre rendez-vous</h2>
+        <p>Bonjour ${data.clientName},</p>
+        <p>Nous vous rappelons votre rendez-vous prévu pour demain, le ${formatDate(data.date)}.</p>
+        <p><strong>Détails du rendez-vous :</strong></p>
+        <ul>
+          <li>Titre : ${data.title}</li>
+          ${data.description ? `<li>Description : ${data.description}</li>` : ''}
+        </ul>
+        <p>Au plaisir de vous recevoir,<br>L'équipe AvantDeVenir</p>
+      `
+    }
+  };
+
+  return templates[type as keyof typeof templates];
+};
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -43,42 +120,14 @@ const handler = async (req: Request): Promise<Response> => {
     if (!appointment) throw new Error("Appointment not found");
 
     const clientName = `${appointment.profiles.first_name} ${appointment.profiles.last_name}`;
-    const appointmentDate = new Date(appointment.date).toLocaleString("fr-FR", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    const emailType = type === "status_update" ? appointment.status : type;
+    
+    const template = getEmailTemplate(emailType, {
+      clientName,
+      date: appointment.date,
+      title: appointment.title,
+      description: appointment.description
     });
-
-    let subject = "";
-    let html = "";
-
-    if (type === "new") {
-      subject = "Nouveau rendez-vous créé";
-      html = `
-        <h2>Nouveau rendez-vous créé</h2>
-        <p>Bonjour ${clientName},</p>
-        <p>Votre rendez-vous a bien été créé pour le ${appointmentDate}.</p>
-        <p>Titre: ${appointment.title}</p>
-        ${appointment.description ? `<p>Description: ${appointment.description}</p>` : ""}
-        <p>Nous vous recontacterons rapidement pour confirmer ce rendez-vous.</p>
-      `;
-    } else if (type === "status_update") {
-      const statusText = appointment.status === "approuve" ? "approuvé" : "refusé";
-      subject = `Rendez-vous ${statusText}`;
-      html = `
-        <h2>Mise à jour de votre rendez-vous</h2>
-        <p>Bonjour ${clientName},</p>
-        <p>Votre rendez-vous prévu le ${appointmentDate} a été ${statusText}.</p>
-        <p>Titre: ${appointment.title}</p>
-        ${appointment.description ? `<p>Description: ${appointment.description}</p>` : ""}
-        ${appointment.status === "approuve" 
-          ? "<p>Nous avons hâte de vous recevoir !</p>" 
-          : "<p>N'hésitez pas à reprendre rendez-vous à une autre date.</p>"}
-      `;
-    }
 
     const emailRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -87,10 +136,10 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Rendez-vous <onboarding@resend.dev>",
+        from: "AvantDeVenir <onboarding@resend.dev>",
         to: [appointment.profiles.email],
-        subject,
-        html,
+        subject: template.subject,
+        html: template.html,
       }),
     });
 
