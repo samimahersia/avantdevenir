@@ -20,16 +20,16 @@ export const UserProfileSection = () => {
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
-          .maybeSingle(); // Use maybeSingle instead of single to avoid 406 error
-
-        if (existingProfile) {
-          setProfile(existingProfile);
-          return;
-        }
+          .maybeSingle();
 
         if (fetchError && fetchError.code !== 'PGRST116') {
           console.error('Error fetching profile:', fetchError);
           toast.error('Erreur lors du chargement du profil');
+          return;
+        }
+
+        if (existingProfile) {
+          setProfile(existingProfile);
           return;
         }
 
@@ -41,7 +41,7 @@ export const UserProfileSection = () => {
             email: session.user.email,
             role: 'client'
           }])
-          .select()
+          .select('*')
           .single();
 
         if (insertError) {
@@ -58,6 +58,19 @@ export const UserProfileSection = () => {
     };
 
     getProfile();
+
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        getProfile();
+      } else {
+        setProfile(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleLogout = async () => {
