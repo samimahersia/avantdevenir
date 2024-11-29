@@ -14,45 +14,47 @@ export const UserProfileSection = () => {
     const getProfile = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user) return;
+        if (!session?.user) {
+          setProfile(null);
+          return;
+        }
 
         const { data: existingProfile, error: fetchError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
-          .maybeSingle();
-
-        if (fetchError) {
-          console.error('Erreur lors de la récupération du profil:', fetchError);
-          toast.error('Erreur lors du chargement du profil');
-          return;
-        }
-
-        if (existingProfile) {
-          setProfile(existingProfile);
-          return;
-        }
-
-        // Création ou mise à jour du profil avec l'ID exact de l'authentification
-        const { data: newProfile, error: upsertError } = await supabase
-          .from('profiles')
-          .upsert([{
-            id: session.user.id,
-            email: session.user.email,
-            role: 'client'
-          }])
-          .select('*')
           .single();
 
-        if (upsertError) {
-          console.error('Erreur lors de la création du profil:', upsertError);
-          toast.error('Erreur lors de la création du profil');
+        if (fetchError) {
+          if (fetchError.code === 'PGRST116') {
+            // Profile doesn't exist yet, create it
+            const { data: newProfile, error: createError } = await supabase
+              .from('profiles')
+              .insert([{
+                id: session.user.id,
+                email: session.user.email,
+                role: 'client'
+              }])
+              .select()
+              .single();
+
+            if (createError) {
+              console.error('Error creating profile:', createError);
+              toast.error('Erreur lors de la création du profil');
+              return;
+            }
+
+            setProfile(newProfile);
+          } else {
+            console.error('Error fetching profile:', fetchError);
+            toast.error('Erreur lors du chargement du profil');
+          }
           return;
         }
 
-        setProfile(newProfile);
+        setProfile(existingProfile);
       } catch (error) {
-        console.error('Erreur dans getProfile:', error);
+        console.error('Error in getProfile:', error);
         toast.error('Erreur lors du chargement du profil');
       }
     };
