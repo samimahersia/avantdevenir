@@ -10,6 +10,7 @@ import NotificationSettings from "./admin/NotificationSettings";
 import AppointmentCalendar from "./admin/AppointmentCalendar";
 import AppointmentStats from "./AppointmentStats";
 import RecurringAvailabilityForm from "./RecurringAvailabilityForm";
+import TechnicalSupport from "./admin/TechnicalSupport";
 
 const AdminDashboard = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -19,12 +20,13 @@ const AdminDashboard = () => {
       <h2 className="text-2xl font-semibold">Tableau de bord administrateur</h2>
       
       <Tabs defaultValue="appointments" className="w-full">
-        <TabsList className="grid w-full grid-cols-1 md:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-1 md:grid-cols-6">
           <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
           <TabsTrigger value="calendar">Calendrier</TabsTrigger>
           <TabsTrigger value="stats">Statistiques</TabsTrigger>
           <TabsTrigger value="users">Utilisateurs</TabsTrigger>
           <TabsTrigger value="settings">Paramètres</TabsTrigger>
+          <TabsTrigger value="support">Support</TabsTrigger>
         </TabsList>
         
         <TabsContent value="appointments" className="mt-6">
@@ -59,6 +61,10 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="support" className="mt-6">
+          <TechnicalSupport />
         </TabsContent>
       </Tabs>
     </div>
