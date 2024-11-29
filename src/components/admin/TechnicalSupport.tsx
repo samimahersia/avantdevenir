@@ -45,7 +45,8 @@ const TechnicalSupport = () => {
           )
         `)
         .or('status.eq.refuse,description.ilike.%problème%,description.ilike.%erreur%')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .returns<Issue[]>();
 
       if (error) throw error;
       return data;
