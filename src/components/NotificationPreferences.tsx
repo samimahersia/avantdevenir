@@ -27,14 +27,7 @@ const NotificationPreferences = () => {
 
       if (error) throw error;
       return data;
-    },
-    onSuccess: (data) => {
-      if (data) {
-        setEmailEnabled(data.email_enabled);
-        setPushEnabled(data.push_enabled);
-        setReminderHours(data.reminder_before_hours);
-      }
-    },
+    }
   });
 
   const updatePreferences = useMutation({
