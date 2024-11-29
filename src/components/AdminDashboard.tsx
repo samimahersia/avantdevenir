@@ -8,6 +8,8 @@ import AppointmentManagement from "./admin/AppointmentManagement";
 import UserManagement from "./admin/UserManagement";
 import NotificationSettings from "./admin/NotificationSettings";
 import AppointmentCalendar from "./admin/AppointmentCalendar";
+import AppointmentStats from "./AppointmentStats";
+import RecurringAvailabilityForm from "./RecurringAvailabilityForm";
 
 const AdminDashboard = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -17,11 +19,12 @@ const AdminDashboard = () => {
       <h2 className="text-2xl font-semibold">Tableau de bord administrateur</h2>
       
       <Tabs defaultValue="appointments" className="w-full">
-        <TabsList className="grid w-full grid-cols-1 md:grid-cols-4">
+        <TabsList className="grid w-full grid-cols-1 md:grid-cols-5">
           <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
           <TabsTrigger value="calendar">Calendrier</TabsTrigger>
+          <TabsTrigger value="stats">Statistiques</TabsTrigger>
           <TabsTrigger value="users">Utilisateurs</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="settings">Paramètres</TabsTrigger>
         </TabsList>
         
         <TabsContent value="appointments" className="mt-6">
@@ -31,13 +34,31 @@ const AdminDashboard = () => {
         <TabsContent value="calendar" className="mt-6">
           <AppointmentCalendar />
         </TabsContent>
+
+        <TabsContent value="stats" className="mt-6">
+          <AppointmentStats />
+        </TabsContent>
         
         <TabsContent value="users" className="mt-6">
           <UserManagement />
         </TabsContent>
         
-        <TabsContent value="notifications" className="mt-6">
-          <NotificationSettings />
+        <TabsContent value="settings" className="mt-6">
+          <div className="grid gap-6">
+            <Card>
+              <CardContent className="pt-6">
+                <h3 className="text-lg font-semibold mb-4">Disponibilités récurrentes</h3>
+                <RecurringAvailabilityForm />
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="pt-6">
+                <h3 className="text-lg font-semibold mb-4">Paramètres des notifications</h3>
+                <NotificationSettings />
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
