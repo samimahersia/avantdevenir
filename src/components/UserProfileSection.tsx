@@ -33,10 +33,10 @@ export const UserProfileSection = () => {
           return;
         }
 
-        // Profile doesn't exist, create one
+        // Profile doesn't exist, create one with the exact ID from auth
         const { data: newProfile, error: insertError } = await supabase
           .from('profiles')
-          .insert([{
+          .upsert([{
             id: session.user.id,
             email: session.user.email,
             role: 'client'
@@ -59,7 +59,6 @@ export const UserProfileSection = () => {
 
     getProfile();
 
-    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         getProfile();
