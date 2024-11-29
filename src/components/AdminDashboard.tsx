@@ -8,8 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
+import AppointmentStats from "./AppointmentStats";
 
 const AdminDashboard = () => {
+  const [showStats, setShowStats] = useState(false);
+
   const { data: appointments = [], refetch } = useQuery({
     queryKey: ["admin-appointments"],
     queryFn: async () => {
@@ -65,63 +68,77 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="border-none shadow-none">
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold">Gestion des Rendez-vous</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {appointments.map((appointment) => (
-              <div
-                key={appointment.id}
-                className="flex flex-col md:flex-row md:items-center justify-between p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="space-y-2 mb-4 md:mb-0">
-                  <h3 className="text-lg font-medium">{appointment.title}</h3>
-                  {appointment.description && (
-                    <p className="text-sm text-muted-foreground">{appointment.description}</p>
-                  )}
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground flex items-center gap-2">
-                      <span className="font-medium">Client:</span> 
-                      {appointment.profiles?.first_name} {appointment.profiles?.last_name}
-                    </p>
-                    <p className="text-sm text-muted-foreground flex items-center gap-2">
-                      <span className="font-medium">Date:</span>
-                      {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
-                    </p>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-semibold">Tableau de bord administrateur</h2>
+        <Button 
+          variant="outline"
+          onClick={() => setShowStats(!showStats)}
+        >
+          {showStats ? "Voir les rendez-vous" : "Voir les statistiques"}
+        </Button>
+      </div>
+
+      {showStats ? (
+        <AppointmentStats />
+      ) : (
+        <Card className="border-none shadow-none">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold">Gestion des Rendez-vous</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {appointments.map((appointment) => (
+                <div
+                  key={appointment.id}
+                  className="flex flex-col md:flex-row md:items-center justify-between p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="space-y-2 mb-4 md:mb-0">
+                    <h3 className="text-lg font-medium">{appointment.title}</h3>
+                    {appointment.description && (
+                      <p className="text-sm text-muted-foreground">{appointment.description}</p>
+                    )}
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground flex items-center gap-2">
+                        <span className="font-medium">Client:</span> 
+                        {appointment.profiles?.first_name} {appointment.profiles?.last_name}
+                      </p>
+                      <p className="text-sm text-muted-foreground flex items-center gap-2">
+                        <span className="font-medium">Date:</span>
+                        {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    {getStatusBadge(appointment.status)}
+                    {appointment.status === "en_attente" && (
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
+                          onClick={() => handleStatusChange(appointment.id, "approuve")}
+                        >
+                          <Check className="w-4 h-4 mr-1" />
+                          Approuver
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          onClick={() => handleStatusChange(appointment.id, "refuse")}
+                        >
+                          <X className="w-4 h-4 mr-1" />
+                          Refuser
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  {getStatusBadge(appointment.status)}
-                  {appointment.status === "en_attente" && (
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
-                        onClick={() => handleStatusChange(appointment.id, "approuve")}
-                      >
-                        <Check className="w-4 h-4 mr-1" />
-                        Approuver
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        onClick={() => handleStatusChange(appointment.id, "refuse")}
-                      >
-                        <X className="w-4 h-4 mr-1" />
-                        Refuser
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
