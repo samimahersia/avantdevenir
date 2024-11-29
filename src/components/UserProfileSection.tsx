@@ -19,30 +19,37 @@ export const UserProfileSection = () => {
           return;
         }
 
-        const { data: existingProfile, error } = await supabase
+        // First, try to get the existing profile
+        const { data: existingProfile, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
           .single();
 
-        if (error) {
-          if (error.code === 'PGRST116') {
-            // Profile not found, wait briefly and retry once
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            const { data: retryProfile, error: retryError } = await supabase
+        if (profileError) {
+          if (profileError.code === 'PGRST116') {
+            // Profile doesn't exist, create it
+            const { data: newProfile, error: createError } = await supabase
               .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
+              .insert([{
+                id: session.user.id,
+                email: session.user.email,
+                first_name: session.user.user_metadata.first_name,
+                last_name: session.user.user_metadata.last_name,
+                role: 'client'
+              }])
+              .select()
               .single();
 
-            if (retryError) {
-              console.error('Error fetching profile after retry:', retryError);
-              toast.error('Erreur lors du chargement du profil');
+            if (createError) {
+              console.error('Error creating profile:', createError);
+              toast.error('Erreur lors de la création du profil');
               return;
             }
-            setProfile(retryProfile);
+            
+            setProfile(newProfile);
           } else {
-            console.error('Error fetching profile:', error);
+            console.error('Error fetching profile:', profileError);
             toast.error('Erreur lors du chargement du profil');
             return;
           }
