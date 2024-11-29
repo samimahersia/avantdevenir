@@ -18,6 +18,7 @@ const AppointmentForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedHour, setSelectedHour] = useState<number>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,11 +35,29 @@ const AppointmentForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       return;
     }
 
-    try {
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
+    setIsSubmitting(true);
 
-      const { data: appointment, error } = await supabase
+    try {
+      const { data: session, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        toast.error("Veuillez vous connecter pour prendre un rendez-vous");
+        return;
+      }
+
+      if (!session?.session?.user) {
+        toast.error("Veuillez vous connecter pour prendre un rendez-vous");
+        return;
+      }
+
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        toast.error("Erreur d'authentification");
+        console.error("Auth error:", userError);
+        return;
+      }
+
+      const { data: appointment, error: appointmentError } = await supabase
         .from("appointments")
         .insert({
           title,
@@ -49,7 +68,15 @@ const AppointmentForm = ({ onSuccess }: { onSuccess?: () => void }) => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (appointmentError) {
+        if (appointmentError.message.includes("Ce créneau n'est pas disponible")) {
+          toast.error("Ce créneau n'est pas disponible");
+        } else {
+          console.error("Appointment error:", appointmentError);
+          toast.error("Erreur lors de la création du rendez-vous. Veuillez vérifier que le créneau est disponible.");
+        }
+        return;
+      }
 
       // Send notification
       const { error: notificationError } = await supabase.functions.invoke("send-notification", {
@@ -65,7 +92,7 @@ const AppointmentForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       });
 
       if (notificationError) {
-        console.error("Failed to send notification:", notificationError);
+        console.error("Notification error:", notificationError);
         toast.success("Rendez-vous créé mais la notification n'a pas pu être envoyée");
       } else {
         toast.success("Rendez-vous demandé avec succès");
@@ -77,7 +104,10 @@ const AppointmentForm = ({ onSuccess }: { onSuccess?: () => void }) => {
       setSelectedHour(undefined);
       onSuccess?.();
     } catch (error) {
-      toast.error("Erreur lors de la création du rendez-vous");
+      console.error("Unexpected error:", error);
+      toast.error("Une erreur inattendue s'est produite");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -143,11 +173,11 @@ const AppointmentForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
       <Button 
         type="submit" 
-        disabled={!date || selectedHour === undefined || !title.trim()}
+        disabled={!date || selectedHour === undefined || !title.trim() || isSubmitting}
         className="w-full sm:w-auto"
         size="lg"
       >
-        Demander un rendez-vous
+        {isSubmitting ? "En cours..." : "Demander un rendez-vous"}
       </Button>
     </form>
   );

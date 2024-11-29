@@ -132,6 +132,83 @@ export type Database = {
           },
         ]
       }
+      notification_stats: {
+        Row: {
+          created_at: string | null
+          failed_sent: number | null
+          id: string
+          last_sent_at: string | null
+          successful_sent: number | null
+          template_id: string | null
+          total_sent: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          failed_sent?: number | null
+          id?: string
+          last_sent_at?: string | null
+          successful_sent?: number | null
+          template_id?: string | null
+          total_sent?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          failed_sent?: number | null
+          id?: string
+          last_sent_at?: string | null
+          successful_sent?: number | null
+          template_id?: string | null
+          total_sent?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_stats_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "notification_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_templates: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          subject: string
+          type: string
+          updated_at: string | null
+          variables: Json | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          subject: string
+          type: string
+          updated_at?: string | null
+          variables?: Json | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          subject?: string
+          type?: string
+          updated_at?: string | null
+          variables?: Json | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
