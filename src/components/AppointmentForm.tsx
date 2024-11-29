@@ -13,7 +13,12 @@ import { fr } from "date-fns/locale";
 
 const AVAILABLE_HOURS = Array.from({ length: 9 }, (_, i) => i + 9); // 9h à 17h
 
-const AppointmentForm = ({ onSuccess }: { onSuccess?: () => void }) => {
+interface AppointmentFormProps {
+  onSuccess?: () => void;
+  selectedConsulate?: string;
+}
+
+const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps) => {
   const [date, setDate] = useState<Date>();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -64,6 +69,7 @@ const AppointmentForm = ({ onSuccess }: { onSuccess?: () => void }) => {
           description,
           date: appointmentDate.toISOString(),
           client_id: userData.user.id,
+          consulate_id: selectedConsulate,
         })
         .select()
         .single();
