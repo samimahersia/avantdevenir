@@ -112,7 +112,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_appointment_availability: {
+        Args: {
+          appointment_date: string
+          duration_minutes?: number
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
