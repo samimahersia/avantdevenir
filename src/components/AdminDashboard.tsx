@@ -9,9 +9,11 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import AppointmentStats from "./AppointmentStats";
+import RecurringAvailabilityForm from "./RecurringAvailabilityForm";
 
 const AdminDashboard = () => {
   const [showStats, setShowStats] = useState(false);
+  const [showAvailabilities, setShowAvailabilities] = useState(false);
 
   const { data: appointments = [], refetch } = useQuery({
     queryKey: ["admin-appointments"],
@@ -68,18 +70,34 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap gap-2">
         <h2 className="text-2xl font-semibold">Tableau de bord administrateur</h2>
-        <Button 
-          variant="outline"
-          onClick={() => setShowStats(!showStats)}
-        >
-          {showStats ? "Voir les rendez-vous" : "Voir les statistiques"}
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            onClick={() => {
+              setShowStats(false);
+              setShowAvailabilities(!showAvailabilities);
+            }}
+          >
+            {showAvailabilities ? "Voir les rendez-vous" : "Gérer les disponibilités"}
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => {
+              setShowAvailabilities(false);
+              setShowStats(!showStats);
+            }}
+          >
+            {showStats ? "Voir les rendez-vous" : "Voir les statistiques"}
+          </Button>
+        </div>
       </div>
 
       {showStats ? (
         <AppointmentStats />
+      ) : showAvailabilities ? (
+        <RecurringAvailabilityForm />
       ) : (
         <Card className="border-none shadow-none">
           <CardHeader>

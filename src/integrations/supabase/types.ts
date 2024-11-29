@@ -80,6 +80,33 @@ export type Database = {
         }
         Relationships: []
       }
+      recurring_availabilities: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          end_hour: number
+          id: string
+          start_hour: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          end_hour: number
+          id?: string
+          start_hour: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          end_hour?: number
+          id?: string
+          start_hour?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
