@@ -22,8 +22,8 @@ export const UserProfileSection = () => {
           .eq('id', session.user.id)
           .maybeSingle();
 
-        if (fetchError && fetchError.code !== 'PGRST116') {
-          console.error('Error fetching profile:', fetchError);
+        if (fetchError) {
+          console.error('Erreur lors de la récupération du profil:', fetchError);
           toast.error('Erreur lors du chargement du profil');
           return;
         }
@@ -33,8 +33,8 @@ export const UserProfileSection = () => {
           return;
         }
 
-        // Profile doesn't exist, create one with the exact ID from auth
-        const { data: newProfile, error: insertError } = await supabase
+        // Création ou mise à jour du profil avec l'ID exact de l'authentification
+        const { data: newProfile, error: upsertError } = await supabase
           .from('profiles')
           .upsert([{
             id: session.user.id,
@@ -44,15 +44,15 @@ export const UserProfileSection = () => {
           .select('*')
           .single();
 
-        if (insertError) {
-          console.error('Error creating profile:', insertError);
+        if (upsertError) {
+          console.error('Erreur lors de la création du profil:', upsertError);
           toast.error('Erreur lors de la création du profil');
           return;
         }
 
         setProfile(newProfile);
       } catch (error) {
-        console.error('Error in getProfile:', error);
+        console.error('Erreur dans getProfile:', error);
         toast.error('Erreur lors du chargement du profil');
       }
     };
