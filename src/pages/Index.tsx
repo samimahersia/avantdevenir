@@ -1,12 +1,36 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ClientDashboard from "@/components/ClientDashboard";
+import AdminDashboard from "@/components/AdminDashboard";
 
 const Index = () => {
+  const [userType, setUserType] = useState<"client" | "admin">("client");
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen p-8 bg-gray-50">
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl font-bold">AvantDeVenir</CardTitle>
+          <div className="flex justify-center gap-4 mt-4">
+            <Button
+              variant={userType === "client" ? "default" : "outline"}
+              onClick={() => setUserType("client")}
+            >
+              Mode Client
+            </Button>
+            <Button
+              variant={userType === "admin" ? "default" : "outline"}
+              onClick={() => setUserType("admin")}
+            >
+              Mode Administrateur
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {userType === "client" ? <ClientDashboard /> : <AdminDashboard />}
+        </CardContent>
+      </Card>
     </div>
   );
 };
