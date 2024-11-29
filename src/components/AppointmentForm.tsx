@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { addHours, setHours, setMinutes, isBefore, startOfToday } from "date-fns";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 const AVAILABLE_HOURS = Array.from({ length: 9 }, (_, i) => i + 9); // 9h à 17h
 
@@ -49,14 +51,22 @@ const AppointmentForm = ({ onSuccess }: { onSuccess?: () => void }) => {
 
       if (error) throw error;
 
-      // Send email notification
-      const { error: notificationError } = await supabase.functions.invoke("send-appointment-notification", {
-        body: { appointmentId: appointment.id, type: "new" }
+      // Send notification
+      const { error: notificationError } = await supabase.functions.invoke("send-notification", {
+        body: {
+          userId: userData.user.id,
+          type: "appointment_created",
+          title: "Nouveau rendez-vous créé",
+          content: `Votre demande de rendez-vous pour le ${format(appointmentDate, "d MMMM yyyy 'à' HH:mm", { locale: fr })} a été enregistrée. Vous recevrez une notification lors de sa validation.`,
+          metadata: {
+            appointmentId: appointment.id,
+          },
+        },
       });
 
       if (notificationError) {
         console.error("Failed to send notification:", notificationError);
-        toast.success("Rendez-vous créé mais l'email n'a pas pu être envoyé");
+        toast.success("Rendez-vous créé mais la notification n'a pas pu être envoyée");
       } else {
         toast.success("Rendez-vous demandé avec succès");
       }

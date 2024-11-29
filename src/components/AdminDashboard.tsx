@@ -37,14 +37,23 @@ const AdminDashboard = () => {
 
       if (error) throw error;
 
-      // Send email notification
-      const { error: notificationError } = await supabase.functions.invoke("send-appointment-notification", {
-        body: { appointmentId, type: "status_update" }
+      // Send notification
+      const { error: notificationError } = await supabase.functions.invoke("send-notification", {
+        body: {
+          userId: appointment.client_id,
+          type: "appointment_status",
+          title: `Rendez-vous ${newStatus === "approuve" ? "approuvé" : "refusé"}`,
+          content: `Votre rendez-vous du ${format(new Date(appointment.date), "d MMMM yyyy 'à' HH:mm", { locale: fr })} a été ${newStatus === "approuve" ? "approuvé" : "refusé"}.`,
+          metadata: {
+            appointmentId,
+            status: newStatus,
+          },
+        },
       });
 
       if (notificationError) {
         console.error("Failed to send notification:", notificationError);
-        toast.error("Le statut a été mis à jour mais l'email n'a pas pu être envoyé");
+        toast.error("Le statut a été mis à jour mais la notification n'a pas pu être envoyée");
       } else {
         toast.success(`Rendez-vous ${newStatus === "approuve" ? "approuvé" : "refusé"}`);
       }
