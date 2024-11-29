@@ -19,31 +19,33 @@ export const UserProfileSection = () => {
           return;
         }
 
-        // Attendre un court instant pour laisser le trigger créer le profil
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        const { data: existingProfile, error: fetchError } = await supabase
+        const { data: existingProfile, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
           .single();
 
-        if (fetchError) {
-          // Réessayer une fois de plus après un délai plus long
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          const { data: retryProfile, error: retryError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
+        if (error) {
+          if (error.code === 'PGRST116') {
+            // Profile not found, wait briefly and retry once
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const { data: retryProfile, error: retryError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
 
-          if (retryError) {
-            console.error('Error fetching profile after retry:', retryError);
+            if (retryError) {
+              console.error('Error fetching profile after retry:', retryError);
+              toast.error('Erreur lors du chargement du profil');
+              return;
+            }
+            setProfile(retryProfile);
+          } else {
+            console.error('Error fetching profile:', error);
             toast.error('Erreur lors du chargement du profil');
             return;
           }
-
-          setProfile(retryProfile);
         } else {
           setProfile(existingProfile);
         }
