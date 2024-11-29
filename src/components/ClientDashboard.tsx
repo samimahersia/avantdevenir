@@ -32,64 +32,72 @@ const ClientDashboard = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "en_attente":
-        return <Badge variant="secondary">En attente</Badge>;
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100">En attente</Badge>;
       case "approuve":
-        return <Badge variant="success">Approuvé</Badge>;
+        return <Badge variant="success" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Approuvé</Badge>;
       case "refuse":
-        return <Badge variant="destructive">Refusé</Badge>;
+        return <Badge variant="destructive" className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100">Refusé</Badge>;
       default:
         return null;
     }
   };
 
   return (
-    <div className="space-y-6">
-      <Card>
+    <div className="space-y-8">
+      <Card className="border-none shadow-none">
         <CardHeader>
-          <CardTitle>Nouveau Rendez-vous</CardTitle>
+          <CardTitle className="text-2xl font-semibold">Nouveau Rendez-vous</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="title">Titre du rendez-vous</Label>
+              <Label htmlFor="title" className="text-base">Titre du rendez-vous</Label>
               <Input
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Entrez le titre du rendez-vous"
+                className="w-full"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label>Date du rendez-vous</Label>
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                className="rounded-md border"
-                required
-              />
+              <Label className="text-base">Date du rendez-vous</Label>
+              <div className="border rounded-lg p-4 bg-white dark:bg-gray-800">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  className="mx-auto"
+                  required
+                />
+              </div>
             </div>
-            <Button type="submit" disabled={!date || !title}>
+            <Button 
+              type="submit" 
+              disabled={!date || !title}
+              className="w-full sm:w-auto"
+              size="lg"
+            >
               Demander un rendez-vous
             </Button>
           </form>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-none shadow-none">
         <CardHeader>
-          <CardTitle>Mes Rendez-vous</CardTitle>
+          <CardTitle className="text-2xl font-semibold">Mes Rendez-vous</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {appointments.map((appointment) => (
               <div
                 key={appointment.id}
-                className="flex items-center justify-between p-4 border rounded-lg"
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
               >
-                <div>
-                  <h3 className="font-medium">{appointment.title}</h3>
+                <div className="space-y-2 mb-4 sm:mb-0">
+                  <h3 className="text-lg font-medium">{appointment.title}</h3>
                   <p className="text-sm text-muted-foreground">
                     {appointment.date.toLocaleDateString()}
                   </p>
