@@ -20,7 +20,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold">Tableau de bord administrateur</h2>
+      <h2 className="text-2xl font-semibold text-center">Tableau de bord administrateur</h2>
       
       <Tabs defaultValue="appointments" className="w-full">
         <TabsList className="grid w-full grid-cols-1 md:grid-cols-8">
