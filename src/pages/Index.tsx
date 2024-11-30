@@ -103,13 +103,27 @@ const Index = () => {
             Mode Client
           </Button>
           {userRole === "admin" && (
-            <Button
-              variant={userType === "admin" ? "default" : "outline"}
-              onClick={() => setUserType("admin")}
-              className="w-full"
-            >
-              Mode Administrateur
-            </Button>
+            <div className="space-y-2">
+              <Button
+                variant={userType === "admin" ? "default" : "outline"}
+                onClick={() => setUserType("admin")}
+                className="w-full"
+              >
+                Mode Administrateur
+              </Button>
+              {userType === "admin" && (
+                <div className="pl-4 space-y-2">
+                  <Button variant="ghost" className="w-full justify-start">Rendez-vous</Button>
+                  <Button variant="ghost" className="w-full justify-start">Calendrier</Button>
+                  <Button variant="ghost" className="w-full justify-start">Statistiques</Button>
+                  <Button variant="ghost" className="w-full justify-start">Utilisateurs</Button>
+                  <Button variant="ghost" className="w-full justify-start">Consulats</Button>
+                  <Button variant="ghost" className="w-full justify-start">Services</Button>
+                  <Button variant="ghost" className="w-full justify-start">Paramètres</Button>
+                  <Button variant="ghost" className="w-full justify-start">Support</Button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </SheetContent>
@@ -137,7 +151,7 @@ const Index = () => {
               </div>
               
               <div className="px-6">
-                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
                   AvantDeVenir
                 </CardTitle>
                 
@@ -200,7 +214,9 @@ const Index = () => {
                 selectedService={selectedService}
               />
             ) : userRole === "admin" ? (
-              <AdminDashboard />
+              <div className="flex justify-center">
+                <AdminDashboard />
+              </div>
             ) : null}
           </CardContent>
         </Card>
