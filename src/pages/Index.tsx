@@ -85,75 +85,77 @@ const Index = () => {
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-[100vw] mx-auto">
         <div className="flex justify-end items-center mb-6">
           <UserProfileSection />
         </div>
 
         <Card className="shadow-lg">
-          <CardHeader className="text-center pb-6">
-            <div className="max-w-4xl mx-auto space-y-6">
-              <div className="relative w-full h-48 mb-6 overflow-hidden rounded-t-lg">
+          <CardHeader className="text-center pb-6 p-0">
+            <div className="max-w-full mx-auto space-y-6">
+              <div className="relative w-full h-64 overflow-hidden">
                 <img
-                  src="/images/consulate-service.jpg"
-                  alt="Service consulaire professionnel"
+                  src="https://images.unsplash.com/photo-1498050108023-c5249f4df085"
+                  alt="Calendrier professionnel"
                   className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
               </div>
               
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                AvantDeVenir
-              </CardTitle>
-              
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button
-                  size="lg"
-                  variant={userType === "client" ? "default" : "outline"}
-                  onClick={() => setUserType("client")}
-                  className="w-full sm:w-auto"
-                >
-                  Mode Client
-                </Button>
-                {userRole === "admin" && (
+              <div className="px-6">
+                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  AvantDeVenir
+                </CardTitle>
+                
+                <div className="flex flex-col sm:flex-row justify-center gap-4 mt-6">
                   <Button
                     size="lg"
-                    variant={userType === "admin" ? "default" : "outline"}
-                    onClick={() => setUserType("admin")}
+                    variant={userType === "client" ? "default" : "outline"}
+                    onClick={() => setUserType("client")}
                     className="w-full sm:w-auto"
                   >
-                    Mode Administrateur
+                    Mode Client
                   </Button>
+                  {userRole === "admin" && (
+                    <Button
+                      size="lg"
+                      variant={userType === "admin" ? "default" : "outline"}
+                      onClick={() => setUserType("admin")}
+                      className="w-full sm:w-auto"
+                    >
+                      Mode Administrateur
+                    </Button>
+                  )}
+                </div>
+
+                {userType === "client" && (
+                  <div className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-2xl mx-auto mt-6">
+                    <div className="w-full sm:w-1/2">
+                      <Select 
+                        value={selectedConsulate} 
+                        onValueChange={setSelectedConsulate}
+                      >
+                        <SelectTrigger className="bg-[#D3E4FD] border-[#D3E4FD] hover:bg-[#C3D4ED]">
+                          <SelectValue placeholder="Sélectionnez un consulat" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {consulates.map((consulate) => (
+                            <SelectItem key={consulate.id} value={consulate.id}>
+                              {consulate.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="w-full sm:w-1/2">
+                      <ServiceSelector
+                        selectedService={selectedService}
+                        onServiceSelect={setSelectedService}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
-
-              {userType === "client" && (
-                <div className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-2xl mx-auto">
-                  <div className="w-full sm:w-1/2">
-                    <Select 
-                      value={selectedConsulate} 
-                      onValueChange={setSelectedConsulate}
-                    >
-                      <SelectTrigger className="bg-[#D3E4FD] border-[#D3E4FD] hover:bg-[#C3D4ED]">
-                        <SelectValue placeholder="Sélectionnez un consulat" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {consulates.map((consulate) => (
-                          <SelectItem key={consulate.id} value={consulate.id}>
-                            {consulate.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="w-full sm:w-1/2">
-                    <ServiceSelector
-                      selectedService={selectedService}
-                      onServiceSelect={setSelectedService}
-                    />
-                  </div>
-                </div>
-              )}
             </div>
           </CardHeader>
 
