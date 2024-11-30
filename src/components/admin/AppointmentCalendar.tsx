@@ -6,6 +6,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { FileDown } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { toast } from "sonner";
 
 const AppointmentCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -18,7 +23,7 @@ const AppointmentCalendar = () => {
 
       const { data, error } = await supabase
         .from("appointments")
-        .select("*, profiles(first_name, last_name)")
+        .select("*, profiles(first_name, last_name), services(name)")
         .gte("date", startOfMonth.toISOString())
         .lte("date", endOfMonth.toISOString())
         .order("date", { ascending: true });
@@ -31,6 +36,80 @@ const AppointmentCalendar = () => {
   const selectedDayAppointments = appointments.filter(
     (appointment) => format(new Date(appointment.date), "yyyy-MM-dd") === format(selectedDate, "yyyy-MM-dd")
   );
+
+  const generatePDF = () => {
+    try {
+      const doc = new jsPDF();
+      
+      // Grouper les rendez-vous par jour
+      const groupedAppointments = appointments.reduce((acc, appointment) => {
+        const day = format(new Date(appointment.date), "yyyy-MM-dd");
+        if (!acc[day]) {
+          acc[day] = [];
+        }
+        acc[day].push(appointment);
+        return acc;
+      }, {});
+
+      // Pour chaque jour, trier par service et heure
+      Object.entries(groupedAppointments).forEach(([day, dayAppointments], index) => {
+        if (index > 0) {
+          doc.addPage();
+        }
+
+        // Titre du jour
+        doc.setFontSize(16);
+        doc.text(format(new Date(day), "EEEE d MMMM yyyy", { locale: fr }), 14, 20);
+
+        // Grouper par service
+        const byService = (dayAppointments as any[]).reduce((acc, appointment) => {
+          const serviceName = appointment.services?.name || "Sans service";
+          if (!acc[serviceName]) {
+            acc[serviceName] = [];
+          }
+          acc[serviceName].push(appointment);
+          return acc;
+        }, {});
+
+        let yOffset = 30;
+        
+        Object.entries(byService).forEach(([serviceName, serviceAppointments]) => {
+          // Titre du service
+          doc.setFontSize(14);
+          doc.text(serviceName, 14, yOffset);
+          yOffset += 10;
+
+          // Tableau des rendez-vous
+          const tableData = (serviceAppointments as any[])
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .map(appointment => [
+              format(new Date(appointment.date), "HH'h'mm", { locale: fr }),
+              appointment.title,
+              `${appointment.profiles?.first_name || ''} ${appointment.profiles?.last_name || ''}`,
+              appointment.status === "approuve" ? "Approuvé" :
+              appointment.status === "refuse" ? "Refusé" : "En attente"
+            ]);
+
+          autoTable(doc, {
+            startY: yOffset,
+            head: [["Heure", "Titre", "Client", "Statut"]],
+            body: tableData,
+            margin: { left: 14 },
+            styles: { fontSize: 10 },
+            headStyles: { fillColor: [41, 128, 185] },
+          });
+
+          yOffset = (doc as any).lastAutoTable.finalY + 20;
+        });
+      });
+
+      doc.save(`rendez-vous-${format(selectedDate, "yyyy-MM")}.pdf`);
+      toast.success("Le PDF a été généré avec succès");
+    } catch (error) {
+      console.error("Erreur lors de la génération du PDF:", error);
+      toast.error("Erreur lors de la génération du PDF");
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -47,6 +126,16 @@ const AppointmentCalendar = () => {
             locale={fr}
             disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
           />
+          <div className="mt-4">
+            <Button 
+              onClick={generatePDF}
+              className="w-full"
+              variant="outline"
+            >
+              <FileDown className="mr-2 h-4 w-4" />
+              Exporter les rendez-vous en PDF
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
