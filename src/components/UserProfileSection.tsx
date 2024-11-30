@@ -100,9 +100,7 @@ export const UserProfileSection = () => {
   };
 
   const handleNavigate = (path: string) => {
-    if (location.pathname !== path) {
-      navigate(path);
-    }
+    navigate(path);
   };
 
   if (isLoading) {
