@@ -21,10 +21,6 @@ import {
 } from "recharts";
 
 const COLORS = ["#10B981", "#F59E0B", "#EF4444"];
-const MONTHS = [
-  "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-  "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
-];
 
 const AppointmentStats = () => {
   const startDate = startOfYear(new Date());
@@ -55,11 +51,11 @@ const AppointmentStats = () => {
     return acc;
   }, []);
 
-  // Prepare data for appointments by month
-  const appointmentsByMonth = MONTHS.map((month, index) => ({
-    name: month,
+  // Prepare data for appointments by day of week
+  const appointmentsByDay = Array.from({ length: 7 }, (_, i) => ({
+    name: format(new Date(2024, 0, i + 1), "EEEE", { locale: fr }),
     appointments: appointments.filter(apt => 
-      parseISO(apt.date).getMonth() === index
+      parseISO(apt.date).getDay() === i
     ).length
   }));
 
@@ -78,15 +74,15 @@ const AppointmentStats = () => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Appointments by Month */}
+        {/* Appointments by Day */}
         <Card>
           <CardHeader>
-            <CardTitle>Rendez-vous par mois</CardTitle>
+            <CardTitle>Rendez-vous par jour</CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={appointmentsByMonth}>
-                <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
+              <BarChart data={appointmentsByDay}>
+                <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="appointments" fill="#6366F1" />
