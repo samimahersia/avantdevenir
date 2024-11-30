@@ -10,36 +10,56 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserCircle, Calendar, Building } from "lucide-react";
 import { UserProfileSection } from "@/components/UserProfileSection";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [userType, setUserType] = useState<"client" | "admin">("client");
   const [selectedConsulate, setSelectedConsulate] = useState<string>();
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const checkUserRole = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data: profile } = await supabase
+    const checkAuth = async () => {
+      try {
+        setIsLoading(true);
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          navigate("/auth");
+          return;
+        }
+
+        const { data: profile, error } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', session.user.id)
           .single();
         
+        if (error) {
+          console.error("Error fetching profile:", error);
+          toast.error("Erreur lors du chargement du profil");
+          return;
+        }
+
         setUserRole(profile?.role || null);
         
-        // If user is not admin and tries to access admin mode, switch to client mode
         if (userType === "admin" && profile?.role !== "admin") {
           setUserType("client");
           toast.error("Vous n'avez pas les droits d'accès au mode administrateur");
         }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        toast.error("Erreur de vérification d'authentification");
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    checkUserRole();
-  }, [userType]);
+    checkAuth();
+  }, [userType, navigate]);
 
-  const { data: consulates = [] } = useQuery({
+  const { data: consulates = [], isLoading: isLoadingConsulates } = useQuery({
     queryKey: ["consulates"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -51,6 +71,17 @@ const Index = () => {
       return data;
     }
   });
+
+  if (isLoading || isLoadingConsulates) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
