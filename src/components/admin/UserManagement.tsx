@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Ban, UserCheck, UserX, Lock, Eye } from "lucide-react";
+import { Ban, UserCheck, UserX, Lock } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
@@ -75,34 +75,6 @@ const UserManagement = () => {
     }
   };
 
-  const getRoleBadgeVariant = (role: string) => {
-    switch (role) {
-      case "admin":
-        return "default";
-      case "consulter":
-        return "secondary";
-      case "client":
-        return "outline";
-      default:
-        return "destructive";
-    }
-  };
-
-  const getRoleDisplayName = (role: string) => {
-    switch (role) {
-      case "admin":
-        return "Administrateur";
-      case "consulter":
-        return "Consultant";
-      case "client":
-        return "Client";
-      case "banned":
-        return "Banni";
-      default:
-        return role;
-    }
-  };
-
   return (
     <>
       <Card>
@@ -124,11 +96,11 @@ const UserManagement = () => {
                   <p className="text-xs text-muted-foreground">
                     Inscrit le {format(new Date(user.created_at), "d MMMM yyyy", { locale: fr })}
                   </p>
-                  <Badge variant={getRoleBadgeVariant(user.role)}>
-                    {getRoleDisplayName(user.role)}
+                  <Badge variant={user.role === "admin" ? "default" : "secondary"}>
+                    {user.role === "admin" ? "Administrateur" : "Client"}
                   </Badge>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex gap-2">
                   <Button
                     size="sm"
                     variant="outline"
@@ -149,26 +121,15 @@ const UserManagement = () => {
                       Promouvoir admin
                     </Button>
                   )}
-                  {user.role !== "consulter" && (
+                  {user.role === "admin" && (
                     <Button
                       size="sm"
                       variant="outline"
                       className="text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
-                      onClick={() => handleUpdateUserRole(user.id, "consulter")}
-                    >
-                      <Eye className="w-4 h-4 mr-1" />
-                      Définir consultant
-                    </Button>
-                  )}
-                  {user.role !== "client" && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
                       onClick={() => handleUpdateUserRole(user.id, "client")}
                     >
                       <UserX className="w-4 h-4 mr-1" />
-                      Définir client
+                      Rétrograder
                     </Button>
                   )}
                   <Button
