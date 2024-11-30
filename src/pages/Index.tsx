@@ -23,6 +23,22 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("appointments");
 
+  const { data: consulates = [], isLoading: isLoadingConsulates, error: consulatesError } = useQuery({
+    queryKey: ["consulates"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("consulates")
+        .select("*")
+        .order("name");
+      
+      if (error) {
+        toast.error("Erreur lors du chargement des consulats");
+        throw error;
+      }
+      return data || [];
+    }
+  });
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -64,25 +80,22 @@ const Index = () => {
     checkAuth();
   }, [userType, navigate]);
 
-  const { data: consulates = [], isLoading: isLoadingConsulates } = useQuery({
-    queryKey: ["consulates"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("consulates")
-        .select("*")
-        .order("name");
-      
-      if (error) throw error;
-      return data;
-    }
-  });
-
   if (isLoading || isLoadingConsulates) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (consulatesError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="text-center">
+          <p className="text-red-500">Une erreur est survenue lors du chargement des consulats</p>
         </div>
       </div>
     );
@@ -214,11 +227,17 @@ const Index = () => {
                           <SelectValue placeholder="Sélectionnez un consulat" />
                         </SelectTrigger>
                         <SelectContent>
-                          {consulates.map((consulate) => (
-                            <SelectItem key={consulate.id} value={consulate.id}>
-                              {consulate.name}
+                          {consulates && consulates.length > 0 ? (
+                            consulates.map((consulate) => (
+                              <SelectItem key={consulate.id} value={consulate.id}>
+                                {consulate.name}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="" disabled>
+                              Aucun consulat disponible
                             </SelectItem>
-                          ))}
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
