@@ -27,7 +27,8 @@ const Index = () => {
     const checkAuth = async () => {
       try {
         setIsLoading(true);
-        const { data: { session } } = await supabase.auth.getSession();
+        const sessionResponse = await supabase.auth.getSession();
+        const session = sessionResponse.data.session;
         
         if (!session) {
           navigate("/auth");

@@ -22,7 +22,8 @@ export const UserProfileSection = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const sessionResponse = await supabase.auth.getSession();
+        const session = sessionResponse.data.session;
         
         if (!session) {
           setProfile(null);
@@ -53,9 +54,9 @@ export const UserProfileSection = () => {
 
     fetchProfile();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN') {
-        fetchProfile();
+        await fetchProfile();
       } else if (event === 'SIGNED_OUT') {
         setProfile(null);
       }
