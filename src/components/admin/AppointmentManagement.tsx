@@ -81,9 +81,6 @@ const AppointmentManagement = () => {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Gestion des Rendez-vous</CardTitle>
-      </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {appointments.map((appointment) => (
@@ -136,6 +133,9 @@ const AppointmentManagement = () => {
           ))}
         </div>
       </CardContent>
+      <CardHeader>
+        <CardTitle>Gestion des Rendez-vous</CardTitle>
+      </CardHeader>
     </Card>
   );
 };
