@@ -9,27 +9,47 @@ interface ServiceSelectorProps {
 }
 
 const ServiceSelector = ({ selectedService, onServiceSelect }: ServiceSelectorProps) => {
-  const { data: services = [], isError } = useQuery({
+  const { data: services = [], isError, error, isLoading } = useQuery({
     queryKey: ["services"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("services")
-        .select("*")
-        .order("name");
+      try {
+        const { data, error } = await supabase
+          .from("services")
+          .select("*")
+          .order("name");
       
-      if (error) {
+        if (error) {
+          console.error("Error fetching services:", error);
+          toast.error("Erreur lors du chargement des services");
+          throw error;
+        }
+
+        return data || [];
+      } catch (err) {
+        console.error("Service fetch error:", err);
         toast.error("Erreur lors du chargement des services");
-        throw error;
+        throw err;
       }
-      return data || [];
-    }
+    },
+    retry: 1
   });
 
   if (isError) {
+    console.error("Query error:", error);
     return (
       <Select disabled>
         <SelectTrigger>
-          <SelectValue placeholder="Erreur de chargement" />
+          <SelectValue placeholder="Erreur de chargement des services" />
+        </SelectTrigger>
+      </Select>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <Select disabled>
+        <SelectTrigger>
+          <SelectValue placeholder="Chargement des services..." />
         </SelectTrigger>
       </Select>
     );
