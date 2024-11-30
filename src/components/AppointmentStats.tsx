@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format, startOfWeek, endOfWeek } from "date-fns";
+import { format, startOfYear, endOfYear, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import {
   BarChart,
@@ -21,11 +21,14 @@ import {
 } from "recharts";
 
 const COLORS = ["#10B981", "#F59E0B", "#EF4444"];
-const DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+const MONTHS = [
+  "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+  "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+];
 
 const AppointmentStats = () => {
-  const startDate = startOfWeek(new Date(), { weekStartsOn: 1 });
-  const endDate = endOfWeek(new Date(), { weekStartsOn: 1 });
+  const startDate = startOfYear(new Date());
+  const endDate = endOfYear(new Date());
 
   const { data: appointments = [] } = useQuery({
     queryKey: ["appointments-stats"],
@@ -52,11 +55,11 @@ const AppointmentStats = () => {
     return acc;
   }, []);
 
-  // Prepare data for appointments by day
-  const appointmentsByDay = DAYS.map(day => ({
-    name: day,
+  // Prepare data for appointments by month
+  const appointmentsByMonth = MONTHS.map((month, index) => ({
+    name: month,
     appointments: appointments.filter(apt => 
-      format(new Date(apt.date), "EEEE", { locale: fr }) === day
+      parseISO(apt.date).getMonth() === index
     ).length
   }));
 
@@ -75,15 +78,15 @@ const AppointmentStats = () => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Appointments by Day */}
+        {/* Appointments by Month */}
         <Card>
           <CardHeader>
-            <CardTitle>Rendez-vous par jour</CardTitle>
+            <CardTitle>Rendez-vous par mois</CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={appointmentsByDay}>
-                <XAxis dataKey="name" />
+              <BarChart data={appointmentsByMonth}>
+                <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="appointments" fill="#6366F1" />
