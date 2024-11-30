@@ -18,17 +18,24 @@ import HolidayManagement from "./admin/HolidayManagement";
 
 interface AdminDashboardProps {
   activeTab?: string;
+  onTabChange?: (tab: string) => void;
 }
 
-const AdminDashboard = ({ activeTab = "appointments" }: AdminDashboardProps) => {
+const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashboardProps) => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const isMobile = useIsMobile();
+
+  const handleTabChange = (value: string) => {
+    if (onTabChange) {
+      onTabChange(value);
+    }
+  };
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold text-center">Tableau de bord administrateur</h2>
       
-      <Tabs value={activeTab} defaultValue="appointments" className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         {!isMobile && (
           <TabsList className="grid w-full grid-cols-1 md:grid-cols-8">
             <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>

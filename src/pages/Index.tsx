@@ -87,6 +87,10 @@ const Index = () => {
     );
   }
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
+
   const MobileMenu = () => (
     <Sheet>
       <SheetTrigger asChild>
@@ -237,7 +241,10 @@ const Index = () => {
               />
             ) : userRole === "admin" ? (
               <div className="flex justify-center">
-                <AdminDashboard activeTab={activeTab} />
+                <AdminDashboard 
+                  activeTab={activeTab}
+                  onTabChange={handleTabChange}
+                />
               </div>
             ) : null}
           </CardContent>
