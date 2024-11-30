@@ -94,7 +94,7 @@ export const UserProfileSection = () => {
     return (
       <div className="flex gap-4 justify-end">
         <Button
-          variant="outline"
+          variant="default"
           size="sm"
           onClick={() => navigate('/auth')}
           className="flex items-center gap-2"
