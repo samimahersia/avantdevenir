@@ -91,13 +91,41 @@ const AppointmentManagement = () => {
               key={appointment.id}
               className="flex flex-col p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="mb-4">
+              <div className="flex justify-between items-start mb-4">
                 <h3 className="text-lg font-medium">{appointment.title}</h3>
-                {appointment.description && (
-                  <p className="text-sm text-muted-foreground">{appointment.description}</p>
-                )}
+                {getStatusBadge(appointment.status)}
               </div>
-              <div className="space-y-1 mb-4">
+              
+              {appointment.status === "en_attente" && (
+                <div className="flex gap-2 mb-4">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
+                    onClick={() => handleStatusChange(appointment.id, "approuve")}
+                  >
+                    <Check className="w-4 h-4 mr-1" />
+                    Approuver
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    onClick={() => handleStatusChange(appointment.id, "refuse")}
+                  >
+                    <X className="w-4 h-4 mr-1" />
+                    Refuser
+                  </Button>
+                </div>
+              )}
+
+              {appointment.description && (
+                <p className="text-sm text-muted-foreground mb-4">
+                  {appointment.description}
+                </p>
+              )}
+              
+              <div className="space-y-1">
                 <p className="text-sm text-muted-foreground">
                   <span className="font-medium">Client:</span> 
                   {appointment.profiles?.first_name} {appointment.profiles?.last_name}
@@ -106,33 +134,6 @@ const AppointmentManagement = () => {
                   <span className="font-medium">Date:</span>
                   {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
                 </p>
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex gap-2">
-                  {appointment.status === "en_attente" && (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
-                        onClick={() => handleStatusChange(appointment.id, "approuve")}
-                      >
-                        <Check className="w-4 h-4 mr-1" />
-                        Approuver
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        onClick={() => handleStatusChange(appointment.id, "refuse")}
-                      >
-                        <X className="w-4 h-4 mr-1" />
-                        Refuser
-                      </Button>
-                    </>
-                  )}
-                </div>
-                {getStatusBadge(appointment.status)}
               </div>
             </div>
           ))}
