@@ -7,8 +7,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const AppointmentManagement = () => {
+  const isMobile = useIsMobile();
   const { data: appointments = [], refetch } = useQuery({
     queryKey: ["admin-appointments"],
     queryFn: async () => {
@@ -95,8 +97,28 @@ const AppointmentManagement = () => {
                 <h3 className="text-lg font-medium">{appointment.title}</h3>
               </div>
               
+              {appointment.description && (
+                <p className="text-sm text-muted-foreground mb-4">
+                  {appointment.description}
+                </p>
+              )}
+              
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-medium">Client:</span> 
+                    {appointment.profiles?.first_name} {appointment.profiles?.last_name}
+                  </p>
+                  {getStatusBadge(appointment.status)}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium">Date:</span>
+                  {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
+                </p>
+              </div>
+
               {appointment.status === "en_attente" && (
-                <div className="flex gap-2 mb-4">
+                <div className={`flex gap-2 ${isMobile ? 'mt-4' : 'mb-4'}`}>
                   <Button
                     size="sm"
                     variant="outline"
@@ -117,26 +139,6 @@ const AppointmentManagement = () => {
                   </Button>
                 </div>
               )}
-
-              {appointment.description && (
-                <p className="text-sm text-muted-foreground mb-4">
-                  {appointment.description}
-                </p>
-              )}
-              
-              <div className="space-y-1">
-                <div className="flex justify-between items-center">
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-medium">Client:</span> 
-                    {appointment.profiles?.first_name} {appointment.profiles?.last_name}
-                  </p>
-                  {getStatusBadge(appointment.status)}
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-medium">Date:</span>
-                  {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
-                </p>
-              </div>
             </div>
           ))}
         </div>
