@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Lock, LogIn, Mail } from "lucide-react";
+import { LogIn, Mail, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import * as z from "zod";
@@ -59,11 +59,15 @@ const LoginForm = () => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="text-gray-700">Email</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="email@exemple.com" className="pl-9" {...field} />
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input 
+                    placeholder="email@exemple.com" 
+                    className="pl-9 bg-[#F1F5F9] border-none h-12" 
+                    {...field} 
+                  />
                 </div>
               </FormControl>
               <FormMessage />
@@ -75,18 +79,26 @@ const LoginForm = () => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mot de passe</FormLabel>
+              <FormLabel className="text-gray-700">Mot de passe</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input type="password" className="pl-9" {...field} />
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input 
+                    type="password" 
+                    className="pl-9 bg-[#F1F5F9] border-none h-12" 
+                    {...field} 
+                  />
                 </div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button 
+          type="submit" 
+          className="w-full bg-[#1E293B] hover:bg-[#334155] h-12" 
+          disabled={isLoading}
+        >
           {isLoading ? (
             "Connexion en cours..."
           ) : (
