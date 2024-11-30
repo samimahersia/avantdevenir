@@ -87,50 +87,21 @@ export const UserProfileSection = () => {
 
   if (!profile) {
     return (
-      <div className="flex gap-4">
+      <div className="flex gap-4 justify-end">
         <Button
           variant="outline"
           onClick={() => navigate("/auth")}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 bg-[#FEF7CD] hover:bg-[#F5EDB3] text-[#8B6E44]"
         >
           <LogIn className="h-4 w-4" />
           Authentification
-        </Button>
-        <Button
-          onClick={() => navigate("/auth?mode=signup")}
-          className="flex items-center gap-2"
-        >
-          <UserPlus className="h-4 w-4" />
-          S'inscrire
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-4">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => window.location.href = `mailto:${profile.email}`}
-        className="flex items-center gap-2"
-      >
-        <Mail className="h-4 w-4" />
-        <span className="hidden sm:inline">{profile.email}</span>
-      </Button>
-      
-      <Avatar>
-        <AvatarFallback>
-          {profile.first_name?.[0]}{profile.last_name?.[0]}
-        </AvatarFallback>
-      </Avatar>
-      
-      <div className="hidden sm:block">
-        <p className="font-medium">
-          {profile.first_name} {profile.last_name}
-        </p>
-      </div>
-      
+    <div className="flex items-center gap-4 justify-end">      
       <Button
         variant="outline"
         size="sm"
@@ -138,7 +109,7 @@ export const UserProfileSection = () => {
         className="flex items-center gap-2"
       >
         <LogOut className="h-4 w-4" />
-        <span className="hidden sm:inline">Déconnexion</span>
+        <span>Déconnexion</span>
       </Button>
     </div>
   );

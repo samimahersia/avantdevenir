@@ -86,7 +86,7 @@ const Index = () => {
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-end items-center mb-6">
           <UserProfileSection />
         </div>
 
@@ -121,8 +121,11 @@ const Index = () => {
               {userType === "client" && (
                 <div className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-2xl mx-auto">
                   <div className="w-full sm:w-1/2">
-                    <Select value={selectedConsulate} onValueChange={setSelectedConsulate}>
-                      <SelectTrigger>
+                    <Select 
+                      value={selectedConsulate} 
+                      onValueChange={setSelectedConsulate}
+                    >
+                      <SelectTrigger className="bg-[#D3E4FD] border-[#D3E4FD] hover:bg-[#C3D4ED]">
                         <SelectValue placeholder="Sélectionnez un consulat" />
                       </SelectTrigger>
                       <SelectContent>

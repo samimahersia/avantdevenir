@@ -23,7 +23,7 @@ const ServiceSelector = ({ selectedService, onServiceSelect }: ServiceSelectorPr
 
   return (
     <Select value={selectedService} onValueChange={onServiceSelect}>
-      <SelectTrigger>
+      <SelectTrigger className="bg-[#D3E4FD] border-[#D3E4FD] hover:bg-[#C3D4ED]">
         <SelectValue placeholder="Sélectionnez un service" />
       </SelectTrigger>
       <SelectContent>
