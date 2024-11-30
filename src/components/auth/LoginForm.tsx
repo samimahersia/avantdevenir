@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Lock, LogIn, Mail } from "lucide-react";
 import { toast } from "sonner";
@@ -33,7 +32,16 @@ const LoginForm = () => {
         password: values.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message === "Invalid login credentials") {
+          toast.error("Email ou mot de passe incorrect");
+        } else {
+          console.error("Error:", error);
+          toast.error("Erreur lors de la connexion");
+        }
+        return;
+      }
+      
       toast.success("Connexion réussie");
     } catch (error) {
       console.error("Error:", error);
