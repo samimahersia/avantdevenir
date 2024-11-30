@@ -58,6 +58,25 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
         return;
       }
 
+      // Check availability before creating appointment
+      const { data: existingAppointments, error: checkError } = await supabase
+        .from("appointments")
+        .select("*")
+        .eq("service_id", selectedService)
+        .eq("consulate_id", selectedConsulate)
+        .eq("date", appointmentDate.toISOString())
+        .neq("status", "refuse");
+
+      if (checkError) {
+        toast.error("Erreur lors de la vérification de disponibilité");
+        return;
+      }
+
+      if (existingAppointments && existingAppointments.length >= 3) {
+        toast.error("Ce créneau est complet. Veuillez choisir un autre horaire.");
+        return;
+      }
+
       const { data: appointment, error: appointmentError } = await supabase
         .from("appointments")
         .insert({
@@ -154,6 +173,7 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
               onSelect={setDate}
               disabled={disabledDays}
               className="mx-auto"
+              locale={fr}
             />
           </CardContent>
         </Card>
