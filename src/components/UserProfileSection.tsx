@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, LogIn, UserPlus } from "lucide-react";
+import { LogOut, LogIn, UserPlus, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -21,7 +21,6 @@ export const UserProfileSection = () => {
           return;
         }
 
-        // Try to get the existing profile
         const { data: existingProfile, error: profileError } = await supabase
           .from('profiles')
           .select('*')
@@ -29,7 +28,6 @@ export const UserProfileSection = () => {
           .maybeSingle();
 
         if (!existingProfile && !profileError) {
-          // Profile doesn't exist, create it
           const { data: newProfile, error: createError } = await supabase
             .from('profiles')
             .insert([{
@@ -111,17 +109,28 @@ export const UserProfileSection = () => {
 
   return (
     <div className="flex items-center gap-4">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => window.location.href = `mailto:${profile.email}`}
+        className="flex items-center gap-2"
+      >
+        <Mail className="h-4 w-4" />
+        <span className="hidden sm:inline">{profile.email}</span>
+      </Button>
+      
       <Avatar>
         <AvatarFallback>
           {profile.first_name?.[0]}{profile.last_name?.[0]}
         </AvatarFallback>
       </Avatar>
+      
       <div className="hidden sm:block">
         <p className="font-medium">
           {profile.first_name} {profile.last_name}
         </p>
-        <p className="text-sm text-muted-foreground">{profile.email}</p>
       </div>
+      
       <Button
         variant="outline"
         size="sm"
