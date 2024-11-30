@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,10 +9,35 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserCircle, Calendar, Building } from "lucide-react";
 import { UserProfileSection } from "@/components/UserProfileSection";
+import { toast } from "sonner";
 
 const Index = () => {
   const [userType, setUserType] = useState<"client" | "admin">("client");
   const [selectedConsulate, setSelectedConsulate] = useState<string>();
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkUserRole = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        
+        setUserRole(profile?.role || null);
+        
+        // If user is not admin and tries to access admin mode, switch to client mode
+        if (userType === "admin" && profile?.role !== "admin") {
+          setUserType("client");
+          toast.error("Vous n'avez pas les droits d'accès au mode administrateur");
+        }
+      }
+    };
+
+    checkUserRole();
+  }, [userType]);
 
   const { data: consulates = [] } = useQuery({
     queryKey: ["consulates"],
@@ -30,7 +55,6 @@ const Index = () => {
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-6xl mx-auto">
-        {/* User Profile Section */}
         <div className="flex justify-between items-center mb-6">
           <UserProfileSection />
         </div>
@@ -50,14 +74,16 @@ const Index = () => {
               >
                 Mode Client
               </Button>
-              <Button
-                size="lg"
-                variant={userType === "admin" ? "default" : "outline"}
-                onClick={() => setUserType("admin")}
-                className="w-full sm:w-auto"
-              >
-                Mode Administrateur
-              </Button>
+              {userRole === "admin" && (
+                <Button
+                  size="lg"
+                  variant={userType === "admin" ? "default" : "outline"}
+                  onClick={() => setUserType("admin")}
+                  className="w-full sm:w-auto"
+                >
+                  Mode Administrateur
+                </Button>
+              )}
             </div>
 
             {userType === "client" && (
@@ -142,9 +168,9 @@ const Index = () => {
                   </Card>
                 </TabsContent>
               </Tabs>
-            ) : (
+            ) : userRole === "admin" ? (
               <AdminDashboard />
-            )}
+            ) : null}
           </CardContent>
         </Card>
       </div>
