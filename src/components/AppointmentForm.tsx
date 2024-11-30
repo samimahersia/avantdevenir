@@ -5,26 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { addHours, setHours, setMinutes, isBefore, startOfToday } from "date-fns";
+import { isBefore } from "date-fns";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useQuery } from "@tanstack/react-query";
-
-// Generate time slots from 9h to 14h with 15min intervals
-const generateTimeSlots = () => {
-  const slots = [];
-  for (let hour = 9; hour < 14; hour++) {
-    for (let minute = 0; minute < 60; minute += 15) {
-      slots.push({ hour, minute });
-    }
-  }
-  return slots;
-};
-
-const TIME_SLOTS = generateTimeSlots();
+import TimeSlotSelector from "./appointment/TimeSlotSelector";
+import ServiceSelector from "./appointment/ServiceSelector";
+import { TIME_SLOTS, getAppointmentDate, disabledDays, TimeSlot } from "@/utils/appointment";
 
 interface AppointmentFormProps {
   onSuccess?: () => void;
@@ -35,22 +23,9 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
   const [date, setDate] = useState<Date>();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [selectedTime, setSelectedTime] = useState<{ hour: number; minute: number }>();
+  const [selectedTime, setSelectedTime] = useState<TimeSlot>();
   const [selectedService, setSelectedService] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { data: services = [] } = useQuery({
-    queryKey: ["services"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("services")
-        .select("*")
-        .order("name");
-      
-      if (error) throw error;
-      return data;
-    }
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +35,7 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
       return;
     }
 
-    const appointmentDate = setMinutes(setHours(date, selectedTime.hour), selectedTime.minute);
+    const appointmentDate = getAppointmentDate(date, selectedTime);
     
     if (isBefore(appointmentDate, new Date())) {
       toast.error("La date sélectionnée est déjà passée");
@@ -140,10 +115,6 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
     }
   };
 
-  const disabledDays = {
-    before: startOfToday(),
-  };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
@@ -157,21 +128,10 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="service">Service *</Label>
-        <Select value={selectedService} onValueChange={setSelectedService}>
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionnez un service" />
-          </SelectTrigger>
-          <SelectContent>
-            {services.map((service) => (
-              <SelectItem key={service.id} value={service.id}>
-                {service.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <ServiceSelector
+        selectedService={selectedService}
+        onServiceSelect={setSelectedService}
+      />
 
       <div className="space-y-2">
         <Label htmlFor="description">Description détaillée</Label>
@@ -199,22 +159,11 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
         </Card>
       </div>
 
-      <div className="space-y-2">
-        <Label>Heure du rendez-vous *</Label>
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-          {TIME_SLOTS.map((slot) => (
-            <Button
-              key={`${slot.hour}-${slot.minute}`}
-              type="button"
-              variant={selectedTime?.hour === slot.hour && selectedTime?.minute === slot.minute ? "default" : "outline"}
-              onClick={() => setSelectedTime(slot)}
-              className="w-full"
-            >
-              {slot.hour}:{slot.minute.toString().padStart(2, '0')}
-            </Button>
-          ))}
-        </div>
-      </div>
+      <TimeSlotSelector
+        selectedTime={selectedTime}
+        onTimeSelect={setSelectedTime}
+        timeSlots={TIME_SLOTS}
+      />
 
       <Button 
         type="submit" 
