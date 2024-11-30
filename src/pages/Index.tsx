@@ -93,6 +93,15 @@ const Index = () => {
         <Card className="shadow-lg">
           <CardHeader className="text-center pb-6">
             <div className="max-w-4xl mx-auto space-y-6">
+              <div className="relative w-full h-48 mb-6 overflow-hidden rounded-t-lg">
+                <img
+                  src="/images/consulate-service.jpg"
+                  alt="Service consulaire professionnel"
+                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+              </div>
+              
               <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                 AvantDeVenir
               </CardTitle>
