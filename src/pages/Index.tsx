@@ -29,13 +29,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-6xl mx-auto">
-        {/* User Profile Section */}
-        <div className="flex justify-between items-center mb-6">
-          <UserProfileSection />
-        </div>
+      <div className="max-w-6xl mx-auto relative">
+        <UserProfileSection />
 
-        <Card className="shadow-lg">
+        <Card className="shadow-lg mt-16">
           <CardHeader className="text-center space-y-4 pb-6">
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               AvantDeVenir
