@@ -107,30 +107,32 @@ const AppointmentManagement = () => {
                   {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
                 </p>
               </div>
-              <div className="flex items-start gap-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex gap-2">
+                  {appointment.status === "en_attente" && (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
+                        onClick={() => handleStatusChange(appointment.id, "approuve")}
+                      >
+                        <Check className="w-4 h-4 mr-1" />
+                        Approuver
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        onClick={() => handleStatusChange(appointment.id, "refuse")}
+                      >
+                        <X className="w-4 h-4 mr-1" />
+                        Refuser
+                      </Button>
+                    </>
+                  )}
+                </div>
                 {getStatusBadge(appointment.status)}
-                {appointment.status === "en_attente" && (
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
-                      onClick={() => handleStatusChange(appointment.id, "approuve")}
-                    >
-                      <Check className="w-4 h-4 mr-1" />
-                      Approuver
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                      onClick={() => handleStatusChange(appointment.id, "refuse")}
-                    >
-                      <X className="w-4 h-4 mr-1" />
-                      Refuser
-                    </Button>
-                  </div>
-                )}
               </div>
             </div>
           ))}
