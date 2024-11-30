@@ -32,7 +32,7 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
   };
 
   return (
-    <div className="space-y-6 bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
+    <div className="space-y-6 bg-gradient-to-br from-[#D3E4FD] to-[#E5DEFF] p-6 rounded-lg">
       <h2 className="text-2xl font-semibold text-center">Tableau de bord administrateur</h2>
       
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
