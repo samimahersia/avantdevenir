@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, LogIn, UserPlus, Mail, Shield } from "lucide-react";
+import { LogOut, LogIn, UserPlus, Shield } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -18,6 +17,7 @@ export const UserProfileSection = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -26,23 +26,28 @@ export const UserProfileSection = () => {
         
         if (!session) {
           setProfile(null);
+          setIsLoading(false);
           return;
         }
 
         const { data, error } = await supabase
           .from('profiles')
-          .select('*')
+          .select('id, first_name, last_name, email, role')
           .eq('id', session.user.id)
           .single();
 
         if (error) {
           console.error('Error fetching profile:', error);
+          toast.error("Erreur lors du chargement du profil");
           return;
         }
 
         setProfile(data);
       } catch (error) {
         console.error('Error:', error);
+        toast.error("Erreur lors du chargement du profil");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -75,11 +80,13 @@ export const UserProfileSection = () => {
   };
 
   const handlePromoteToAdmin = async () => {
+    if (!profile) return;
+
     try {
       const { error } = await supabase
         .from('profiles')
         .update({ role: 'admin' })
-        .eq('id', profile?.id);
+        .eq('id', profile.id);
 
       if (error) throw error;
 
@@ -97,11 +104,15 @@ export const UserProfileSection = () => {
     }
   };
 
+  if (isLoading) {
+    return null;
+  }
+
   if (!profile) {
     return (
       <div className="flex gap-4 justify-end">
         <Button
-          variant="default"
+          variant="outline"
           size="sm"
           onClick={() => handleNavigate('/auth')}
           className="flex items-center gap-2"
@@ -110,7 +121,7 @@ export const UserProfileSection = () => {
           <span>Se connecter</span>
         </Button>
         <Button
-          variant="default"
+          variant="outline"
           size="sm"
           onClick={() => handleNavigate('/auth?tab=register')}
           className="flex items-center gap-2"
