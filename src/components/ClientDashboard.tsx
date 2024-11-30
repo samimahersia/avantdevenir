@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import AppointmentForm from "./AppointmentForm";
@@ -9,9 +8,10 @@ import { fr } from "date-fns/locale";
 
 interface ClientDashboardProps {
   selectedConsulate?: string;
+  selectedService?: string;
 }
 
-const ClientDashboard = ({ selectedConsulate }: ClientDashboardProps) => {
+const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboardProps) => {
   const { data: appointments = [], refetch } = useQuery({
     queryKey: ["appointments", selectedConsulate],
     queryFn: async () => {
@@ -45,12 +45,12 @@ const ClientDashboard = ({ selectedConsulate }: ClientDashboardProps) => {
     }
   };
 
-  if (!selectedConsulate) {
+  if (!selectedConsulate || !selectedService) {
     return (
       <Card className="border-none shadow-none">
         <CardContent className="text-center py-8">
           <p className="text-muted-foreground">
-            Veuillez sélectionner un consulat pour prendre rendez-vous.
+            Veuillez sélectionner un consulat et un service pour prendre rendez-vous.
           </p>
         </CardContent>
       </Card>
@@ -64,7 +64,11 @@ const ClientDashboard = ({ selectedConsulate }: ClientDashboardProps) => {
           <CardTitle className="text-2xl font-semibold">Nouveau Rendez-vous</CardTitle>
         </CardHeader>
         <CardContent>
-          <AppointmentForm onSuccess={refetch} selectedConsulate={selectedConsulate} />
+          <AppointmentForm 
+            onSuccess={refetch} 
+            selectedConsulate={selectedConsulate}
+            selectedService={selectedService}
+          />
         </CardContent>
       </Card>
 

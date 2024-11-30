@@ -11,11 +11,13 @@ import { UserCircle, Calendar, Building } from "lucide-react";
 import { UserProfileSection } from "@/components/UserProfileSection";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import ServiceSelector from "@/components/appointment/ServiceSelector";
 
 const Index = () => {
   const navigate = useNavigate();
   const [userType, setUserType] = useState<"client" | "admin">("client");
   const [selectedConsulate, setSelectedConsulate] = useState<string>();
+  const [selectedService, setSelectedService] = useState<string>();
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -118,87 +120,38 @@ const Index = () => {
             </div>
 
             {userType === "client" && (
-              <div className="max-w-md mx-auto">
-                <Select value={selectedConsulate} onValueChange={setSelectedConsulate}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Sélectionnez un consulat" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {consulates.map((consulate) => (
-                      <SelectItem key={consulate.id} value={consulate.id}>
-                        {consulate.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
+                <div className="flex-1">
+                  <Select value={selectedConsulate} onValueChange={setSelectedConsulate}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez un consulat" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {consulates.map((consulate) => (
+                        <SelectItem key={consulate.id} value={consulate.id}>
+                          {consulate.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex-1">
+                  <ServiceSelector
+                    selectedService={selectedService}
+                    onServiceSelect={setSelectedService}
+                    className="w-full"
+                  />
+                </div>
               </div>
             )}
           </CardHeader>
 
           <CardContent>
             {userType === "client" ? (
-              <Tabs defaultValue="appointments" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="appointments" className="space-x-2">
-                    <Calendar className="h-4 w-4" />
-                    <span>Rendez-vous</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="profile" className="space-x-2">
-                    <UserCircle className="h-4 w-4" />
-                    <span>Profil</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="consulate" className="space-x-2">
-                    <Building className="h-4 w-4" />
-                    <span>Consulat</span>
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="appointments">
-                  <ClientDashboard selectedConsulate={selectedConsulate} />
-                </TabsContent>
-
-                <TabsContent value="profile">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Mon Profil</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground">Gérez vos informations personnelles ici.</p>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-
-                <TabsContent value="consulate">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Informations du Consulat</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {selectedConsulate ? (
-                        <div className="space-y-4">
-                          {consulates.find(c => c.id === selectedConsulate) ? (
-                            <>
-                              <h3 className="font-semibold">
-                                {consulates.find(c => c.id === selectedConsulate)?.name}
-                              </h3>
-                              <p className="text-muted-foreground">
-                                {consulates.find(c => c.id === selectedConsulate)?.address}
-                              </p>
-                              <p className="text-muted-foreground">
-                                {consulates.find(c => c.id === selectedConsulate)?.city}, {consulates.find(c => c.id === selectedConsulate)?.country}
-                              </p>
-                            </>
-                          ) : (
-                            <p>Chargement des informations...</p>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-muted-foreground">Veuillez sélectionner un consulat pour voir ses informations.</p>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
+              <ClientDashboard 
+                selectedConsulate={selectedConsulate} 
+                selectedService={selectedService}
+              />
             ) : userRole === "admin" ? (
               <AdminDashboard />
             ) : null}

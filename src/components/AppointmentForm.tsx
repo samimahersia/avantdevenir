@@ -11,20 +11,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import TimeSlotSelector from "./appointment/TimeSlotSelector";
-import ServiceSelector from "./appointment/ServiceSelector";
 import { TIME_SLOTS, getAppointmentDate, disabledDays, TimeSlot } from "@/utils/appointment";
 
 interface AppointmentFormProps {
   onSuccess?: () => void;
   selectedConsulate?: string;
+  selectedService?: string;
 }
 
-const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps) => {
+const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: AppointmentFormProps) => {
   const [date, setDate] = useState<Date>();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedTime, setSelectedTime] = useState<TimeSlot>();
-  const [selectedService, setSelectedService] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -104,7 +103,6 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
       setDescription("");
       setDate(undefined);
       setSelectedTime(undefined);
-      setSelectedService(undefined);
       onSuccess?.();
 
     } catch (error) {
@@ -127,11 +125,6 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
           required
         />
       </div>
-
-      <ServiceSelector
-        selectedService={selectedService}
-        onServiceSelect={setSelectedService}
-      />
 
       <div className="space-y-2">
         <Label htmlFor="description">Description détaillée</Label>
