@@ -1,10 +1,19 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { LogOut, LogIn, UserPlus, Shield } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
+import { LogOut, User } from "lucide-react";
+import { toast } from "sonner";
 
 interface Profile {
   id: string;
@@ -14,135 +23,107 @@ interface Profile {
   role: string | null;
 }
 
-export const UserProfileSection = () => {
+export function UserProfileSection() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { data: profile } = useQuery({
-    queryKey: ["user-profile"],
+    queryKey: ["profile"],
     queryFn: async () => {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) throw sessionError;
-      if (!session) return null;
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error("No session found");
+      }
 
-      const { data, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session.session.user.id)
         .single();
 
-      if (profileError) throw profileError;
-      return data as Profile;
+      if (error) throw error;
+      return profile as Profile;
     },
-    retry: false,
     meta: {
       onError: (error: Error) => {
         console.error('Error fetching profile:', error);
         toast.error("Erreur lors du chargement du profil");
-      },
-      onSettled: () => {
         setIsLoading(false);
       }
     }
   });
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
-      if (event === 'SIGNED_OUT') {
-        navigate('/auth');
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate]);
-
-  const handleSignOut = async () => {
+  const handleLogout = async () => {
     try {
+      setIsLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      navigate('/auth');
-      toast.success('Déconnexion réussie');
+      navigate("/auth");
+      toast.success("Déconnexion réussie");
     } catch (error) {
-      console.error('Error signing out:', error);
-      toast.error('Erreur lors de la déconnexion');
+      console.error("Error logging out:", error);
+      toast.error("Erreur lors de la déconnexion");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handlePromoteToAdmin = async () => {
-    if (!profile) return;
-
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ role: 'admin' })
-        .eq('id', profile.id);
-
-      if (error) throw error;
-      toast.success('Promu administrateur avec succès');
-    } catch (error) {
-      console.error('Error promoting to admin:', error);
-      toast.error('Erreur lors de la promotion');
-    }
+  const getInitials = (firstName: string | null, lastName: string | null) => {
+    const first = firstName?.charAt(0) || '';
+    const last = lastName?.charAt(0) || '';
+    return (first + last).toUpperCase() || 'U';
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-end gap-2">
-        <div className="h-9 w-24 bg-gray-200 animate-pulse rounded-md"></div>
-      </div>
-    );
-  }
 
   if (!profile) {
     return (
-      <div className="flex gap-4 justify-end">
+      <div className="flex justify-end">
         <Button
           variant="outline"
-          size="sm"
-          onClick={() => navigate('/auth')}
-          className="flex items-center gap-2"
+          className="gap-2"
+          onClick={() => navigate("/auth")}
         >
-          <LogIn className="h-4 w-4" />
-          <span>Se connecter</span>
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate('/auth?tab=register')}
-          className="flex items-center gap-2"
-        >
-          <UserPlus className="h-4 w-4" />
-          <span>S'inscrire</span>
+          <User className="h-4 w-4" />
+          Connexion
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-4 justify-end">
-      {profile.role !== 'admin' && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handlePromoteToAdmin}
-          className="flex items-center gap-2"
-        >
-          <Shield className="h-4 w-4" />
-          <span>Devenir Admin</span>
-        </Button>
-      )}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleSignOut}
-        className="flex items-center gap-2"
-      >
-        <LogOut className="h-4 w-4" />
-        <span>Se déconnecter</span>
-      </Button>
+    <div className="flex justify-end">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+            <Avatar className="h-10 w-10">
+              <AvatarFallback>
+                {getInitials(profile.first_name, profile.last_name)}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end">
+          <DropdownMenuLabel>
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">
+                {profile.first_name} {profile.last_name}
+              </p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {profile.email}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            disabled={isLoading}
+            onClick={handleLogout}
+            className="text-red-600 cursor-pointer"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Déconnexion</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
-};
+}
