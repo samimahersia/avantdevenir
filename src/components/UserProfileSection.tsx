@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, LogIn, UserPlus, Mail } from "lucide-react";
+import { LogOut, LogIn, UserPlus, Mail, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -85,6 +85,23 @@ export const UserProfileSection = () => {
     }
   };
 
+  const handlePromoteToAdmin = async () => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: 'admin' })
+        .eq('id', profile.id);
+
+      if (error) throw error;
+
+      setProfile({ ...profile, role: 'admin' });
+      toast.success('Promu administrateur avec succès');
+    } catch (error) {
+      console.error('Error promoting to admin:', error);
+      toast.error('Erreur lors de la promotion');
+    }
+  };
+
   if (!profile) {
     return (
       <div className="flex gap-4 justify-end">
@@ -101,7 +118,18 @@ export const UserProfileSection = () => {
   }
 
   return (
-    <div className="flex items-center gap-4 justify-end">      
+    <div className="flex items-center gap-4 justify-end">
+      {profile.role !== 'admin' && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handlePromoteToAdmin}
+          className="flex items-center gap-2"
+        >
+          <Shield className="h-4 w-4" />
+          <span>Devenir Admin</span>
+        </Button>
+      )}
       <Button
         variant="outline"
         size="sm"
