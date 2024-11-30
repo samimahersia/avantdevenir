@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 
 const loginSchema = z.object({
   email: z.string().email("Email invalide").min(1, "L'email est requis"),
@@ -15,6 +16,7 @@ const loginSchema = z.object({
 });
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -27,7 +29,7 @@ const LoginForm = () => {
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
@@ -41,8 +43,11 @@ const LoginForm = () => {
         }
         return;
       }
-      
-      toast.success("Connexion réussie");
+
+      if (data?.user) {
+        toast.success("Connexion réussie");
+        navigate("/");
+      }
     } catch (error) {
       console.error("Error:", error);
       toast.error("Erreur lors de la connexion");
