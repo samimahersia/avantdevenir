@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format, startOfYear, endOfYear, parseISO } from "date-fns";
+import { format, startOfWeek, endOfWeek } from "date-fns";
 import { fr } from "date-fns/locale";
 import {
   BarChart,
@@ -21,10 +21,11 @@ import {
 } from "recharts";
 
 const COLORS = ["#10B981", "#F59E0B", "#EF4444"];
+const DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
 
 const AppointmentStats = () => {
-  const startDate = startOfYear(new Date());
-  const endDate = endOfYear(new Date());
+  const startDate = startOfWeek(new Date(), { weekStartsOn: 1 });
+  const endDate = endOfWeek(new Date(), { weekStartsOn: 1 });
 
   const { data: appointments = [] } = useQuery({
     queryKey: ["appointments-stats"],
@@ -51,11 +52,11 @@ const AppointmentStats = () => {
     return acc;
   }, []);
 
-  // Prepare data for appointments by day of week
-  const appointmentsByDay = Array.from({ length: 7 }, (_, i) => ({
-    name: format(new Date(2024, 0, i + 1), "EEEE", { locale: fr }),
+  // Prepare data for appointments by day
+  const appointmentsByDay = DAYS.map(day => ({
+    name: day,
     appointments: appointments.filter(apt => 
-      parseISO(apt.date).getDay() === i
+      format(new Date(apt.date), "EEEE", { locale: fr }) === day
     ).length
   }));
 
