@@ -81,7 +81,7 @@ const AppointmentManagement = () => {
 
   return (
     <Card className="mt-auto">
-      <CardHeader className="text-center">
+      <CardHeader>
         <CardTitle>Gestion des Rendez-vous</CardTitle>
       </CardHeader>
       <CardContent>
@@ -91,13 +91,13 @@ const AppointmentManagement = () => {
               key={appointment.id}
               className="flex flex-col p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="text-center mb-4">
+              <div className="mb-4">
                 <h3 className="text-lg font-medium">{appointment.title}</h3>
                 {appointment.description && (
                   <p className="text-sm text-muted-foreground">{appointment.description}</p>
                 )}
               </div>
-              <div className="space-y-1 text-center mb-4">
+              <div className="space-y-1 mb-4">
                 <p className="text-sm text-muted-foreground">
                   <span className="font-medium">Client:</span> 
                   {appointment.profiles?.first_name} {appointment.profiles?.last_name}
@@ -107,7 +107,7 @@ const AppointmentManagement = () => {
                   {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
                 </p>
               </div>
-              <div className="flex flex-col items-center gap-4">
+              <div className="flex items-start gap-4">
                 {getStatusBadge(appointment.status)}
                 {appointment.status === "en_attente" && (
                   <div className="flex gap-2">
