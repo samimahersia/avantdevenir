@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, LogIn, UserPlus, Mail } from "lucide-react";
+import { LogOut, LogIn, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -25,35 +25,15 @@ export const UserProfileSection = () => {
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
-          .maybeSingle();
+          .single();
 
-        if (!existingProfile && !profileError) {
-          const { data: newProfile, error: createError } = await supabase
-            .from('profiles')
-            .insert([{
-              id: session.user.id,
-              email: session.user.email,
-              first_name: session.user.user_metadata?.first_name || '',
-              last_name: session.user.user_metadata?.last_name || '',
-              role: 'client'
-            }])
-            .select()
-            .single();
-
-          if (createError) {
-            console.error('Error creating profile:', createError);
-            toast.error('Erreur lors de la création du profil');
-            return;
-          }
-          
-          setProfile(newProfile);
-        } else if (profileError && profileError.code !== 'PGRST116') {
+        if (profileError) {
           console.error('Error fetching profile:', profileError);
           toast.error('Erreur lors du chargement du profil');
           return;
-        } else {
-          setProfile(existingProfile);
         }
+
+        setProfile(existingProfile);
       } catch (error) {
         console.error('Error in getProfile:', error);
         toast.error('Erreur lors du chargement du profil');
@@ -94,14 +74,33 @@ export const UserProfileSection = () => {
           className="flex items-center gap-2 bg-[#FEF7CD] hover:bg-[#F5EDB3] text-[#8B6E44]"
         >
           <LogIn className="h-4 w-4" />
-          Authentification
+          Se connecter
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => navigate("/auth?signup=true")}
+          className="flex items-center gap-2 bg-[#D3E4FD] hover:bg-[#C3D4ED] text-[#4B5563]"
+        >
+          <UserPlus className="h-4 w-4" />
+          S'inscrire
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-4 justify-end">      
+    <div className="flex items-center gap-4 justify-end">
+      <div className="flex items-center gap-2">
+        <Avatar>
+          <AvatarFallback>
+            {profile.first_name?.[0]}{profile.last_name?.[0]}
+          </AvatarFallback>
+        </Avatar>
+        <div className="text-right">
+          <p className="text-sm font-medium">{profile.first_name} {profile.last_name}</p>
+          <p className="text-xs text-muted-foreground">{profile.role}</p>
+        </div>
+      </div>
       <Button
         variant="outline"
         size="sm"

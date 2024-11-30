@@ -1,6 +1,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface ServiceSelectorProps {
   selectedService?: string;
@@ -8,7 +9,7 @@ interface ServiceSelectorProps {
 }
 
 const ServiceSelector = ({ selectedService, onServiceSelect }: ServiceSelectorProps) => {
-  const { data: services = [] } = useQuery({
+  const { data: services = [], isError } = useQuery({
     queryKey: ["services"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -16,10 +17,23 @@ const ServiceSelector = ({ selectedService, onServiceSelect }: ServiceSelectorPr
         .select("*")
         .order("name");
       
-      if (error) throw error;
-      return data;
+      if (error) {
+        toast.error("Erreur lors du chargement des services");
+        throw error;
+      }
+      return data || [];
     }
   });
+
+  if (isError) {
+    return (
+      <Select disabled>
+        <SelectTrigger>
+          <SelectValue placeholder="Erreur de chargement" />
+        </SelectTrigger>
+      </Select>
+    );
+  }
 
   return (
     <Select value={selectedService} onValueChange={onServiceSelect}>
