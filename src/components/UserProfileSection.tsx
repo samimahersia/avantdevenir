@@ -3,14 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { LogOut, User } from "lucide-react";
 import { toast } from "sonner";
@@ -91,39 +83,27 @@ export function UserProfileSection() {
   }
 
   return (
-    <div className="flex justify-end">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-            <Avatar className="h-10 w-10">
-              <AvatarFallback>
-                {getInitials(profile.first_name, profile.last_name)}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end">
-          <DropdownMenuLabel>
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {profile.first_name} {profile.last_name}
-              </p>
-              <p className="text-xs leading-none text-muted-foreground">
-                {profile.email}
-              </p>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            disabled={isLoading}
-            onClick={handleLogout}
-            className="text-red-600 cursor-pointer"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Déconnexion</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+    <div className="flex items-center justify-end gap-4">
+      <div className="flex items-center gap-4">
+        <span className="text-sm text-muted-foreground">
+          {profile.email}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={handleLogout}
+          disabled={isLoading}
+        >
+          <LogOut className="h-4 w-4" />
+          Déconnexion
+        </Button>
+      </div>
+      <Avatar className="h-10 w-10">
+        <AvatarFallback>
+          {getInitials(profile.first_name, profile.last_name)}
+        </AvatarFallback>
+      </Avatar>
     </div>
   );
 }
