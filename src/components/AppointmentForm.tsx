@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { addHours, setHours, setMinutes, isBefore, startOfToday } from "date-fns";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useQuery } from "@tanstack/react-query";
 
 // Generate time slots from 9h to 14h with 15min intervals
 const generateTimeSlots = () => {
@@ -34,12 +36,26 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedTime, setSelectedTime] = useState<{ hour: number; minute: number }>();
+  const [selectedService, setSelectedService] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { data: services = [] } = useQuery({
+    queryKey: ["services"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("services")
+        .select("*")
+        .order("name");
+      
+      if (error) throw error;
+      return data;
+    }
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!date || !selectedTime || !title.trim()) {
+    if (!date || !selectedTime || !title.trim() || !selectedService) {
       toast.error("Veuillez remplir tous les champs requis");
       return;
     }
@@ -76,6 +92,7 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
           date: appointmentDate.toISOString(),
           client_id: userData.user.id,
           consulate_id: selectedConsulate,
+          service_id: selectedService,
         })
         .select()
         .single();
@@ -112,6 +129,7 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
       setDescription("");
       setDate(undefined);
       setSelectedTime(undefined);
+      setSelectedService(undefined);
       onSuccess?.();
 
     } catch (error) {
@@ -137,6 +155,22 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
           placeholder="Ex: Consultation initiale"
           required
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="service">Service *</Label>
+        <Select value={selectedService} onValueChange={setSelectedService}>
+          <SelectTrigger>
+            <SelectValue placeholder="Sélectionnez un service" />
+          </SelectTrigger>
+          <SelectContent>
+            {services.map((service) => (
+              <SelectItem key={service.id} value={service.id}>
+                {service.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-2">
@@ -184,7 +218,7 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
 
       <Button 
         type="submit" 
-        disabled={!date || !selectedTime || !title.trim() || isSubmitting}
+        disabled={!date || !selectedTime || !title.trim() || !selectedService || isSubmitting}
         className="w-full sm:w-auto"
         size="lg"
       >
