@@ -86,25 +86,25 @@ const AppointmentManagement = () => {
           {appointments.map((appointment) => (
             <div
               key={appointment.id}
-              className="flex flex-col md:flex-row md:items-center justify-between p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
+              className="flex flex-col p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="space-y-2 mb-4 md:mb-0">
+              <div className="text-center mb-4">
                 <h3 className="text-lg font-medium">{appointment.title}</h3>
                 {appointment.description && (
                   <p className="text-sm text-muted-foreground">{appointment.description}</p>
                 )}
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground flex items-center gap-2">
-                    <span className="font-medium">Client:</span> 
-                    {appointment.profiles?.first_name} {appointment.profiles?.last_name}
-                  </p>
-                  <p className="text-sm text-muted-foreground flex items-center gap-2">
-                    <span className="font-medium">Date:</span>
-                    {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
-                  </p>
-                </div>
               </div>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="space-y-1 text-center mb-4">
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium">Client:</span> 
+                  {appointment.profiles?.first_name} {appointment.profiles?.last_name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium">Date:</span>
+                  {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
+                </p>
+              </div>
+              <div className="flex flex-col items-center gap-4">
                 {getStatusBadge(appointment.status)}
                 {appointment.status === "en_attente" && (
                   <div className="flex gap-2">
@@ -133,7 +133,7 @@ const AppointmentManagement = () => {
           ))}
         </div>
       </CardContent>
-      <CardHeader>
+      <CardHeader className="text-center">
         <CardTitle>Gestion des Rendez-vous</CardTitle>
       </CardHeader>
     </Card>
