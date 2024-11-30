@@ -31,18 +31,8 @@ const RegisterForm = () => {
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
     try {
       setIsLoading(true);
-      const { data: existingUser, error: checkError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('email', values.email)
-        .maybeSingle();
 
-      if (existingUser) {
-        toast.error("Un compte existe déjà avec cet email");
-        return;
-      }
-
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
@@ -54,8 +44,8 @@ const RegisterForm = () => {
       });
 
       if (error) {
-        if (error.message.includes("Email not confirmed")) {
-          toast.error("Veuillez vérifier votre email pour confirmer votre compte");
+        if (error.message.includes("User already registered")) {
+          toast.error("Un compte existe déjà avec cet email");
         } else {
           toast.error(error.message);
         }
