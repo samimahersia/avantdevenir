@@ -43,13 +43,8 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
     setIsSubmitting(true);
 
     try {
-      const { data: session, error: sessionError } = await supabase.auth.getSession();
+      const { data: session } = await supabase.auth.getSession();
       
-      if (sessionError) {
-        toast.error("Veuillez vous connecter pour prendre un rendez-vous");
-        return;
-      }
-
       if (!session?.session?.user) {
         toast.error("Veuillez vous connecter pour prendre un rendez-vous");
         return;
@@ -76,10 +71,10 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
 
       if (appointmentError) {
         if (appointmentError.message.includes("Ce créneau n'est pas disponible")) {
-          toast.error("Ce créneau n'est pas disponible");
+          toast.error("Ce créneau n'est pas disponible. Veuillez choisir un autre horaire.");
         } else {
           console.error("Appointment error:", appointmentError);
-          toast.error("Erreur lors de la création du rendez-vous. Veuillez vérifier que le créneau est disponible.");
+          toast.error("Une erreur est survenue lors de la création du rendez-vous");
         }
         return;
       }
@@ -99,16 +94,15 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
 
       if (notificationError) {
         console.error("Notification error:", notificationError);
-        toast.success("Rendez-vous créé mais la notification n'a pas pu être envoyée");
-      } else {
-        toast.success("Rendez-vous demandé avec succès");
       }
 
+      toast.success("Rendez-vous demandé avec succès");
       setTitle("");
       setDescription("");
       setDate(undefined);
       setSelectedHour(undefined);
       onSuccess?.();
+
     } catch (error) {
       console.error("Unexpected error:", error);
       toast.error("Une erreur inattendue s'est produite");
