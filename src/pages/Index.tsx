@@ -6,8 +6,6 @@ import ClientDashboard from "@/components/ClientDashboard";
 import AdminDashboard from "@/components/AdminDashboard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserCircle, Calendar, Building } from "lucide-react";
 import { UserProfileSection } from "@/components/UserProfileSection";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -93,57 +91,58 @@ const Index = () => {
         </div>
 
         <Card className="shadow-lg">
-          <CardHeader className="text-center space-y-4 pb-6">
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              AvantDeVenir
-            </CardTitle>
-            
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button
-                size="lg"
-                variant={userType === "client" ? "default" : "outline"}
-                onClick={() => setUserType("client")}
-                className="w-full sm:w-auto"
-              >
-                Mode Client
-              </Button>
-              {userRole === "admin" && (
+          <CardHeader className="text-center pb-6">
+            <div className="max-w-4xl mx-auto space-y-6">
+              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                AvantDeVenir
+              </CardTitle>
+              
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button
                   size="lg"
-                  variant={userType === "admin" ? "default" : "outline"}
-                  onClick={() => setUserType("admin")}
+                  variant={userType === "client" ? "default" : "outline"}
+                  onClick={() => setUserType("client")}
                   className="w-full sm:w-auto"
                 >
-                  Mode Administrateur
+                  Mode Client
                 </Button>
+                {userRole === "admin" && (
+                  <Button
+                    size="lg"
+                    variant={userType === "admin" ? "default" : "outline"}
+                    onClick={() => setUserType("admin")}
+                    className="w-full sm:w-auto"
+                  >
+                    Mode Administrateur
+                  </Button>
+                )}
+              </div>
+
+              {userType === "client" && (
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-4 max-w-2xl mx-auto">
+                  <div className="w-full sm:w-1/2">
+                    <Select value={selectedConsulate} onValueChange={setSelectedConsulate}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez un consulat" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {consulates.map((consulate) => (
+                          <SelectItem key={consulate.id} value={consulate.id}>
+                            {consulate.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="w-full sm:w-1/2">
+                    <ServiceSelector
+                      selectedService={selectedService}
+                      onServiceSelect={setSelectedService}
+                    />
+                  </div>
+                </div>
               )}
             </div>
-
-            {userType === "client" && (
-              <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
-                <div className="flex-1">
-                  <Select value={selectedConsulate} onValueChange={setSelectedConsulate}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez un consulat" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {consulates.map((consulate) => (
-                        <SelectItem key={consulate.id} value={consulate.id}>
-                          {consulate.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex-1">
-                  <ServiceSelector
-                    selectedService={selectedService}
-                    onServiceSelect={setSelectedService}
-                    className="w-full"
-                  />
-                </div>
-              </div>
-            )}
           </CardHeader>
 
           <CardContent>
