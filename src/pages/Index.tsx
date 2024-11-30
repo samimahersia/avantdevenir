@@ -93,13 +93,13 @@ const Index = () => {
         <Card className="shadow-lg">
           <CardHeader className="text-center pb-6 p-0">
             <div className="max-w-full mx-auto space-y-6">
-              <div className="relative w-full h-80 overflow-hidden">
+              <div className="relative w-full h-80 overflow-hidden rounded-t-lg shadow-inner">
                 <img
                   src="https://images.unsplash.com/photo-1606327054629-64c8b0fd6e4f"
                   alt="Agenda professionnel"
                   className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent shadow-2xl backdrop-blur-[2px]"></div>
               </div>
               
               <div className="px-6">
