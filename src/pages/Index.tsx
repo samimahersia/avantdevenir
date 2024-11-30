@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
 import ClientDashboard from "@/components/ClientDashboard";
 import AdminDashboard from "@/components/AdminDashboard";
 import { useQuery } from "@tanstack/react-query";
@@ -83,10 +85,42 @@ const Index = () => {
     );
   }
 
+  const MobileMenu = () => (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-6 w-6" />
+          <span className="sr-only">Menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+        <div className="flex flex-col gap-4 py-4">
+          <Button
+            variant={userType === "client" ? "default" : "outline"}
+            onClick={() => setUserType("client")}
+            className="w-full"
+          >
+            Mode Client
+          </Button>
+          {userRole === "admin" && (
+            <Button
+              variant={userType === "admin" ? "default" : "outline"}
+              onClick={() => setUserType("admin")}
+              className="w-full"
+            >
+              Mode Administrateur
+            </Button>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-[100vw] mx-auto">
-        <div className="flex justify-end items-center mb-6">
+        <div className="flex justify-between items-center mb-6">
+          <MobileMenu />
           <UserProfileSection />
         </div>
 
@@ -107,7 +141,7 @@ const Index = () => {
                   AvantDeVenir
                 </CardTitle>
                 
-                <div className="flex flex-col sm:flex-row justify-center gap-4 mt-6">
+                <div className="hidden md:flex flex-col sm:flex-row justify-center gap-4 mt-6">
                   <Button
                     size="lg"
                     variant={userType === "client" ? "default" : "outline"}
