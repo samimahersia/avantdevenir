@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LoginForm from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
@@ -22,31 +22,21 @@ const Auth = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white p-4">
-      <Card className="w-full max-w-md border-none shadow-none">
-        <div className="text-center space-y-2 mb-8">
-          <h1 className="text-4xl font-bold text-[#8B5CF6]">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center space-y-2">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             AvantDeVenir
-          </h1>
-          <p className="text-gray-600">
+          </CardTitle>
+          <CardDescription>
             Gérez vos rendez-vous consulaires en toute simplicité
-          </p>
-        </div>
-        <CardContent className="p-0">
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "login" | "register")}>
-            <TabsList className="grid grid-cols-2 w-full mb-6 bg-gray-100 p-1 rounded-lg">
-              <TabsTrigger 
-                value="login" 
-                className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-none"
-              >
-                Connexion
-              </TabsTrigger>
-              <TabsTrigger 
-                value="register"
-                className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-none"
-              >
-                Inscription
-              </TabsTrigger>
+            <TabsList className="grid grid-cols-2 w-full mb-6">
+              <TabsTrigger value="login">Connexion</TabsTrigger>
+              <TabsTrigger value="register">Inscription</TabsTrigger>
             </TabsList>
             <TabsContent value="login">
               <LoginForm />
