@@ -27,8 +27,10 @@ export const UserProfileSection = () => {
         
         if (sessionError) {
           console.error('Session error:', sessionError);
-          setProfile(null);
-          setIsLoading(false);
+          if (!ignore) {
+            setProfile(null);
+            setIsLoading(false);
+          }
           return;
         }
 
@@ -49,6 +51,10 @@ export const UserProfileSection = () => {
         if (profileError) {
           console.error('Error fetching profile:', profileError);
           toast.error("Erreur lors du chargement du profil");
+          if (!ignore) {
+            setProfile(null);
+            setIsLoading(false);
+          }
           return;
         }
 
@@ -59,6 +65,10 @@ export const UserProfileSection = () => {
       } catch (error) {
         console.error('Error:', error);
         toast.error("Erreur lors du chargement du profil");
+        if (!ignore) {
+          setProfile(null);
+          setIsLoading(false);
+        }
       }
     };
 
@@ -111,7 +121,11 @@ export const UserProfileSection = () => {
   };
 
   if (isLoading) {
-    return null;
+    return (
+      <div className="flex items-center justify-end gap-2">
+        <div className="h-9 w-24 bg-gray-200 animate-pulse rounded-md"></div>
+      </div>
+    );
   }
 
   if (!profile) {
