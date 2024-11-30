@@ -99,7 +99,7 @@ const Index = () => {
                   alt="Agenda professionnel"
                   className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent shadow-2xl backdrop-blur-[2px]"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent shadow-2xl"></div>
               </div>
               
               <div className="px-6">
