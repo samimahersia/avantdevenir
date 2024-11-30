@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
 import AppointmentManagement from "./admin/AppointmentManagement";
 import UserManagement from "./admin/UserManagement";
 import NotificationSettings from "./admin/NotificationSettings";
@@ -17,22 +18,25 @@ import HolidayManagement from "./admin/HolidayManagement";
 
 const AdminDashboard = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const isMobile = useIsMobile();
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold text-center">Tableau de bord administrateur</h2>
       
       <Tabs defaultValue="appointments" className="w-full">
-        <TabsList className="grid w-full grid-cols-1 md:grid-cols-8">
-          <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
-          <TabsTrigger value="calendar">Calendrier</TabsTrigger>
-          <TabsTrigger value="stats">Statistiques</TabsTrigger>
-          <TabsTrigger value="users">Utilisateurs</TabsTrigger>
-          <TabsTrigger value="consulates">Consulats</TabsTrigger>
-          <TabsTrigger value="services">Services</TabsTrigger>
-          <TabsTrigger value="settings">Paramètres</TabsTrigger>
-          <TabsTrigger value="support">Support</TabsTrigger>
-        </TabsList>
+        {!isMobile && (
+          <TabsList className="grid w-full grid-cols-1 md:grid-cols-8">
+            <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
+            <TabsTrigger value="calendar">Calendrier</TabsTrigger>
+            <TabsTrigger value="stats">Statistiques</TabsTrigger>
+            <TabsTrigger value="users">Utilisateurs</TabsTrigger>
+            <TabsTrigger value="consulates">Consulats</TabsTrigger>
+            <TabsTrigger value="services">Services</TabsTrigger>
+            <TabsTrigger value="settings">Paramètres</TabsTrigger>
+            <TabsTrigger value="support">Support</TabsTrigger>
+          </TabsList>
+        )}
         
         <TabsContent value="appointments" className="mt-6">
           <AppointmentManagement />

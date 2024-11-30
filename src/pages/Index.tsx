@@ -113,14 +113,34 @@ const Index = () => {
               </Button>
               {userType === "admin" && (
                 <div className="pl-4 space-y-2">
-                  <Button variant="ghost" className="w-full justify-start">Rendez-vous</Button>
-                  <Button variant="ghost" className="w-full justify-start">Calendrier</Button>
-                  <Button variant="ghost" className="w-full justify-start">Statistiques</Button>
-                  <Button variant="ghost" className="w-full justify-start">Utilisateurs</Button>
-                  <Button variant="ghost" className="w-full justify-start">Consulats</Button>
-                  <Button variant="ghost" className="w-full justify-start">Services</Button>
-                  <Button variant="ghost" className="w-full justify-start">Paramètres</Button>
-                  <Button variant="ghost" className="w-full justify-start">Support</Button>
+                  <Tabs defaultValue="appointments" orientation="vertical" className="w-full">
+                    <TabsList className="flex flex-col h-auto">
+                      <TabsTrigger value="appointments" className="w-full justify-start">
+                        Rendez-vous
+                      </TabsTrigger>
+                      <TabsTrigger value="calendar" className="w-full justify-start">
+                        Calendrier
+                      </TabsTrigger>
+                      <TabsTrigger value="stats" className="w-full justify-start">
+                        Statistiques
+                      </TabsTrigger>
+                      <TabsTrigger value="users" className="w-full justify-start">
+                        Utilisateurs
+                      </TabsTrigger>
+                      <TabsTrigger value="consulates" className="w-full justify-start">
+                        Consulats
+                      </TabsTrigger>
+                      <TabsTrigger value="services" className="w-full justify-start">
+                        Services
+                      </TabsTrigger>
+                      <TabsTrigger value="settings" className="w-full justify-start">
+                        Paramètres
+                      </TabsTrigger>
+                      <TabsTrigger value="support" className="w-full justify-start">
+                        Support
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
                 </div>
               )}
             </div>
