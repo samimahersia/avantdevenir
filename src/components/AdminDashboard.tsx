@@ -16,7 +16,11 @@ import ConsulateManagement from "./admin/ConsulateManagement";
 import ServiceManagement from "./admin/ServiceManagement";
 import HolidayManagement from "./admin/HolidayManagement";
 
-const AdminDashboard = () => {
+interface AdminDashboardProps {
+  activeTab?: string;
+}
+
+const AdminDashboard = ({ activeTab = "appointments" }: AdminDashboardProps) => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const isMobile = useIsMobile();
 
@@ -24,7 +28,7 @@ const AdminDashboard = () => {
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold text-center">Tableau de bord administrateur</h2>
       
-      <Tabs defaultValue="appointments" className="w-full">
+      <Tabs value={activeTab} defaultValue="appointments" className="w-full">
         {!isMobile && (
           <TabsList className="grid w-full grid-cols-1 md:grid-cols-8">
             <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>

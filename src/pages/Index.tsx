@@ -21,6 +21,7 @@ const Index = () => {
   const [selectedService, setSelectedService] = useState<string>();
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("appointments");
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -114,7 +115,7 @@ const Index = () => {
               </Button>
               {userType === "admin" && (
                 <div className="pl-4 space-y-2">
-                  <Tabs defaultValue="appointments" orientation="vertical" className="w-full">
+                  <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical" className="w-full">
                     <TabsList className="flex flex-col h-auto">
                       <TabsTrigger value="appointments" className="w-full justify-start">
                         Rendez-vous
@@ -236,7 +237,7 @@ const Index = () => {
               />
             ) : userRole === "admin" ? (
               <div className="flex justify-center">
-                <AdminDashboard />
+                <AdminDashboard activeTab={activeTab} />
               </div>
             ) : null}
           </CardContent>
