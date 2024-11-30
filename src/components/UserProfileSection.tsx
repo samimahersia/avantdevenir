@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { LogOut, LogIn, UserPlus, Shield } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -15,15 +15,13 @@ interface Profile {
 
 export const UserProfileSection = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const sessionResponse = await supabase.auth.getSession();
-        const session = sessionResponse.data.session;
+        const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
           setProfile(null);
@@ -54,7 +52,7 @@ export const UserProfileSection = () => {
 
     fetchProfile();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
       if (event === 'SIGNED_IN') {
         await fetchProfile();
       } else if (event === 'SIGNED_OUT') {
@@ -99,10 +97,6 @@ export const UserProfileSection = () => {
     }
   };
 
-  const handleNavigate = (path: string) => {
-    navigate(path);
-  };
-
   if (isLoading) {
     return null;
   }
@@ -113,7 +107,7 @@ export const UserProfileSection = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handleNavigate('/auth')}
+          onClick={() => navigate('/auth')}
           className="flex items-center gap-2"
         >
           <LogIn className="h-4 w-4" />
@@ -122,7 +116,7 @@ export const UserProfileSection = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handleNavigate('/auth?tab=register')}
+          onClick={() => navigate('/auth?tab=register')}
           className="flex items-center gap-2"
         >
           <UserPlus className="h-4 w-4" />
