@@ -39,10 +39,10 @@ export const UserProfileSection = () => {
       onError: (error: Error) => {
         console.error('Error fetching profile:', error);
         toast.error("Erreur lors du chargement du profil");
+      },
+      onSettled: () => {
+        setIsLoading(false);
       }
-    },
-    onSettled: () => {
-      setIsLoading(false);
     }
   });
 
