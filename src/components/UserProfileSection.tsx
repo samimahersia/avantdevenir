@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { LogOut, LogIn, UserPlus, Mail, Shield } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -16,6 +16,7 @@ interface Profile {
 
 export const UserProfileSection = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
@@ -78,15 +79,21 @@ export const UserProfileSection = () => {
       const { error } = await supabase
         .from('profiles')
         .update({ role: 'admin' })
-        .eq('id', profile.id);
+        .eq('id', profile?.id);
 
       if (error) throw error;
 
-      setProfile({ ...profile, role: 'admin' });
+      setProfile(prev => prev ? { ...prev, role: 'admin' } : null);
       toast.success('Promu administrateur avec succès');
     } catch (error) {
       console.error('Error promoting to admin:', error);
       toast.error('Erreur lors de la promotion');
+    }
+  };
+
+  const handleNavigate = (path: string) => {
+    if (location.pathname !== path) {
+      navigate(path);
     }
   };
 
@@ -96,7 +103,7 @@ export const UserProfileSection = () => {
         <Button
           variant="default"
           size="sm"
-          onClick={() => navigate('/auth')}
+          onClick={() => handleNavigate('/auth')}
           className="flex items-center gap-2"
         >
           <LogIn className="h-4 w-4" />
@@ -105,7 +112,7 @@ export const UserProfileSection = () => {
         <Button
           variant="default"
           size="sm"
-          onClick={() => navigate('/auth?tab=register')}
+          onClick={() => handleNavigate('/auth?tab=register')}
           className="flex items-center gap-2"
         >
           <UserPlus className="h-4 w-4" />
