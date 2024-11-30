@@ -80,7 +80,10 @@ const AppointmentManagement = () => {
   };
 
   return (
-    <Card>
+    <Card className="mt-auto">
+      <CardHeader className="text-center">
+        <CardTitle>Gestion des Rendez-vous</CardTitle>
+      </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {appointments.map((appointment) => (
@@ -133,9 +136,6 @@ const AppointmentManagement = () => {
           ))}
         </div>
       </CardContent>
-      <CardHeader className="text-center">
-        <CardTitle>Gestion des Rendez-vous</CardTitle>
-      </CardHeader>
     </Card>
   );
 };
