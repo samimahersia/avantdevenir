@@ -3,13 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Ban, UserCheck, UserX, Lock } from "lucide-react";
+import { Ban, UserCheck, UserX, Lock, Pencil } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useState } from "react";
 import { decryptData } from "@/utils/encryption";
+import { Input } from "@/components/ui/input";
 
 interface EncryptedData {
   personalData?: {
@@ -27,7 +28,13 @@ interface EncryptedData {
 const UserManagement = () => {
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [showEncryptedData, setShowEncryptedData] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [decryptedData, setDecryptedData] = useState<EncryptedData | null>(null);
+  const [editForm, setEditForm] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+  });
 
   const { data: users = [], refetch } = useQuery({
     queryKey: ["admin-users"],
@@ -75,6 +82,38 @@ const UserManagement = () => {
     }
   };
 
+  const handleEditUser = (user: any) => {
+    setSelectedUser(user);
+    setEditForm({
+      first_name: user.first_name || "",
+      last_name: user.last_name || "",
+      email: user.email || "",
+    });
+    setShowEditDialog(true);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          first_name: editForm.first_name,
+          last_name: editForm.last_name,
+          email: editForm.email,
+        })
+        .eq("id", selectedUser.id);
+
+      if (error) throw error;
+
+      toast.success("Informations de l'utilisateur mises à jour avec succès");
+      setShowEditDialog(false);
+      refetch();
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toast.error("Erreur lors de la mise à jour des informations");
+    }
+  };
+
   return (
     <>
       <Card>
@@ -100,7 +139,7 @@ const UserManagement = () => {
                     {user.role === "admin" ? "Administrateur" : "Client"}
                   </Badge>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button
                     size="sm"
                     variant="outline"
@@ -109,6 +148,15 @@ const UserManagement = () => {
                   >
                     <Lock className="w-4 h-4 mr-1" />
                     Données sensibles
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                    onClick={() => handleEditUser(user)}
+                  >
+                    <Pencil className="w-4 h-4 mr-1" />
+                    Modifier
                   </Button>
                   {user.role !== "admin" && (
                     <Button
@@ -190,6 +238,40 @@ const UserManagement = () => {
               <p className="text-muted-foreground">Aucune donnée sensible enregistrée</p>
             )}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Modifier l'utilisateur</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Prénom</label>
+              <Input
+                value={editForm.first_name}
+                onChange={(e) => setEditForm({ ...editForm, first_name: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Nom</label>
+              <Input
+                value={editForm.last_name}
+                onChange={(e) => setEditForm({ ...editForm, last_name: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Email</label>
+              <Input
+                value={editForm.email}
+                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleSaveEdit}>Enregistrer</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
