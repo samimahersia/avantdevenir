@@ -181,7 +181,7 @@ const Index = () => {
                   AvantDeVenir
                 </CardTitle>
                 
-                <div className="hidden md:flex flex-col sm:flex-row justify-center gap-4 mt-8">
+                <div className="hidden md:flex flex-col sm:flex-row justify-center gap-4 mt-8 mb-12">
                   <Button
                     size="lg"
                     variant={userType === "client" ? "default" : "outline"}
