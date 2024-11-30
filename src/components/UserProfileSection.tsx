@@ -19,34 +19,46 @@ export const UserProfileSection = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let ignore = false;
+
     const fetchProfile = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
-        if (!session) {
+        if (sessionError) {
+          console.error('Session error:', sessionError);
           setProfile(null);
           setIsLoading(false);
           return;
         }
 
-        const { data, error } = await supabase
+        if (!sessionData.session) {
+          if (!ignore) {
+            setProfile(null);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('id, first_name, last_name, email, role')
-          .eq('id', session.user.id)
+          .eq('id', sessionData.session.user.id)
           .single();
 
-        if (error) {
-          console.error('Error fetching profile:', error);
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
           toast.error("Erreur lors du chargement du profil");
           return;
         }
 
-        setProfile(data);
+        if (!ignore) {
+          setProfile(profileData);
+          setIsLoading(false);
+        }
       } catch (error) {
         console.error('Error:', error);
         toast.error("Erreur lors du chargement du profil");
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -61,6 +73,7 @@ export const UserProfileSection = () => {
     });
 
     return () => {
+      ignore = true;
       subscription.unsubscribe();
     };
   }, []);
