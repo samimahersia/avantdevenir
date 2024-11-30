@@ -11,7 +11,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
-const AVAILABLE_HOURS = Array.from({ length: 9 }, (_, i) => i + 9); // 9h à 17h
+// Generate time slots from 9h to 14h with 15min intervals
+const generateTimeSlots = () => {
+  const slots = [];
+  for (let hour = 9; hour < 14; hour++) {
+    for (let minute = 0; minute < 60; minute += 15) {
+      slots.push({ hour, minute });
+    }
+  }
+  return slots;
+};
+
+const TIME_SLOTS = generateTimeSlots();
 
 interface AppointmentFormProps {
   onSuccess?: () => void;
@@ -22,18 +33,18 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
   const [date, setDate] = useState<Date>();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [selectedHour, setSelectedHour] = useState<number>();
+  const [selectedTime, setSelectedTime] = useState<{ hour: number; minute: number }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!date || selectedHour === undefined || !title.trim()) {
+    if (!date || !selectedTime || !title.trim()) {
       toast.error("Veuillez remplir tous les champs requis");
       return;
     }
 
-    const appointmentDate = setMinutes(setHours(date, selectedHour), 0);
+    const appointmentDate = setMinutes(setHours(date, selectedTime.hour), selectedTime.minute);
     
     if (isBefore(appointmentDate, new Date())) {
       toast.error("La date sélectionnée est déjà passée");
@@ -100,7 +111,7 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
       setTitle("");
       setDescription("");
       setDate(undefined);
-      setSelectedHour(undefined);
+      setSelectedTime(undefined);
       onSuccess?.();
 
     } catch (error) {
@@ -156,16 +167,16 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
 
       <div className="space-y-2">
         <Label>Heure du rendez-vous *</Label>
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-          {AVAILABLE_HOURS.map((hour) => (
+        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+          {TIME_SLOTS.map((slot) => (
             <Button
-              key={hour}
+              key={`${slot.hour}-${slot.minute}`}
               type="button"
-              variant={selectedHour === hour ? "default" : "outline"}
-              onClick={() => setSelectedHour(hour)}
+              variant={selectedTime?.hour === slot.hour && selectedTime?.minute === slot.minute ? "default" : "outline"}
+              onClick={() => setSelectedTime(slot)}
               className="w-full"
             >
-              {hour}:00
+              {slot.hour}:{slot.minute.toString().padStart(2, '0')}
             </Button>
           ))}
         </div>
@@ -173,7 +184,7 @@ const AppointmentForm = ({ onSuccess, selectedConsulate }: AppointmentFormProps)
 
       <Button 
         type="submit" 
-        disabled={!date || selectedHour === undefined || !title.trim() || isSubmitting}
+        disabled={!date || !selectedTime || !title.trim() || isSubmitting}
         className="w-full sm:w-auto"
         size="lg"
       >
