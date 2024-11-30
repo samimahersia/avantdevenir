@@ -93,7 +93,6 @@ const AppointmentManagement = () => {
             >
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-lg font-medium">{appointment.title}</h3>
-                {getStatusBadge(appointment.status)}
               </div>
               
               {appointment.status === "en_attente" && (
@@ -126,10 +125,13 @@ const AppointmentManagement = () => {
               )}
               
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-medium">Client:</span> 
-                  {appointment.profiles?.first_name} {appointment.profiles?.last_name}
-                </p>
+                <div className="flex justify-between items-center">
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-medium">Client:</span> 
+                    {appointment.profiles?.first_name} {appointment.profiles?.last_name}
+                  </p>
+                  {getStatusBadge(appointment.status)}
+                </div>
                 <p className="text-sm text-muted-foreground">
                   <span className="font-medium">Date:</span>
                   {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
