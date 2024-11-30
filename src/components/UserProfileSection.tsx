@@ -23,17 +23,8 @@ export const UserProfileSection = () => {
 
     const fetchProfile = async () => {
       try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
         
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          if (!ignore) {
-            setProfile(null);
-            setIsLoading(false);
-          }
-          return;
-        }
-
         if (!session) {
           if (!ignore) {
             setProfile(null);
@@ -44,7 +35,7 @@ export const UserProfileSection = () => {
 
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
-          .select('id, first_name, last_name, email, role')
+          .select('*')
           .eq('id', session.user.id)
           .single();
 
