@@ -177,11 +177,11 @@ const Index = () => {
               </div>
               
               <div className="px-6">
-                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
-                  AvantDeVenir 2
+                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-8">
+                  AvantDeVenir
                 </CardTitle>
                 
-                <div className="hidden md:flex flex-col sm:flex-row justify-center gap-4 mt-6">
+                <div className="hidden md:flex flex-col sm:flex-row justify-center gap-4 mt-8">
                   <Button
                     size="lg"
                     variant={userType === "client" ? "default" : "outline"}
