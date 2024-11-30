@@ -1,4 +1,3 @@
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,21 +22,18 @@ const ServiceSelector = ({ selectedService, onServiceSelect }: ServiceSelectorPr
   });
 
   return (
-    <div className="space-y-2">
-      <Label htmlFor="service">Service *</Label>
-      <Select value={selectedService} onValueChange={onServiceSelect}>
-        <SelectTrigger>
-          <SelectValue placeholder="Sélectionnez un service" />
-        </SelectTrigger>
-        <SelectContent>
-          {services.map((service) => (
-            <SelectItem key={service.id} value={service.id}>
-              {service.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <Select value={selectedService} onValueChange={onServiceSelect}>
+      <SelectTrigger>
+        <SelectValue placeholder="Sélectionnez un service" />
+      </SelectTrigger>
+      <SelectContent>
+        {services.map((service) => (
+          <SelectItem key={service.id} value={service.id}>
+            {service.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 };
 
