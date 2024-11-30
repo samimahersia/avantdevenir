@@ -44,6 +44,8 @@ const AppointmentCalendar = () => {
             selected={selectedDate}
             onSelect={(date) => date && setSelectedDate(date)}
             className="rounded-md border"
+            locale={fr}
+            disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
           />
         </CardContent>
       </Card>
