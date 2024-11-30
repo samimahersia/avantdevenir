@@ -18,7 +18,7 @@ export const UserProfileSection = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
-  const { data: profile, error: profileError } = useQuery({
+  const { data: profile } = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -35,9 +35,11 @@ export const UserProfileSection = () => {
       return data as Profile;
     },
     retry: false,
-    onError: (error) => {
-      console.error('Error fetching profile:', error);
-      toast.error("Erreur lors du chargement du profil");
+    meta: {
+      onError: (error: Error) => {
+        console.error('Error fetching profile:', error);
+        toast.error("Erreur lors du chargement du profil");
+      }
     },
     onSettled: () => {
       setIsLoading(false);
