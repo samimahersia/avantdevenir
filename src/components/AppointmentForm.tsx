@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { isBefore } from "date-fns";
+import { isBefore, startOfDay, endOfDay } from "date-fns";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -29,7 +29,7 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!date || !selectedTime || !title.trim() || !selectedService) {
+    if (!date || !selectedTime || !title.trim() || !selectedService || !selectedConsulate) {
       toast.error("Veuillez remplir tous les champs requis");
       return;
     }
@@ -48,6 +48,25 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
       
       if (!session?.session?.user) {
         toast.error("Veuillez vous connecter pour prendre un rendez-vous");
+        return;
+      }
+
+      // First, check if the slot is available
+      const { data: availabilityCheck, error: availabilityError } = await supabase
+        .rpc('check_appointment_availability', {
+          p_appointment_date: appointmentDate.toISOString(),
+          p_service_id: selectedService,
+          p_consulate_id: selectedConsulate
+        });
+
+      if (availabilityError) {
+        toast.error("Erreur lors de la vérification de disponibilité");
+        console.error("Availability check error:", availabilityError);
+        return;
+      }
+
+      if (!availabilityCheck) {
+        toast.error("Ce créneau n'est pas disponible. Veuillez choisir un autre horaire.");
         return;
       }
 
@@ -73,23 +92,8 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
         .single();
 
       if (appointmentError) {
-        let errorMessage = "Une erreur est survenue lors de la création du rendez-vous";
-        
-        if (appointmentError.message) {
-          try {
-            const errorBody = JSON.parse(appointmentError.message);
-            if (errorBody.message === "Ce créneau n'est pas disponible") {
-              errorMessage = "Ce créneau n'est pas disponible. Veuillez choisir un autre horaire.";
-            }
-          } catch (e) {
-            // Si le message d'erreur n'est pas au format JSON, on utilise directement le message
-            if (appointmentError.message.includes("n'est pas disponible")) {
-              errorMessage = "Ce créneau n'est pas disponible. Veuillez choisir un autre horaire.";
-            }
-          }
-        }
-        
-        toast.error(errorMessage);
+        toast.error("Une erreur est survenue lors de la création du rendez-vous");
+        console.error("Appointment creation error:", appointmentError);
         return;
       }
 
@@ -173,7 +177,7 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
 
       <Button 
         type="submit" 
-        disabled={!date || !selectedTime || !title.trim() || !selectedService || isSubmitting}
+        disabled={!date || !selectedTime || !title.trim() || !selectedService || !selectedConsulate || isSubmitting}
         className="w-full sm:w-auto"
         size="lg"
       >
