@@ -13,6 +13,7 @@ import RecurringAvailabilityForm from "./RecurringAvailabilityForm";
 import TechnicalSupport from "./admin/TechnicalSupport";
 import ConsulateManagement from "./admin/ConsulateManagement";
 import ServiceManagement from "./admin/ServiceManagement";
+import HolidayManagement from "./admin/HolidayManagement";
 
 const AdminDashboard = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -61,10 +62,12 @@ const AdminDashboard = () => {
           <div className="grid gap-6">
             <Card>
               <CardContent className="pt-6">
-                <h3 className="text-lg font-semibold mb-4">Disponibilités récurrentes</h3>
+                <h3 className="text-lg font-semibold mb-4">Horaires d'ouverture</h3>
                 <RecurringAvailabilityForm />
               </CardContent>
             </Card>
+
+            <HolidayManagement />
             
             <Card>
               <CardContent className="pt-6">
