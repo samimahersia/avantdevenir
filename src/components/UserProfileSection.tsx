@@ -4,6 +4,7 @@ import { LogOut, LogIn, UserPlus, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 interface Profile {
   id: string;
@@ -15,69 +16,45 @@ interface Profile {
 
 export const UserProfileSection = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const { data: profile, error: profileError } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async () => {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!session) return null;
+
+      const { data, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profileError) throw profileError;
+      return data as Profile;
+    },
+    retry: false,
+    onError: (error) => {
+      console.error('Error fetching profile:', error);
+      toast.error("Erreur lors du chargement du profil");
+    },
+    onSettled: () => {
+      setIsLoading(false);
+    }
+  });
+
   useEffect(() => {
-    let ignore = false;
-
-    const fetchProfile = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session) {
-          if (!ignore) {
-            setProfile(null);
-            setIsLoading(false);
-          }
-          return;
-        }
-
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profileError) {
-          console.error('Error fetching profile:', profileError);
-          toast.error("Erreur lors du chargement du profil");
-          if (!ignore) {
-            setProfile(null);
-            setIsLoading(false);
-          }
-          return;
-        }
-
-        if (!ignore) {
-          setProfile(profileData);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        toast.error("Erreur lors du chargement du profil");
-        if (!ignore) {
-          setProfile(null);
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchProfile();
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
-      if (event === 'SIGNED_IN') {
-        await fetchProfile();
-      } else if (event === 'SIGNED_OUT') {
-        setProfile(null);
+      if (event === 'SIGNED_OUT') {
+        navigate('/auth');
       }
     });
 
     return () => {
-      ignore = true;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   const handleSignOut = async () => {
     try {
@@ -102,8 +79,6 @@ export const UserProfileSection = () => {
         .eq('id', profile.id);
 
       if (error) throw error;
-
-      setProfile(prev => prev ? { ...prev, role: 'admin' } : null);
       toast.success('Promu administrateur avec succès');
     } catch (error) {
       console.error('Error promoting to admin:', error);
