@@ -67,17 +67,24 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
           client_id: userData.user.id,
           consulate_id: selectedConsulate,
           service_id: selectedService,
+          status: 'en_attente'
         })
         .select()
         .single();
 
       if (appointmentError) {
-        if (appointmentError.message.includes("Ce créneau n'est pas disponible")) {
-          toast.error("Ce créneau n'est pas disponible. Veuillez choisir un autre horaire.");
-        } else {
-          console.error("Appointment error:", appointmentError);
-          toast.error("Une erreur est survenue lors de la création du rendez-vous");
+        let errorMessage = "Une erreur est survenue lors de la création du rendez-vous";
+        
+        try {
+          const errorBody = JSON.parse(appointmentError.message);
+          if (errorBody.message === "Ce créneau n'est pas disponible") {
+            errorMessage = "Ce créneau n'est pas disponible. Veuillez choisir un autre horaire.";
+          }
+        } catch (e) {
+          console.error("Error parsing error message:", e);
         }
+        
+        toast.error(errorMessage);
         return;
       }
 
