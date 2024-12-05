@@ -3,18 +3,39 @@
     "login": "Connexion",
     "logout": "Déconnexion",
     "logout_success": "Déconnexion réussie",
-    "logout_error": "Erreur lors de la déconnexion"
+    "logout_error": "Erreur lors de la déconnexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "register": "S'inscrire",
+    "forgot_password": "Mot de passe oublié ?",
+    "no_account": "Pas encore de compte ?",
+    "has_account": "Déjà un compte ?"
   },
   "dashboard": {
     "selectPrompt": "Veuillez sélectionner un organisme et un service pour prendre rendez-vous",
     "newAppointment": "Nouveau Rendez-vous",
     "myAppointments": "Mes Rendez-vous",
     "noAppointments": "Vous n'avez pas encore de rendez-vous",
-    "service": "Service"
+    "service": "Service",
+    "date": "Date",
+    "time": "Heure",
+    "description": "Description",
+    "submit": "Soumettre"
   },
   "status": {
     "pending": "En attente",
     "approved": "Approuvé",
     "rejected": "Refusé"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "success": "Succès",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "confirm": "Confirmer",
+    "back": "Retour"
   }
 }

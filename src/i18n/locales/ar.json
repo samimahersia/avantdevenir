@@ -3,18 +3,39 @@
     "login": "تسجيل الدخول",
     "logout": "تسجيل الخروج",
     "logout_success": "تم تسجيل الخروج بنجاح",
-    "logout_error": "خطأ في تسجيل الخروج"
+    "logout_error": "خطأ في تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "register": "تسجيل",
+    "forgot_password": "نسيت كلمة المرور؟",
+    "no_account": "ليس لديك حساب؟",
+    "has_account": "لديك حساب بالفعل؟"
   },
   "dashboard": {
     "selectPrompt": "يرجى اختيار مؤسسة وخدمة لتحديد موعد",
     "newAppointment": "موعد جديد",
     "myAppointments": "مواعيدي",
     "noAppointments": "ليس لديك أي مواعيد حتى الآن",
-    "service": "خدمة"
+    "service": "خدمة",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "description": "الوصف",
+    "submit": "إرسال"
   },
   "status": {
     "pending": "قيد الانتظار",
     "approved": "تمت الموافقة",
     "rejected": "مرفوض"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "success": "نجاح",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "confirm": "تأكيد",
+    "back": "رجوع"
   }
 }

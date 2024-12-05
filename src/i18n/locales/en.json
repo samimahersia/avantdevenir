@@ -3,18 +3,39 @@
     "login": "Login",
     "logout": "Logout",
     "logout_success": "Successfully logged out",
-    "logout_error": "Error logging out"
+    "logout_error": "Error logging out",
+    "email": "Email",
+    "password": "Password",
+    "register": "Register",
+    "forgot_password": "Forgot password?",
+    "no_account": "Don't have an account?",
+    "has_account": "Already have an account?"
   },
   "dashboard": {
     "selectPrompt": "Please select an organization and a service to make an appointment",
     "newAppointment": "New Appointment",
     "myAppointments": "My Appointments",
     "noAppointments": "You don't have any appointments yet",
-    "service": "Service"
+    "service": "Service",
+    "date": "Date",
+    "time": "Time",
+    "description": "Description",
+    "submit": "Submit"
   },
   "status": {
     "pending": "Pending",
     "approved": "Approved",
     "rejected": "Rejected"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "back": "Back"
   }
 }

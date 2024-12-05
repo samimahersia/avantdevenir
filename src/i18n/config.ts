@@ -26,6 +26,10 @@ i18n
     fallbackLng: 'fr',
     interpolation: {
       escapeValue: false
+    },
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage']
     }
   });
 
