@@ -58,8 +58,14 @@ export function UserProfileSection() {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
-      navigate("/auth");
       
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        console.log("No active session found, redirecting to auth");
+        navigate("/auth");
+        return;
+      }
+
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error("Logout error:", error);
@@ -68,6 +74,7 @@ export function UserProfileSection() {
       }
       
       toast.success(t("auth.logout_success"));
+      navigate("/auth");
     } catch (error) {
       console.error("Error during logout:", error);
       toast.error(t("auth.logout_error"));
