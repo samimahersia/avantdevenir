@@ -50,7 +50,7 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
       <Card className="border-none shadow-none">
         <CardContent className="text-center py-8">
           <p className="text-muted-foreground">
-            Veuillez sélectionner un consulat et un service pour prendre rendez-vous.
+            Veuillez sélectionner un organisme et un service pour prendre rendez-vous.
           </p>
         </CardContent>
       </Card>
