@@ -59,11 +59,10 @@ export function UserProfileSection() {
     try {
       setIsLoading(true);
       
-      // First check if we have a valid session
-      const { data: { session } } = await supabase.auth.getSession();
-      console.log("Current session before logout:", session);
+      // Navigate first to prevent any race conditions with auth state
+      navigate("/auth");
       
-      // Attempt to sign out
+      // Then attempt to sign out
       const { error } = await supabase.auth.signOut();
       
       if (error) {
@@ -73,13 +72,8 @@ export function UserProfileSection() {
         toast.success(t("auth.logout_success"));
       }
       
-      // Always navigate to auth page
-      navigate("/auth");
-      
     } catch (error) {
       console.error("Error during logout:", error);
-      // Still navigate to auth even if there's an error
-      navigate("/auth");
     } finally {
       setIsLoading(false);
     }
