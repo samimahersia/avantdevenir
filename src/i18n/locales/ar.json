@@ -1,0 +1,18 @@
+{
+  "auth": {
+    "login": "تسجيل الدخول",
+    "logout": "تسجيل الخروج"
+  },
+  "dashboard": {
+    "selectPrompt": "يرجى اختيار مؤسسة وخدمة لتحديد موعد",
+    "newAppointment": "موعد جديد",
+    "myAppointments": "مواعيدي",
+    "noAppointments": "ليس لديك أي مواعيد حتى الآن",
+    "service": "خدمة"
+  },
+  "status": {
+    "pending": "قيد الانتظار",
+    "approved": "تمت الموافقة",
+    "rejected": "مرفوض"
+  }
+}
