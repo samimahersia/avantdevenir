@@ -58,34 +58,17 @@ export function UserProfileSection() {
   const handleLogout = async () => {
     if (isLoading) return;
     
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      
-      // First check if we have a valid session
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        // If no session, just navigate to auth
-        navigate("/auth");
-        return;
-      }
-
-      // Attempt to sign out
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error("Logout error:", error);
-        toast.error("Une erreur est survenue lors de la déconnexion");
-      } else {
-        toast.success(t("auth.logout_success"));
-        navigate("/auth");
-      }
-      
+      // Simple signOut call without any pre-checks
+      await supabase.auth.signOut();
+      toast.success(t("auth.logout_success"));
     } catch (error) {
-      console.error("Error during logout:", error);
-      navigate("/auth");
+      console.error("Logout error:", error);
     } finally {
       setIsLoading(false);
+      // Always navigate to auth page after logout attempt
+      navigate("/auth");
     }
   };
 
