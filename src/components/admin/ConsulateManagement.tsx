@@ -71,14 +71,14 @@ const ConsulateManagement = () => {
           .eq("id", editingConsulate.id);
 
         if (error) throw error;
-        toast.success("Consulat modifié avec succès");
+        toast.success("Organisme modifié avec succès");
       } else {
         const { error } = await supabase
           .from("consulates")
           .insert([formData]);
 
         if (error) throw error;
-        toast.success("Consulat ajouté avec succès");
+        toast.success("Organisme ajouté avec succès");
       }
       
       setIsDialogOpen(false);
@@ -90,19 +90,34 @@ const ConsulateManagement = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Êtes-vous sûr de vouloir supprimer ce consulat ?")) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer cet organisme ?")) {
       try {
+        // First check if there are any appointments for this consulate
+        const { data: appointments, error: checkError } = await supabase
+          .from("appointments")
+          .select("id")
+          .eq("consulate_id", id)
+          .limit(1);
+
+        if (checkError) throw checkError;
+
+        if (appointments && appointments.length > 0) {
+          toast.error("Impossible de supprimer cet organisme car il a des rendez-vous associés");
+          return;
+        }
+
+        // If no appointments exist, proceed with deletion
         const { error } = await supabase
           .from("consulates")
           .delete()
           .eq("id", id);
 
         if (error) throw error;
-        toast.success("Consulat supprimé avec succès");
+        toast.success("Organisme supprimé avec succès");
         refetch();
       } catch (error) {
         console.error("Error:", error);
-        toast.error("Une erreur est survenue");
+        toast.error("Une erreur est survenue lors de la suppression");
       }
     }
   };
