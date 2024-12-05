@@ -59,10 +59,16 @@ export function UserProfileSection() {
     try {
       setIsLoading(true);
       
-      // Attempt to sign out without checking session first
+      // First check if we have a valid session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // Always attempt to sign out, even if no session
       await supabase.auth.signOut();
       
-      // Always navigate to auth and show success message
+      // Clear any cached data
+      await supabase.auth.clearSession();
+      
+      // Always show success and navigate to auth
       toast.success(t("auth.logout_success"));
       navigate("/auth");
       
