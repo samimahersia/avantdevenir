@@ -97,7 +97,7 @@ export function UserProfileSection() {
   return (
     <div className="flex items-center justify-end gap-4">
       <div className="flex items-center gap-4">
-        <span className="text-sm text-white font-medium">
+        <span className="text-sm text-blue-500 font-medium">
           {profile.email}
         </span>
         <Button
