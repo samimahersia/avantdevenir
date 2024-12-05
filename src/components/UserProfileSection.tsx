@@ -69,7 +69,7 @@ export function UserProfileSection() {
 
   if (!profile) {
     return (
-      <div className="flex justify-end">
+      <div className="flex justify-start">
         <Button
           variant="outline"
           className="gap-2"
@@ -83,15 +83,15 @@ export function UserProfileSection() {
   }
 
   return (
-    <div className="flex items-center justify-end gap-4">
+    <div className="flex items-center justify-start gap-4">
       <div className="flex items-center gap-4">
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-red-600 font-medium">
           {profile.email}
         </span>
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
-          className="gap-2"
+          className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
           onClick={handleLogout}
           disabled={isLoading}
         >
