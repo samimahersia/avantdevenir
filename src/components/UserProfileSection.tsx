@@ -103,7 +103,7 @@ export function UserProfileSection() {
         <Button
           variant="ghost"
           size="sm"
-          className="gap-2 text-white hover:text-white/90 hover:bg-white/10"
+          className="gap-2 bg-blue-500 hover:bg-blue-600 text-white"
           onClick={handleLogout}
           disabled={isLoading}
         >
