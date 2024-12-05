@@ -56,13 +56,21 @@ export function UserProfileSection() {
   });
 
   const handleLogout = async () => {
+    if (isLoading) return;
+    
     try {
       setIsLoading(true);
       
-      // Navigate first to prevent any race conditions with auth state
-      navigate("/auth");
+      // First check if we have a valid session
+      const { data: { session } } = await supabase.auth.getSession();
       
-      // Then attempt to sign out
+      if (!session) {
+        // If no session, just navigate to auth
+        navigate("/auth");
+        return;
+      }
+
+      // Attempt to sign out
       const { error } = await supabase.auth.signOut();
       
       if (error) {
@@ -70,10 +78,12 @@ export function UserProfileSection() {
         toast.error("Une erreur est survenue lors de la déconnexion");
       } else {
         toast.success(t("auth.logout_success"));
+        navigate("/auth");
       }
       
     } catch (error) {
       console.error("Error during logout:", error);
+      navigate("/auth");
     } finally {
       setIsLoading(false);
     }
