@@ -30,19 +30,19 @@ const Auth = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900 dark:to-gray-900 p-4">
       <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+        <div className="text-center space-y-2">
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
             Bienvenue
-          </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Connectez-vous pour accéder à votre espace
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400">
+            Connectez-vous pour accéder à votre espace personnel
           </p>
         </div>
 
-        <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 shadow-xl border-0">
-          <CardHeader className="space-y-1 pb-4">
+        <Card className="backdrop-blur-sm bg-white/90 dark:bg-gray-800/90 shadow-xl border-0 ring-1 ring-gray-200 dark:ring-gray-700">
+          <CardHeader className="space-y-1 pb-6">
             <CardTitle className="text-2xl text-center font-semibold">
               Connexion
             </CardTitle>
@@ -55,12 +55,12 @@ const Auth = () => {
                 variables: {
                   default: {
                     colors: {
-                      brand: '#4F46E5',
-                      brandAccent: '#4338CA',
+                      brand: '#6366f1',
+                      brandAccent: '#4f46e5',
                       inputBackground: 'white',
-                      inputBorder: '#E5E7EB',
-                      inputBorderHover: '#D1D5DB',
-                      inputBorderFocus: '#4F46E5',
+                      inputBorder: '#e5e7eb',
+                      inputBorderHover: '#d1d5db',
+                      inputBorderFocus: '#6366f1',
                     },
                     borderWidths: {
                       buttonBorderWidth: '1px',
@@ -75,9 +75,10 @@ const Auth = () => {
                 },
                 className: {
                   container: 'space-y-4',
-                  button: 'w-full px-4 py-2 text-sm font-medium',
-                  label: 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1',
-                  input: 'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500',
+                  button: 'w-full px-4 py-2.5 text-sm font-medium transition-colors',
+                  label: 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5',
+                  input: 'w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 dark:border-gray-600',
+                  loader: 'border-indigo-500',
                 },
               }}
               localization={{
@@ -89,6 +90,8 @@ const Auth = () => {
                     password_input_placeholder: 'Votre mot de passe',
                     button_label: 'Se connecter',
                     loading_button_label: 'Connexion en cours...',
+                    social_provider_text: 'Continuer avec {{provider}}',
+                    link_text: "Vous avez déjà un compte ? Connectez-vous",
                   },
                   sign_up: {
                     email_label: 'Adresse email',
@@ -97,6 +100,8 @@ const Auth = () => {
                     password_input_placeholder: 'Créez un mot de passe',
                     button_label: "S'inscrire",
                     loading_button_label: 'Inscription en cours...',
+                    social_provider_text: 'Continuer avec {{provider}}',
+                    link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
                   },
                   forgotten_password: {
                     email_label: 'Adresse email',
@@ -104,6 +109,13 @@ const Auth = () => {
                     email_input_placeholder: 'Votre adresse email',
                     button_label: 'Réinitialiser le mot de passe',
                     loading_button_label: 'Envoi en cours...',
+                    link_text: 'Mot de passe oublié ?',
+                  },
+                  update_password: {
+                    password_label: 'Nouveau mot de passe',
+                    password_input_placeholder: 'Votre nouveau mot de passe',
+                    button_label: 'Mettre à jour le mot de passe',
+                    loading_button_label: 'Mise à jour en cours...',
                   },
                 },
               }}
