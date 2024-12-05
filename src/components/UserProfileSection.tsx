@@ -59,21 +59,16 @@ export function UserProfileSection() {
     try {
       setIsLoading(true);
       
-      // Try to sign out regardless of session state
-      const { error } = await supabase.auth.signOut();
-      
-      // If we get a 403 or any error, we still want to clear local state and redirect
-      if (error) {
-        console.log("Logout completed with warning:", error.message);
-      }
-      
-      // Always redirect to auth and show success message
-      toast.success(t("auth.logout_success"));
+      // First navigate to auth page to clear UI state
       navigate("/auth");
+      
+      // Then attempt to clear the session server-side
+      await supabase.auth.signOut();
+      
+      toast.success(t("auth.logout_success"));
     } catch (error) {
       console.error("Error during logout:", error);
-      // Even if there's an error, redirect to auth page
-      navigate("/auth");
+      // No need to show error since we've already navigated away
     } finally {
       setIsLoading(false);
     }
