@@ -2,9 +2,8 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { LogOut, User } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 
 interface Profile {
@@ -61,21 +60,15 @@ export function UserProfileSection() {
     }
   };
 
-  const getInitials = (firstName: string | null, lastName: string | null) => {
-    const first = firstName?.charAt(0) || '';
-    const last = lastName?.charAt(0) || '';
-    return (first + last).toUpperCase() || 'U';
-  };
-
   if (!profile) {
     return (
-      <div className="flex justify-start">
+      <div className="flex justify-end">
         <Button
           variant="outline"
           className="gap-2"
           onClick={() => navigate("/auth")}
         >
-          <User className="h-4 w-4" />
+          <LogOut className="h-4 w-4" />
           Connexion
         </Button>
       </div>
@@ -83,7 +76,7 @@ export function UserProfileSection() {
   }
 
   return (
-    <div className="flex items-center justify-start gap-4">
+    <div className="flex items-center justify-end gap-4">
       <div className="flex items-center gap-4">
         <span className="text-sm text-red-600 font-medium">
           {profile.email}
@@ -99,11 +92,6 @@ export function UserProfileSection() {
           Déconnexion
         </Button>
       </div>
-      <Avatar className="h-10 w-10">
-        <AvatarFallback>
-          {getInitials(profile.first_name, profile.last_name)}
-        </AvatarFallback>
-      </Avatar>
     </div>
   );
 }
