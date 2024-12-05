@@ -21,49 +21,35 @@ const Index = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("appointments");
+  const [session, setSession] = useState(null);
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error("Session error:", sessionError);
-          navigate("/auth");
-          return;
-        }
-
-        if (!session) {
-          console.log("No active session found, redirecting to auth");
-          navigate("/auth");
-          return;
-        }
-      } catch (error) {
-        console.error("Error checking session:", error);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
         navigate("/auth");
+        return;
       }
-    };
-
-    checkSession();
-
-    // Écouter les changements d'état d'authentification
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        navigate("/auth");
-      }
+      setSession(session);
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         setIsLoading(true);
-        const sessionResponse = await supabase.auth.getSession();
-        const session = sessionResponse.data.session;
+        const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
           navigate("/auth");
@@ -96,8 +82,10 @@ const Index = () => {
       }
     };
 
-    checkAuth();
-  }, [userType, navigate]);
+    if (session) {
+      checkAuth();
+    }
+  }, [userType, navigate, session]);
 
   if (isLoading) {
     return (
@@ -108,6 +96,10 @@ const Index = () => {
         </div>
       </div>
     );
+  }
+
+  if (!session) {
+    return null;
   }
 
   return (
