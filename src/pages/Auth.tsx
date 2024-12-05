@@ -66,7 +66,7 @@ const Auth = () => {
                       buttonBorderWidth: '1px',
                       inputBorderWidth: '1px',
                     },
-                    borderRadius: {
+                    radii: {
                       borderRadiusButton: '0.5rem',
                       buttonBorderRadius: '0.5rem',
                       inputBorderRadius: '0.5rem',
