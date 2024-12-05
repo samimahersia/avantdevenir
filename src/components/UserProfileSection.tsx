@@ -60,22 +60,12 @@ export function UserProfileSection() {
     
     setIsLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        console.log("No active session found, redirecting to auth...");
-        navigate("/auth");
-        return;
-      }
-
-      console.log("Active session found, attempting to sign out...");
       const { error } = await supabase.auth.signOut();
       
       if (error) {
         console.error("Logout error:", error);
         toast.error(t("auth.logout_error"));
       } else {
-        console.log("Sign out successful");
         toast.success(t("auth.logout_success"));
       }
     } catch (error) {
