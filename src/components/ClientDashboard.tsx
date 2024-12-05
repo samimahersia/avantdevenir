@@ -18,9 +18,15 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
   const { data: appointments = [], refetch } = useQuery({
     queryKey: ["appointments", selectedConsulate],
     queryFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session?.user.id) {
+        throw new Error("User not authenticated");
+      }
+
       const query = supabase
         .from("appointments")
         .select("*, services(name)")
+        .eq("client_id", session.session.user.id)
         .order("date", { ascending: true });
 
       if (selectedConsulate) {
@@ -29,10 +35,13 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
       
       const { data, error } = await query;
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching appointments:", error);
+        throw error;
+      }
       return data;
     },
-    enabled: !!selectedConsulate
+    enabled: true
   });
 
   const getStatusBadge = (status: string) => {
