@@ -20,7 +20,7 @@ export function UserProfileSection() {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
-  const { data: profile } = useQuery({
+  const { data: profile, isError } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
       const { data: session } = await supabase.auth.getSession();
@@ -34,14 +34,23 @@ export function UserProfileSection() {
         .eq("id", session.session.user.id)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        if (error.code === "PGRST116") {
+          await supabase.auth.signOut();
+          navigate("/auth");
+          throw new Error("Session expired");
+        }
+        throw error;
+      }
       return profile as Profile;
     },
+    retry: false,
     meta: {
       onError: (error: Error) => {
         console.error('Error fetching profile:', error);
         toast.error("Erreur lors du chargement du profil");
         setIsLoading(false);
+        navigate("/auth");
       }
     }
   });
@@ -70,7 +79,7 @@ export function UserProfileSection() {
     }
   };
 
-  if (!profile) {
+  if (isError || !profile) {
     return (
       <div className="flex justify-end">
         <Button
