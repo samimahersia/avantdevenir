@@ -341,6 +341,7 @@ export type Database = {
       }
       recurring_availabilities: {
         Row: {
+          consulate_id: string | null
           created_at: string
           day_of_week: number
           end_hour: number
@@ -349,6 +350,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          consulate_id?: string | null
           created_at?: string
           day_of_week: number
           end_hour: number
@@ -357,6 +359,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          consulate_id?: string | null
           created_at?: string
           day_of_week?: number
           end_hour?: number
@@ -364,7 +367,15 @@ export type Database = {
           start_hour?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "recurring_availabilities_consulate_id_fkey"
+            columns: ["consulate_id"]
+            isOneToOne: false
+            referencedRelation: "consulates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       services: {
         Row: {

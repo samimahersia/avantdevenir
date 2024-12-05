@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { ConsulateSelector } from "./ConsulateSelector";
 
 const DAYS_OF_WEEK = [
   "Lundi",
@@ -18,6 +19,7 @@ const DAYS_OF_WEEK = [
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
 const RecurringAvailabilityForm = () => {
+  const [selectedConsulate, setSelectedConsulate] = useState<string>("");
   const [availabilities, setAvailabilities] = useState<{
     [key: number]: { startHour: number; endHour: number };
   }>({});
@@ -37,19 +39,35 @@ const RecurringAvailabilityForm = () => {
   };
 
   const handleSave = async (dayIndex: number) => {
+    if (!selectedConsulate) {
+      toast.error("Veuillez sélectionner un consulat");
+      return;
+    }
+
     const availability = availabilities[dayIndex];
     if (!availability) return;
 
     try {
+      console.log("Saving availability:", {
+        dayIndex,
+        consulateId: selectedConsulate,
+        availability,
+      });
+
       const { error } = await supabase.from("recurring_availabilities").upsert({
         day_of_week: dayIndex,
         start_hour: availability.startHour,
         end_hour: availability.endHour,
+        consulate_id: selectedConsulate,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error saving availability:", error);
+        throw error;
+      }
       toast.success("Disponibilités mises à jour");
     } catch (error) {
+      console.error("Error:", error);
       toast.error("Erreur lors de la mise à jour des disponibilités");
     }
   };
@@ -60,6 +78,14 @@ const RecurringAvailabilityForm = () => {
         <CardTitle>Gestion des disponibilités récurrentes</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        <div className="mb-6">
+          <Label>Consulat</Label>
+          <ConsulateSelector
+            value={selectedConsulate}
+            onValueChange={setSelectedConsulate}
+          />
+        </div>
+
         {DAYS_OF_WEEK.map((day, index) => (
           <div key={day} className="space-y-4 p-4 border rounded-lg">
             <h3 className="font-medium text-lg">{day}</h3>
@@ -106,6 +132,7 @@ const RecurringAvailabilityForm = () => {
             <Button
               onClick={() => handleSave(index)}
               disabled={
+                !selectedConsulate ||
                 !availabilities[index]?.startHour ||
                 !availabilities[index]?.endHour
               }
