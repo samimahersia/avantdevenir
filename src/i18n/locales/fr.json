@@ -1,7 +1,9 @@
 {
   "auth": {
     "login": "Connexion",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "logout_success": "Déconnexion réussie",
+    "logout_error": "Erreur lors de la déconnexion"
   },
   "dashboard": {
     "selectPrompt": "Veuillez sélectionner un organisme et un service pour prendre rendez-vous",

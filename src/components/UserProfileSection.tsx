@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface Profile {
   id: string;
@@ -17,6 +18,7 @@ interface Profile {
 export function UserProfileSection() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],
@@ -48,11 +50,9 @@ export function UserProfileSection() {
     try {
       setIsLoading(true);
       
-      // First check if we have an active session
       const { data: sessionData } = await supabase.auth.getSession();
       
       if (!sessionData.session) {
-        // If no session exists, just navigate to auth page
         navigate("/auth");
         return;
       }
@@ -60,11 +60,11 @@ export function UserProfileSection() {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      toast.success("Déconnexion réussie");
+      toast.success(t("auth.logout_success"));
       navigate("/auth");
     } catch (error) {
       console.error("Error logging out:", error);
-      toast.error("Erreur lors de la déconnexion");
+      toast.error(t("auth.logout_error"));
     } finally {
       setIsLoading(false);
     }
@@ -75,11 +75,11 @@ export function UserProfileSection() {
       <div className="flex justify-end">
         <Button
           variant="outline"
-          className="gap-2"
+          className="gap-2 text-white"
           onClick={() => navigate("/auth")}
         >
           <LogOut className="h-4 w-4" />
-          Connexion
+          {t("auth.login")}
         </Button>
       </div>
     );
@@ -88,18 +88,18 @@ export function UserProfileSection() {
   return (
     <div className="flex items-center justify-end gap-4">
       <div className="flex items-center gap-4">
-        <span className="text-sm text-red-600 font-medium">
+        <span className="text-sm text-white font-medium">
           {profile.email}
         </span>
         <Button
           variant="ghost"
           size="sm"
-          className="gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+          className="gap-2 text-white hover:text-white/90 hover:bg-white/10"
           onClick={handleLogout}
           disabled={isLoading}
         >
           <LogOut className="h-4 w-4" />
-          Déconnexion
+          {t("auth.logout")}
         </Button>
       </div>
     </div>

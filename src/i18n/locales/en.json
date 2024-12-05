@@ -1,7 +1,9 @@
 {
   "auth": {
     "login": "Login",
-    "logout": "Logout"
+    "logout": "Logout",
+    "logout_success": "Successfully logged out",
+    "logout_error": "Error logging out"
   },
   "dashboard": {
     "selectPrompt": "Please select an organization and a service to make an appointment",
