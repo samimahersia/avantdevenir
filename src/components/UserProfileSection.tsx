@@ -59,37 +59,17 @@ export function UserProfileSection() {
     try {
       setIsLoading(true);
       
-      // First check if we have a session
-      const { data: { session } } = await supabase.auth.getSession();
+      // Attempt to sign out without checking session first
+      await supabase.auth.signOut();
       
-      if (!session) {
-        // If no session, just navigate to auth
-        navigate("/auth");
-        return;
-      }
-
-      // Try to sign out
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error("Logout error:", error);
-        // If error is session related, just navigate
-        if (error.status === 403) {
-          navigate("/auth");
-          return;
-        }
-        // For other errors, show error message
-        toast.error("Erreur lors de la déconnexion");
-        return;
-      }
-
-      // On successful logout
+      // Always navigate to auth and show success message
       toast.success(t("auth.logout_success"));
       navigate("/auth");
       
     } catch (error) {
       console.error("Error during logout:", error);
-      toast.error("Erreur lors de la déconnexion");
+      // Still navigate to auth even if there's an error
+      navigate("/auth");
     } finally {
       setIsLoading(false);
     }
