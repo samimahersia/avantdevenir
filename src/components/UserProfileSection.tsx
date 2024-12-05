@@ -59,25 +59,21 @@ export function UserProfileSection() {
     try {
       setIsLoading(true);
       
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        console.log("No active session found, redirecting to auth");
-        navigate("/auth");
-        return;
-      }
-
+      // Try to sign out regardless of session state
       const { error } = await supabase.auth.signOut();
+      
+      // If we get a 403 or any error, we still want to clear local state and redirect
       if (error) {
-        console.error("Logout error:", error);
-        toast.error(t("auth.logout_error"));
-        return;
+        console.log("Logout completed with warning:", error.message);
       }
       
+      // Always redirect to auth and show success message
       toast.success(t("auth.logout_success"));
       navigate("/auth");
     } catch (error) {
       console.error("Error during logout:", error);
-      toast.error(t("auth.logout_error"));
+      // Even if there's an error, redirect to auth page
+      navigate("/auth");
     } finally {
       setIsLoading(false);
     }
