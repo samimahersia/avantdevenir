@@ -58,31 +58,16 @@ export function UserProfileSection() {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
+      navigate("/auth");
       
-      // Vérifier d'abord si une session existe
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error("Session error:", sessionError);
-        navigate("/auth");
-        return;
-      }
-
-      if (!sessionData.session) {
-        console.log("No active session found, redirecting to auth");
-        navigate("/auth");
-        return;
-      }
-
-      // Si nous avons une session, procéder à la déconnexion
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error("Logout error:", error);
-        throw error;
+        toast.error(t("auth.logout_error"));
+        return;
       }
       
       toast.success(t("auth.logout_success"));
-      navigate("/auth");
     } catch (error) {
       console.error("Error during logout:", error);
       toast.error(t("auth.logout_error"));
