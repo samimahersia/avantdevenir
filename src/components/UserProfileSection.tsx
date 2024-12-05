@@ -47,11 +47,11 @@ export function UserProfileSection() {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
-      navigate("/auth");
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
       toast.success("Déconnexion réussie");
+      navigate("/auth");
     } catch (error) {
       console.error("Error logging out:", error);
       toast.error("Erreur lors de la déconnexion");
