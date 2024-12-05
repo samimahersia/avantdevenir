@@ -23,6 +23,42 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("appointments");
 
   useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          navigate("/auth");
+          return;
+        }
+
+        if (!session) {
+          console.log("No active session found, redirecting to auth");
+          navigate("/auth");
+          return;
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+        navigate("/auth");
+      }
+    };
+
+    checkSession();
+
+    // Écouter les changements d'état d'authentification
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate("/auth");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  useEffect(() => {
     const checkAuth = async () => {
       try {
         setIsLoading(true);
