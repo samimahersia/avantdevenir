@@ -1,13 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import AppointmentForm from "./AppointmentForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format, isBefore, addHours } from "date-fns";
+import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
 interface ClientDashboardProps {
   selectedConsulate?: string;
@@ -45,32 +43,6 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
     },
     enabled: true
   });
-
-  const handleCancelAppointment = async (appointmentId: string, appointmentDate: string) => {
-    const now = new Date();
-    const appointmentTime = new Date(appointmentDate);
-    
-    // Vérifier si le rendez-vous est dans plus de 24h
-    if (isBefore(appointmentTime, addHours(now, 24))) {
-      toast.error(t('appointments.cancelError24h'));
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from("appointments")
-        .update({ status: "refuse" })
-        .eq("id", appointmentId);
-
-      if (error) throw error;
-
-      toast.success(t('appointments.cancelSuccess'));
-      refetch();
-    } catch (error) {
-      console.error("Error canceling appointment:", error);
-      toast.error(t('appointments.cancelError'));
-    }
-  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -135,19 +107,7 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
                     {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
                   </p>
                 </div>
-                <div className="flex flex-col space-y-2">
-                  {getStatusBadge(appointment.status)}
-                  {appointment.status !== "refuse" && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleCancelAppointment(appointment.id, appointment.date)}
-                      className="mt-2"
-                    >
-                      {t('appointments.cancel')}
-                    </Button>
-                  )}
-                </div>
+                {getStatusBadge(appointment.status)}
               </div>
             ))}
             {appointments.length === 0 && (
