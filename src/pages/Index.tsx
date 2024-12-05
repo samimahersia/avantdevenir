@@ -1,22 +1,17 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Menu } from "lucide-react";
-import ClientDashboard from "@/components/ClientDashboard";
-import AdminDashboard from "@/components/AdminDashboard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfileSection } from "@/components/UserProfileSection";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import ServiceSelector from "@/components/appointment/ServiceSelector";
-import { ConsulateSelector } from "@/components/ConsulateSelector";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { PageHeader } from "@/components/PageHeader";
 import { DashboardContent } from "@/components/DashboardContent";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -83,8 +78,17 @@ const Index = () => {
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-[100vw] mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <MobileNavigation userType={userType} setUserType={setUserType} userRole={userRole} activeTab={activeTab} setActiveTab={setActiveTab} />
-          <UserProfileSection />
+          <MobileNavigation 
+            userType={userType} 
+            setUserType={setUserType} 
+            userRole={userRole} 
+            activeTab={activeTab} 
+            setActiveTab={setActiveTab} 
+          />
+          <div className="flex items-center gap-4">
+            <LanguageSelector />
+            <UserProfileSection />
+          </div>
         </div>
 
         <Card className="shadow-lg">

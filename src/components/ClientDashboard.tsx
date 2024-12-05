@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 interface ClientDashboardProps {
   selectedConsulate?: string;
@@ -12,6 +13,8 @@ interface ClientDashboardProps {
 }
 
 const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboardProps) => {
+  const { t } = useTranslation();
+  
   const { data: appointments = [], refetch } = useQuery({
     queryKey: ["appointments", selectedConsulate],
     queryFn: async () => {
@@ -35,11 +38,11 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "en_attente":
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100">En attente</Badge>;
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100">{t('status.pending')}</Badge>;
       case "approuve":
-        return <Badge variant="success" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Approuvé</Badge>;
+        return <Badge variant="success" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">{t('status.approved')}</Badge>;
       case "refuse":
-        return <Badge variant="destructive" className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100">Refusé</Badge>;
+        return <Badge variant="destructive" className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100">{t('status.rejected')}</Badge>;
       default:
         return null;
     }
@@ -50,7 +53,7 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
       <Card className="border-none shadow-none">
         <CardContent className="text-center py-8">
           <p className="text-muted-foreground">
-            Veuillez sélectionner un organisme et un service pour prendre rendez-vous.
+            {t('dashboard.selectPrompt')}
           </p>
         </CardContent>
       </Card>
@@ -61,7 +64,7 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
     <div className="space-y-8">
       <Card className="border-none shadow-none">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold">Nouveau Rendez-vous</CardTitle>
+          <CardTitle className="text-2xl font-semibold">{t('dashboard.newAppointment')}</CardTitle>
         </CardHeader>
         <CardContent>
           <AppointmentForm 
@@ -74,7 +77,7 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
 
       <Card className="border-none shadow-none">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold">Mes Rendez-vous</CardTitle>
+          <CardTitle className="text-2xl font-semibold">{t('dashboard.myAppointments')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -86,7 +89,7 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
                 <div className="space-y-2 mb-4 sm:mb-0">
                   <h3 className="text-lg font-medium">{appointment.title}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Service : {appointment.services?.name}
+                    {t('dashboard.service')} : {appointment.services?.name}
                   </p>
                   {appointment.description && (
                     <p className="text-sm text-muted-foreground">{appointment.description}</p>
@@ -100,7 +103,7 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
             ))}
             {appointments.length === 0 && (
               <p className="text-center text-muted-foreground py-4">
-                Vous n'avez pas encore de rendez-vous.
+                {t('dashboard.noAppointments')}
               </p>
             )}
           </div>

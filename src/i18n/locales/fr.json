@@ -1,0 +1,18 @@
+{
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion"
+  },
+  "dashboard": {
+    "selectPrompt": "Veuillez sélectionner un organisme et un service pour prendre rendez-vous",
+    "newAppointment": "Nouveau Rendez-vous",
+    "myAppointments": "Mes Rendez-vous",
+    "noAppointments": "Vous n'avez pas encore de rendez-vous",
+    "service": "Service"
+  },
+  "status": {
+    "pending": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Refusé"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "auth": {
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "selectPrompt": "Please select an organization and a service to make an appointment",
+    "newAppointment": "New Appointment",
+    "myAppointments": "My Appointments",
+    "noAppointments": "You don't have any appointments yet",
+    "service": "Service"
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  }
+}
