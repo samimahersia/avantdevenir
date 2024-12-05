@@ -47,6 +47,16 @@ export function UserProfileSection() {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
+      
+      // First check if we have an active session
+      const { data: sessionData } = await supabase.auth.getSession();
+      
+      if (!sessionData.session) {
+        // If no session exists, just navigate to auth page
+        navigate("/auth");
+        return;
+      }
+
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
