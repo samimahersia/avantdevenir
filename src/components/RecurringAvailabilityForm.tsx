@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { ConsulateSelector } from "./ConsulateSelector";
+import { OrganismeeSelector } from "./OrganismeeSelector";
 
 const DAYS_OF_WEEK = [
   "Lundi",
@@ -19,7 +19,7 @@ const DAYS_OF_WEEK = [
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
 const RecurringAvailabilityForm = () => {
-  const [selectedConsulate, setSelectedConsulate] = useState<string>("");
+  const [selectedOrganismee, setSelectedOrganismee] = useState<string>("");
   const [availabilities, setAvailabilities] = useState<{
     [key: number]: { startHour: number; endHour: number };
   }>({});
@@ -39,8 +39,8 @@ const RecurringAvailabilityForm = () => {
   };
 
   const handleSave = async (dayIndex: number) => {
-    if (!selectedConsulate) {
-      toast.error("Veuillez sélectionner un consulat");
+    if (!selectedOrganismee) {
+      toast.error("Veuillez sélectionner un organisme");
       return;
     }
 
@@ -50,7 +50,7 @@ const RecurringAvailabilityForm = () => {
     try {
       console.log("Saving availability:", {
         dayIndex,
-        consulateId: selectedConsulate,
+        consulateId: selectedOrganismee,
         availability,
       });
 
@@ -58,7 +58,7 @@ const RecurringAvailabilityForm = () => {
         day_of_week: dayIndex,
         start_hour: availability.startHour,
         end_hour: availability.endHour,
-        consulate_id: selectedConsulate,
+        consulate_id: selectedOrganismee,
       });
 
       if (error) {
@@ -79,10 +79,10 @@ const RecurringAvailabilityForm = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="mb-6">
-          <Label>Consulat</Label>
-          <ConsulateSelector
-            value={selectedConsulate}
-            onValueChange={setSelectedConsulate}
+          <Label>Organisme</Label>
+          <OrganismeeSelector
+            value={selectedOrganismee}
+            onValueChange={setSelectedOrganismee}
           />
         </div>
 
@@ -132,7 +132,7 @@ const RecurringAvailabilityForm = () => {
             <Button
               onClick={() => handleSave(index)}
               disabled={
-                !selectedConsulate ||
+                !selectedOrganismee ||
                 !availabilities[index]?.startHour ||
                 !availabilities[index]?.endHour
               }

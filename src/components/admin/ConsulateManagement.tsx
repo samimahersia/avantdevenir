@@ -110,10 +110,10 @@ const ConsulateManagement = () => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Gestion des Consulats</CardTitle>
+        <CardTitle>Gestion des Organismes</CardTitle>
         <Button onClick={() => handleOpenDialog()}>
           <Plus className="w-4 h-4 mr-2" />
-          Ajouter un consulat
+          Ajouter un organisme
         </Button>
       </CardHeader>
       <CardContent>
@@ -155,7 +155,7 @@ const ConsulateManagement = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingConsulate ? "Modifier le consulat" : "Ajouter un consulat"}
+              {editingConsulate ? "Modifier l'organisme" : "Ajouter un organisme"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">

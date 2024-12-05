@@ -42,7 +42,7 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
             <TabsTrigger value="calendar">Calendrier</TabsTrigger>
             <TabsTrigger value="stats">Statistiques</TabsTrigger>
             <TabsTrigger value="users">Utilisateurs</TabsTrigger>
-            <TabsTrigger value="consulates">Consulats</TabsTrigger>
+            <TabsTrigger value="consulates">Organismes</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="settings">Paramètres</TabsTrigger>
             <TabsTrigger value="support">Support</TabsTrigger>

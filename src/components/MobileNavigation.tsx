@@ -61,7 +61,7 @@ export const MobileNavigation = ({
                         Utilisateurs
                       </TabsTrigger>
                       <TabsTrigger value="consulates" className="w-full justify-start">
-                        Consulats
+                        Organismes
                       </TabsTrigger>
                       <TabsTrigger value="services" className="w-full justify-start">
                         Services
