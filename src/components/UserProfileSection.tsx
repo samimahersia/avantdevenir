@@ -59,20 +59,32 @@ export function UserProfileSection() {
     try {
       setIsLoading(true);
       
-      const { data: sessionData } = await supabase.auth.getSession();
+      // Vérifier d'abord si une session existe
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       
-      if (!sessionData.session) {
+      if (sessionError) {
+        console.error("Session error:", sessionError);
         navigate("/auth");
         return;
       }
 
+      if (!sessionData.session) {
+        console.log("No active session found, redirecting to auth");
+        navigate("/auth");
+        return;
+      }
+
+      // Si nous avons une session, procéder à la déconnexion
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        console.error("Logout error:", error);
+        throw error;
+      }
       
       toast.success(t("auth.logout_success"));
       navigate("/auth");
     } catch (error) {
-      console.error("Error logging out:", error);
+      console.error("Error during logout:", error);
       toast.error(t("auth.logout_error"));
     } finally {
       setIsLoading(false);
