@@ -56,13 +56,11 @@ const TimeSlotSelector = ({
         return [];
       }
 
-      if (!recurringAvailabilities?.length) {
-        console.log("No recurring availabilities found for this day");
-        return [];
-      }
+      // Ne garder que les créneaux après 9h00
+      const filteredTimeSlots = timeSlots.filter(slot => slot.hour >= 9);
 
       const results = await Promise.all(
-        timeSlots.map(async (slot) => {
+        filteredTimeSlots.map(async (slot) => {
           const slotDate = new Date(selectedDate);
           slotDate.setHours(slot.hour, slot.minute);
 
