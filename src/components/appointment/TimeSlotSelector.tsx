@@ -44,6 +44,8 @@ const TimeSlotSelector = ({
   const dayOfWeek = selectedDate.getDay();
   const adjustedDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
 
+  console.log("Checking availability for day:", adjustedDayOfWeek, "consulate:", consulateId);
+
   const { data: availabilities = [], isLoading } = useQuery({
     queryKey: ["recurring-availabilities", consulateId, adjustedDayOfWeek],
     queryFn: async () => {
@@ -57,12 +59,13 @@ const TimeSlotSelector = ({
 
       if (error) {
         console.error("Error fetching availabilities:", error);
-        return [];
+        throw error;
       }
 
       console.log("Fetched availabilities:", data);
       return data || [];
-    }
+    },
+    enabled: !!consulateId && !!selectedDate
   });
 
   const isTimeSlotAvailable = (slot: TimeSlot) => {
