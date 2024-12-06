@@ -1,6 +1,7 @@
 import { Label } from "@/components/ui/label";
 
-const HOURS = Array.from({ length: 24 }, (_, i) => i);
+// Generate hours from 9 to 14 only
+const HOURS = Array.from({ length: 15 }, (_, i) => i + 9);
 
 interface TimeRangeSelectorProps {
   startHour: number | undefined;
@@ -27,7 +28,7 @@ export const TimeRangeSelector = ({
           <option value="">Sélectionner une heure</option>
           {HOURS.map((hour) => (
             <option key={hour} value={hour}>
-              {hour}:00
+              {hour.toString().padStart(2, '0')}:00
             </option>
           ))}
         </select>
@@ -46,7 +47,7 @@ export const TimeRangeSelector = ({
               value={hour}
               disabled={hour <= (startHour ?? -1)}
             >
-              {hour}:00
+              {hour.toString().padStart(2, '0')}:00
             </option>
           ))}
         </select>
