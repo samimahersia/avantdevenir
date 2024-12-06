@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { OrganismeeSelector } from "./OrganismeeSelector";
+import { useQuery } from "@tanstack/react-query";
 
 const DAYS_OF_WEEK = [
   "Lundi",
@@ -23,6 +24,32 @@ const RecurringAvailabilityForm = () => {
   const [availabilities, setAvailabilities] = useState<{
     [key: number]: { startHour: number; endHour: number };
   }>({});
+
+  const { data: existingAvailabilities = [], refetch } = useQuery({
+    queryKey: ["recurring-availabilities", selectedOrganismee],
+    queryFn: async () => {
+      if (!selectedOrganismee) return [];
+      
+      const { data, error } = await supabase
+        .from("recurring_availabilities")
+        .select("*")
+        .eq("consulate_id", selectedOrganismee);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!selectedOrganismee,
+    onSuccess: (data) => {
+      const newAvailabilities = data.reduce((acc, curr) => ({
+        ...acc,
+        [curr.day_of_week]: {
+          startHour: curr.start_hour,
+          endHour: curr.end_hour
+        }
+      }), {});
+      setAvailabilities(newAvailabilities);
+    }
+  });
 
   const handleHourChange = (
     dayIndex: number,
@@ -48,24 +75,22 @@ const RecurringAvailabilityForm = () => {
     if (!availability) return;
 
     try {
-      console.log("Saving availability:", {
-        dayIndex,
-        consulateId: selectedOrganismee,
-        availability,
-      });
+      const existingAvailability = existingAvailabilities.find(
+        a => a.day_of_week === dayIndex
+      );
 
       const { error } = await supabase.from("recurring_availabilities").upsert({
+        id: existingAvailability?.id,
         day_of_week: dayIndex,
         start_hour: availability.startHour,
         end_hour: availability.endHour,
         consulate_id: selectedOrganismee,
       });
 
-      if (error) {
-        console.error("Error saving availability:", error);
-        throw error;
-      }
+      if (error) throw error;
+      
       toast.success("Disponibilités mises à jour");
+      refetch();
     } catch (error) {
       console.error("Error:", error);
       toast.error("Erreur lors de la mise à jour des disponibilités");
