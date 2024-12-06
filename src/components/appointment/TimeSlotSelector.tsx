@@ -28,10 +28,16 @@ const TimeSlotSelector = ({
     queryFn: async () => {
       if (!selectedDate || !consulateId || !serviceId) return [];
 
+      console.log("Fetching availabilities for consulate:", consulateId);
+      
+      // Get the day of week (0-6, Sunday is 0)
+      const dayOfWeek = selectedDate.getDay();
+      
       console.log("Checking availability for:", {
         date: selectedDate,
         consulateId,
-        serviceId
+        serviceId,
+        dayOfWeek
       });
 
       // Vérifier les disponibilités récurrentes d'abord
@@ -39,9 +45,9 @@ const TimeSlotSelector = ({
         .from("recurring_availabilities")
         .select("*")
         .eq("consulate_id", consulateId)
-        .eq("day_of_week", selectedDate.getDay());
+        .eq("day_of_week", dayOfWeek);
 
-      console.log("Recurring availabilities:", recurringAvailabilities);
+      console.log("Recurring availabilities found:", recurringAvailabilities);
 
       if (recurringError) {
         console.error("Error fetching recurring availabilities:", recurringError);
