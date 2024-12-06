@@ -36,7 +36,7 @@ const TimeSlotSelector = ({
       <div className="space-y-2">
         <Label>Heure du rendez-vous *</Label>
         <p className="text-center text-muted-foreground">
-          Veuillez d'abord sélectionner un organisme
+          Veuillez d'abord sélectionner un consulat
         </p>
       </div>
     );
@@ -55,7 +55,7 @@ const TimeSlotSelector = ({
   const { data: availabilities = [], isLoading } = useQuery({
     queryKey: ["recurring-availabilities", consulateId, dayOfWeek, formattedDate],
     queryFn: async () => {
-      console.log("Fetching availabilities...");
+      console.log("Fetching availabilities for consulate:", consulateId);
       
       const { data: recurringAvailabilities, error: recurringError } = await supabase
         .from("recurring_availabilities")
@@ -67,6 +67,8 @@ const TimeSlotSelector = ({
         console.error("Error fetching recurring availabilities:", recurringError);
         throw recurringError;
       }
+
+      console.log("Recurring availabilities found:", recurringAvailabilities);
 
       // Vérifier s'il y a des jours fériés
       const { data: holidays, error: holidayError } = await supabase
@@ -86,7 +88,6 @@ const TimeSlotSelector = ({
         return [];
       }
 
-      console.log("Recurring availabilities found:", recurringAvailabilities);
       return recurringAvailabilities || [];
     }
   });

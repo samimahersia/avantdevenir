@@ -40,7 +40,7 @@ export const ConsulateSelector = ({ value, onValueChange }: ConsulateSelectorPro
   return (
     <Select value={value} onValueChange={onValueChange}>
       <SelectTrigger className="bg-[#D3E4FD] border-[#D3E4FD] hover:bg-[#C3D4ED]">
-        <SelectValue placeholder="Sélectionnez un organisme" />
+        <SelectValue placeholder="Sélectionnez un consulat" />
       </SelectTrigger>
       <SelectContent>
         {isLoading ? (
