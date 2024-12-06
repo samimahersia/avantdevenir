@@ -56,24 +56,23 @@ export function UserProfileSection() {
   });
 
   const handleLogout = async () => {
-    if (isLoading) return;
-    
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const { error } = await supabase.auth.signOut();
       
       if (error) {
         console.error("Logout error:", error);
-        toast.error(t("auth.logout_error"));
-      } else {
-        toast.success(t("auth.logout_success"));
+        toast.error("Erreur lors de la déconnexion");
+        return;
       }
+      
+      toast.success("Déconnexion réussie");
+      navigate("/auth");
     } catch (error) {
       console.error("Logout error:", error);
-      toast.error(t("auth.logout_error"));
+      toast.error("Erreur lors de la déconnexion");
     } finally {
       setIsLoading(false);
-      navigate("/auth");
     }
   };
 
@@ -106,7 +105,7 @@ export function UserProfileSection() {
           disabled={isLoading}
         >
           <LogOut className="h-4 w-4" />
-          {t("auth.logout")}
+          {isLoading ? "Déconnexion..." : "Déconnexion"}
         </Button>
       </div>
     </div>
