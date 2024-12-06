@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,6 +37,7 @@ const RecurringAvailabilityForm = () => {
 
       if (error) {
         console.error("Error fetching availabilities:", error);
+        toast.error("Erreur lors du chargement des disponibilités");
         throw error;
       }
 
@@ -61,6 +61,11 @@ const RecurringAvailabilityForm = () => {
     }
   });
 
+  const handleOrganismeeChange = (value: string) => {
+    setSelectedOrganismee(value);
+    setAvailabilities({}); // Reset availabilities when changing organisme
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -71,7 +76,7 @@ const RecurringAvailabilityForm = () => {
           <Label>Organisme</Label>
           <OrganismeeSelector
             value={selectedOrganismee}
-            onValueChange={setSelectedOrganismee}
+            onValueChange={handleOrganismeeChange}
           />
         </div>
 
