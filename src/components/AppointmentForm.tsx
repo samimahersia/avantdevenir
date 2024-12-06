@@ -48,6 +48,7 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
         return;
       }
 
+      // Vérification de la disponibilité
       const { data: availabilityCheck, error: availabilityError } = await supabase
         .rpc('check_appointment_availability', {
           p_appointment_date: appointmentDate.toISOString(),
@@ -73,7 +74,8 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
         return;
       }
 
-      const { data: appointment, error: appointmentError } = await supabase
+      // Création du rendez-vous
+      const { error: appointmentError } = await supabase
         .from("appointments")
         .insert({
           title,
@@ -83,31 +85,12 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
           consulate_id: selectedConsulate,
           service_id: selectedService,
           status: 'en_attente'
-        })
-        .select()
-        .single();
+        });
 
       if (appointmentError) {
         toast.error("Une erreur est survenue lors de la création du rendez-vous");
         console.error("Appointment creation error:", appointmentError);
         return;
-      }
-
-      // Send notification
-      const { error: notificationError } = await supabase.functions.invoke("send-notification", {
-        body: {
-          userId: userData.user.id,
-          type: "appointment_created",
-          title: "Nouveau rendez-vous créé",
-          content: `Votre demande de rendez-vous pour le ${format(appointmentDate, "d MMMM yyyy 'à' HH:mm", { locale: fr })} a été enregistrée. Vous recevrez une notification lors de sa validation.`,
-          metadata: {
-            appointmentId: appointment.id,
-          },
-        },
-      });
-
-      if (notificationError) {
-        console.error("Notification error:", notificationError);
       }
 
       toast.success("Rendez-vous demandé avec succès");

@@ -2,11 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-
-interface TimeSlot {
-  hour: number;
-  minute: number;
-}
+import { TimeSlot } from "@/utils/appointment";
 
 interface TimeSlotSelectorProps {
   selectedTime?: TimeSlot;
@@ -23,7 +19,7 @@ const TimeSlotSelector = ({
   selectedDate,
   consulateId 
 }: TimeSlotSelectorProps) => {
-  // If no date is selected, show message
+  // Si aucune date n'est sélectionnée, afficher un message
   if (!selectedDate) {
     return (
       <div className="space-y-2">
@@ -36,7 +32,7 @@ const TimeSlotSelector = ({
   }
 
   const dayOfWeek = selectedDate.getDay();
-  // Convert Sunday (0) to 7 to match our database convention
+  // Convertir dimanche (0) en 7 pour correspondre à notre convention de base de données
   const adjustedDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
 
   const { data: availabilities = [] } = useQuery({
