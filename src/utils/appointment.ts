@@ -5,10 +5,10 @@ export interface TimeSlot {
   minute: number;
 }
 
-// Generate time slots from 8h to 16h with 15min intervals
+// Generate time slots from 9h to 14h with 15min intervals
 export const generateTimeSlots = () => {
   const slots: TimeSlot[] = [];
-  for (let hour = 8; hour < 16; hour++) {
+  for (let hour = 9; hour < 14; hour++) {
     for (let minute = 0; minute < 60; minute += 15) {
       slots.push({ hour, minute });
     }
@@ -22,8 +22,8 @@ export const getAppointmentDate = (date: Date, selectedTime: TimeSlot) => {
   return setMinutes(setHours(date, selectedTime.hour), selectedTime.minute);
 };
 
-// Disable Sundays (0) and Saturdays (6)
+// Disable Mondays (1), Sundays (0) and Saturdays (6)
 export const disabledDays = {
   before: startOfToday(),
-  daysOfWeek: [0, 6], // 0 is Sunday, 6 is Saturday
+  daysOfWeek: [0, 1, 6], // 0 is Sunday, 1 is Monday, 6 is Saturday
 };
