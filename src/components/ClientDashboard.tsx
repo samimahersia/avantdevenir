@@ -1,11 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import AppointmentForm from "./AppointmentForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { Pencil, X } from "lucide-react";
 
 interface ClientDashboardProps {
   selectedConsulate?: string;
@@ -44,6 +47,27 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
     enabled: true
   });
 
+  const handleCancel = async (appointmentId: string) => {
+    try {
+      const { error } = await supabase
+        .from("appointments")
+        .update({ status: "refuse" })
+        .eq("id", appointmentId);
+
+      if (error) {
+        console.error("Error canceling appointment:", error);
+        toast.error("Erreur lors de l'annulation du rendez-vous");
+        return;
+      }
+
+      toast.success("Rendez-vous annulé avec succès");
+      refetch();
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Une erreur est survenue");
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "en_attente":
@@ -55,6 +79,10 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
       default:
         return null;
     }
+  };
+
+  const canModifyAppointment = (appointment: any) => {
+    return appointment.status === "en_attente" && new Date(appointment.date) > new Date();
   };
 
   if (!selectedConsulate || !selectedService) {
@@ -107,7 +135,22 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
                     {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
                   </p>
                 </div>
-                {getStatusBadge(appointment.status)}
+                <div className="flex flex-col sm:flex-row items-center gap-2">
+                  {getStatusBadge(appointment.status)}
+                  {canModifyAppointment(appointment) && (
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700"
+                        onClick={() => handleCancel(appointment.id)}
+                      >
+                        <X className="h-4 w-4" />
+                        <span className="sr-only">Annuler</span>
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
             {appointments.length === 0 && (
