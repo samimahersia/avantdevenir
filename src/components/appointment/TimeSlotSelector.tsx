@@ -43,7 +43,7 @@ const TimeSlotSelector = ({
   }
 
   // Get day of week (1-7, Monday-Sunday)
-  const dayOfWeek = selectedDate.getDay() || 7; // Convert Sunday (0) to 7
+  const dayOfWeek = selectedDate.getDay() === 0 ? 7 : selectedDate.getDay();
   const formattedDate = format(selectedDate, 'yyyy-MM-dd');
 
   console.log("Checking availability for:", {
