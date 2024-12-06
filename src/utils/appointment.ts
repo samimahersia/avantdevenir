@@ -22,6 +22,8 @@ export const getAppointmentDate = (date: Date, selectedTime: TimeSlot) => {
   return setMinutes(setHours(date, selectedTime.hour), selectedTime.minute);
 };
 
+// Disable Sundays (0) and Mondays (1)
 export const disabledDays = {
   before: startOfToday(),
+  daysOfWeek: [0, 1], // 0 is Sunday, 1 is Monday
 };
