@@ -40,7 +40,13 @@ export const DayAvailabilityForm = ({
       return;
     }
 
+    if (!selectedOrganismee) {
+      toast.error("Veuillez sélectionner un organisme");
+      return;
+    }
+
     try {
+      console.log("Saving availability for day", dayIndex, ":", availability);
       await handleSave(availability);
       toast.success(`Disponibilités enregistrées pour ${day}`);
     } catch (error) {

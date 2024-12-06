@@ -65,6 +65,11 @@ const TimeSlotSelector = ({
 
       console.log("Fetched availabilities:", data);
       return data || [];
+    },
+    meta: {
+      onError: (error) => {
+        console.error("Error in availability query:", error);
+      }
     }
   });
 
