@@ -23,33 +23,51 @@ export const useAvailability = ({
         availability
       });
 
-      // Supprimer les disponibilités existantes pour ce jour et cet organisme
-      const { error: deleteError } = await supabase
+      // Vérifier si une disponibilité existe déjà pour ce jour et cet organisme
+      const { data: existingAvailability, error: fetchError } = await supabase
         .from("recurring_availabilities")
-        .delete()
+        .select("*")
         .eq("consulate_id", selectedOrganismee)
-        .eq("day_of_week", dayIndex);
+        .eq("day_of_week", dayIndex)
+        .single();
 
-      if (deleteError) {
-        console.error("Error deleting existing availabilities:", deleteError);
-        throw deleteError;
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = not found
+        console.error("Error fetching existing availability:", fetchError);
+        throw fetchError;
       }
 
-      // Insérer la nouvelle disponibilité
-      const { error: insertError } = await supabase
-        .from("recurring_availabilities")
-        .insert([
-          {
-            day_of_week: dayIndex,
+      if (existingAvailability) {
+        // Mettre à jour la disponibilité existante
+        const { error: updateError } = await supabase
+          .from("recurring_availabilities")
+          .update({
             start_hour: availability.startHour,
             end_hour: availability.endHour,
-            consulate_id: selectedOrganismee,
-          },
-        ]);
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", existingAvailability.id);
 
-      if (insertError) {
-        console.error("Error inserting availability:", insertError);
-        throw insertError;
+        if (updateError) {
+          console.error("Error updating availability:", updateError);
+          throw updateError;
+        }
+      } else {
+        // Insérer une nouvelle disponibilité
+        const { error: insertError } = await supabase
+          .from("recurring_availabilities")
+          .insert([
+            {
+              day_of_week: dayIndex,
+              start_hour: availability.startHour,
+              end_hour: availability.endHour,
+              consulate_id: selectedOrganismee,
+            },
+          ]);
+
+        if (insertError) {
+          console.error("Error inserting availability:", insertError);
+          throw insertError;
+        }
       }
 
       await refetchAvailabilities();
