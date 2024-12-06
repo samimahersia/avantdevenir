@@ -30,12 +30,19 @@ const RecurringAvailabilityForm = () => {
     queryFn: async () => {
       if (!selectedOrganismee) return [];
       
+      console.log("Fetching existing availabilities for organisme:", selectedOrganismee);
+      
       const { data, error } = await supabase
         .from("recurring_availabilities")
         .select("*")
         .eq("consulate_id", selectedOrganismee);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching availabilities:", error);
+        throw error;
+      }
+
+      console.log("Fetched availabilities:", data);
       return data;
     },
     enabled: !!selectedOrganismee,
@@ -78,20 +85,36 @@ const RecurringAvailabilityForm = () => {
     const availability = availabilities[dayIndex];
     if (!availability) return;
 
+    if (availability.startHour >= availability.endHour) {
+      toast.error("L'heure de début doit être inférieure à l'heure de fin");
+      return;
+    }
+
     try {
+      console.log("Saving availability:", {
+        dayIndex,
+        availability,
+        selectedOrganismee
+      });
+
       const existingAvailability = existingAvailabilities.find(
         a => a.day_of_week === dayIndex
       );
 
-      const { error } = await supabase.from("recurring_availabilities").upsert({
-        id: existingAvailability?.id,
-        day_of_week: dayIndex,
-        start_hour: availability.startHour,
-        end_hour: availability.endHour,
-        consulate_id: selectedOrganismee,
-      });
+      const { error } = await supabase
+        .from("recurring_availabilities")
+        .upsert({
+          id: existingAvailability?.id,
+          day_of_week: dayIndex,
+          start_hour: availability.startHour,
+          end_hour: availability.endHour,
+          consulate_id: selectedOrganismee,
+        });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error saving availability:", error);
+        throw error;
+      }
       
       toast.success("Disponibilités mises à jour");
       refetch();
@@ -123,9 +146,9 @@ const RecurringAvailabilityForm = () => {
                 <Label>Heure de début</Label>
                 <select
                   className="w-full border rounded-md p-2"
-                  value={availabilities[index]?.startHour ?? ""}
+                  value={availabilities[index + 1]?.startHour ?? ""}
                   onChange={(e) =>
-                    handleHourChange(index, "startHour", parseInt(e.target.value))
+                    handleHourChange(index + 1, "startHour", parseInt(e.target.value))
                   }
                 >
                   <option value="">Sélectionner une heure</option>
@@ -140,9 +163,9 @@ const RecurringAvailabilityForm = () => {
                 <Label>Heure de fin</Label>
                 <select
                   className="w-full border rounded-md p-2"
-                  value={availabilities[index]?.endHour ?? ""}
+                  value={availabilities[index + 1]?.endHour ?? ""}
                   onChange={(e) =>
-                    handleHourChange(index, "endHour", parseInt(e.target.value))
+                    handleHourChange(index + 1, "endHour", parseInt(e.target.value))
                   }
                 >
                   <option value="">Sélectionner une heure</option>
@@ -150,7 +173,7 @@ const RecurringAvailabilityForm = () => {
                     <option
                       key={hour}
                       value={hour}
-                      disabled={hour <= (availabilities[index]?.startHour ?? -1)}
+                      disabled={hour <= (availabilities[index + 1]?.startHour ?? -1)}
                     >
                       {hour}:00
                     </option>
@@ -159,11 +182,11 @@ const RecurringAvailabilityForm = () => {
               </div>
             </div>
             <Button
-              onClick={() => handleSave(index)}
+              onClick={() => handleSave(index + 1)}
               disabled={
                 !selectedOrganismee ||
-                !availabilities[index]?.startHour ||
-                !availabilities[index]?.endHour
+                !availabilities[index + 1]?.startHour ||
+                !availabilities[index + 1]?.endHour
               }
               className="w-full md:w-auto"
             >

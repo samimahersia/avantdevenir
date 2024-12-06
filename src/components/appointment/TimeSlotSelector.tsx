@@ -19,7 +19,6 @@ const TimeSlotSelector = ({
   selectedDate,
   consulateId 
 }: TimeSlotSelectorProps) => {
-  // Si aucune date n'est sélectionnée, afficher un message
   if (!selectedDate) {
     return (
       <div className="space-y-2">
@@ -31,14 +30,24 @@ const TimeSlotSelector = ({
     );
   }
 
+  if (!consulateId) {
+    return (
+      <div className="space-y-2">
+        <Label>Heure du rendez-vous *</Label>
+        <p className="text-center text-muted-foreground">
+          Veuillez d'abord sélectionner un organisme
+        </p>
+      </div>
+    );
+  }
+
   const dayOfWeek = selectedDate.getDay();
-  // Convertir dimanche (0) en 7 pour correspondre à notre convention de base de données
   const adjustedDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
 
-  const { data: availabilities = [] } = useQuery({
+  const { data: availabilities = [], isLoading } = useQuery({
     queryKey: ["recurring-availabilities", consulateId, adjustedDayOfWeek],
     queryFn: async () => {
-      if (!consulateId) return [];
+      console.log("Fetching availabilities for consulate:", consulateId, "day:", adjustedDayOfWeek);
       
       const { data, error } = await supabase
         .from("recurring_availabilities")
@@ -51,6 +60,7 @@ const TimeSlotSelector = ({
         return [];
       }
 
+      console.log("Fetched availabilities:", data);
       return data;
     },
     enabled: !!consulateId
@@ -66,6 +76,17 @@ const TimeSlotSelector = ({
   };
 
   const availableTimeSlots = timeSlots.filter(isTimeSlotAvailable);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-2">
+        <Label>Heure du rendez-vous *</Label>
+        <p className="text-center text-muted-foreground">
+          Chargement des créneaux disponibles...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2">
