@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TimeSlot } from "@/utils/appointment";
 import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface TimeSlotSelectorProps {
   selectedTime?: TimeSlot;
@@ -11,15 +12,48 @@ interface TimeSlotSelectorProps {
   timeSlots: TimeSlot[];
   selectedDate?: Date;
   consulateId?: string;
+  serviceId?: string;
 }
 
-const TimeSlotSelector = ({ 
-  selectedTime, 
-  onTimeSelect, 
+const TimeSlotSelector = ({
+  selectedTime,
+  onTimeSelect,
   timeSlots,
   selectedDate,
-  consulateId 
+  consulateId,
+  serviceId
 }: TimeSlotSelectorProps) => {
+  const { data: availableSlots = [], isLoading } = useQuery({
+    queryKey: ["available-slots", selectedDate, consulateId, serviceId],
+    queryFn: async () => {
+      if (!selectedDate || !consulateId || !serviceId) return [];
+
+      const results = await Promise.all(
+        timeSlots.map(async (slot) => {
+          const slotDate = new Date(selectedDate);
+          slotDate.setHours(slot.hour, slot.minute);
+
+          const { data: isAvailable } = await supabase.rpc(
+            'check_appointment_availability',
+            {
+              p_appointment_date: slotDate.toISOString(),
+              p_service_id: serviceId,
+              p_consulate_id: consulateId
+            }
+          );
+
+          return {
+            ...slot,
+            isAvailable
+          };
+        })
+      );
+
+      return results.filter(slot => slot.isAvailable);
+    },
+    enabled: !!selectedDate && !!consulateId && !!serviceId
+  });
+
   if (!selectedDate) {
     return (
       <div className="space-y-2">
@@ -31,92 +65,12 @@ const TimeSlotSelector = ({
     );
   }
 
-  if (!consulateId) {
+  if (!consulateId || !serviceId) {
     return (
       <div className="space-y-2">
         <Label>Heure du rendez-vous *</Label>
         <p className="text-center text-muted-foreground">
-          Veuillez d'abord sélectionner un consulat
-        </p>
-      </div>
-    );
-  }
-
-  // Get day of week (1-7, Monday-Sunday)
-  const dayOfWeek = selectedDate.getDay() === 0 ? 7 : selectedDate.getDay();
-  const formattedDate = format(selectedDate, 'yyyy-MM-dd');
-
-  console.log("Checking availability for:", {
-    consulateId,
-    dayOfWeek,
-    date: formattedDate
-  });
-
-  const { data: availabilities = [], isLoading } = useQuery({
-    queryKey: ["recurring-availabilities", consulateId, dayOfWeek, formattedDate],
-    queryFn: async () => {
-      console.log("Fetching availabilities for consulate:", consulateId);
-      
-      const { data: recurringAvailabilities, error: recurringError } = await supabase
-        .from("recurring_availabilities")
-        .select("*")
-        .eq("consulate_id", consulateId)
-        .eq("day_of_week", dayOfWeek);
-
-      if (recurringError) {
-        console.error("Error fetching recurring availabilities:", recurringError);
-        throw recurringError;
-      }
-
-      console.log("Recurring availabilities found:", recurringAvailabilities);
-
-      // Vérifier s'il y a des jours fériés
-      const { data: holidays, error: holidayError } = await supabase
-        .from("consulate_holidays")
-        .select("*")
-        .eq("consulate_id", consulateId)
-        .eq("date", formattedDate);
-
-      if (holidayError) {
-        console.error("Error fetching holidays:", holidayError);
-        throw holidayError;
-      }
-
-      // Si c'est un jour férié, retourner un tableau vide
-      if (holidays && holidays.length > 0) {
-        console.log("Holiday found for this date");
-        return [];
-      }
-
-      return recurringAvailabilities || [];
-    }
-  });
-
-  const isTimeSlotAvailable = (slot: TimeSlot) => {
-    if (!availabilities.length) {
-      console.log("No availabilities found for this day");
-      return false;
-    }
-
-    const isAvailable = availabilities.some(availability => {
-      const isInRange = slot.hour >= availability.start_hour && 
-                       slot.hour < availability.end_hour;
-      console.log(`Checking slot ${slot.hour}:${slot.minute} - In range: ${isInRange}`);
-      return isInRange;
-    });
-
-    return isAvailable;
-  };
-
-  const availableTimeSlots = timeSlots.filter(isTimeSlotAvailable);
-  console.log("Available time slots:", availableTimeSlots);
-
-  if (isLoading) {
-    return (
-      <div className="space-y-2">
-        <Label>Heure du rendez-vous *</Label>
-        <p className="text-center text-muted-foreground">
-          Chargement des créneaux disponibles...
+          Veuillez d'abord sélectionner un consulat et un service
         </p>
       </div>
     );
@@ -125,9 +79,14 @@ const TimeSlotSelector = ({
   return (
     <div className="space-y-2">
       <Label>Heure du rendez-vous *</Label>
-      <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-        {availableTimeSlots.length > 0 ? (
-          availableTimeSlots.map((slot) => (
+      {isLoading ? (
+        <div className="text-center py-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="text-sm text-muted-foreground mt-2">Vérification des disponibilités...</p>
+        </div>
+      ) : availableSlots.length > 0 ? (
+        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+          {availableSlots.map((slot) => (
             <Button
               key={`${slot.hour}-${slot.minute}`}
               type="button"
@@ -135,15 +94,20 @@ const TimeSlotSelector = ({
               onClick={() => onTimeSelect(slot)}
               className="w-full"
             >
-              {slot.hour}:{slot.minute.toString().padStart(2, '0')}
+              {slot.hour.toString().padStart(2, '0')}:{slot.minute.toString().padStart(2, '0')}
             </Button>
-          ))
-        ) : (
-          <p className="col-span-full text-center text-muted-foreground">
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200">
+          <p className="text-muted-foreground">
             Aucun créneau disponible pour cette date
           </p>
-        )}
-      </div>
+          <p className="text-sm text-muted-foreground mt-1">
+            Veuillez sélectionner une autre date
+          </p>
+        </div>
+      )}
     </div>
   );
 };
