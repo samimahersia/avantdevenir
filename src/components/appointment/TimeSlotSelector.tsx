@@ -41,15 +41,16 @@ const TimeSlotSelector = ({
     );
   }
 
+  // Get day of week (1-7, Monday-Sunday)
   const dayOfWeek = selectedDate.getDay();
   const adjustedDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
 
-  console.log("Checking availability for day:", adjustedDayOfWeek, "consulate:", consulateId);
+  console.log("Fetching availabilities for consulate:", consulateId, "day:", adjustedDayOfWeek);
 
   const { data: availabilities = [], isLoading } = useQuery({
     queryKey: ["recurring-availabilities", consulateId, adjustedDayOfWeek],
     queryFn: async () => {
-      console.log("Fetching availabilities for consulate:", consulateId, "day:", adjustedDayOfWeek);
+      console.log("Fetching availabilities...");
       
       const { data, error } = await supabase
         .from("recurring_availabilities")
@@ -65,7 +66,7 @@ const TimeSlotSelector = ({
       console.log("Fetched availabilities:", data);
       return data || [];
     },
-    enabled: !!consulateId && !!selectedDate
+    enabled: true // On active toujours la requête quand le composant est monté
   });
 
   const isTimeSlotAvailable = (slot: TimeSlot) => {
