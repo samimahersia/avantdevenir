@@ -68,45 +68,45 @@ export const DayAvailabilityForm = ({
         selectedOrganismee
       });
 
-      const { data: existingData, error: fetchError } = await supabase
+      // First, get all existing records for this day and consulate
+      const { data: existingRecords, error: fetchError } = await supabase
         .from("recurring_availabilities")
         .select("*")
         .eq("consulate_id", selectedOrganismee)
-        .eq("day_of_week", dayIndex)
-        .single();
+        .eq("day_of_week", dayIndex);
 
-      if (fetchError && fetchError.code !== 'PGRST116') {
-        console.error("Error checking existing availability:", fetchError);
+      if (fetchError) {
+        console.error("Error checking existing availabilities:", fetchError);
         throw fetchError;
       }
 
-      const availabilityData = {
-        day_of_week: dayIndex,
-        start_hour: availability.startHour,
-        end_hour: availability.endHour,
-        consulate_id: selectedOrganismee,
-      };
+      // Delete all existing records for this day and consulate
+      if (existingRecords && existingRecords.length > 0) {
+        const { error: deleteError } = await supabase
+          .from("recurring_availabilities")
+          .delete()
+          .eq("consulate_id", selectedOrganismee)
+          .eq("day_of_week", dayIndex);
 
-      let error;
-      
-      if (existingData) {
-        // Update existing record
-        const { error: updateError } = await supabase
-          .from("recurring_availabilities")
-          .update(availabilityData)
-          .eq("id", existingData.id);
-        error = updateError;
-      } else {
-        // Insert new record
-        const { error: insertError } = await supabase
-          .from("recurring_availabilities")
-          .insert([availabilityData]);
-        error = insertError;
+        if (deleteError) {
+          console.error("Error deleting existing availabilities:", deleteError);
+          throw deleteError;
+        }
       }
 
-      if (error) {
-        console.error("Error saving availability:", error);
-        throw error;
+      // Insert the new record
+      const { error: insertError } = await supabase
+        .from("recurring_availabilities")
+        .insert([{
+          day_of_week: dayIndex,
+          start_hour: availability.startHour,
+          end_hour: availability.endHour,
+          consulate_id: selectedOrganismee,
+        }]);
+
+      if (insertError) {
+        console.error("Error saving availability:", insertError);
+        throw insertError;
       }
 
       toast.success("Disponibilités mises à jour");
