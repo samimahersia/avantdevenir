@@ -28,6 +28,31 @@ const TimeSlotSelector = ({
     queryFn: async () => {
       if (!selectedDate || !consulateId || !serviceId) return [];
 
+      console.log("Checking availability for:", {
+        date: selectedDate,
+        consulateId,
+        serviceId
+      });
+
+      // Vérifier les disponibilités récurrentes d'abord
+      const { data: recurringAvailabilities, error: recurringError } = await supabase
+        .from("recurring_availabilities")
+        .select("*")
+        .eq("consulate_id", consulateId)
+        .eq("day_of_week", selectedDate.getDay());
+
+      console.log("Recurring availabilities:", recurringAvailabilities);
+
+      if (recurringError) {
+        console.error("Error fetching recurring availabilities:", recurringError);
+        return [];
+      }
+
+      if (!recurringAvailabilities?.length) {
+        console.log("No recurring availabilities found for this day");
+        return [];
+      }
+
       const results = await Promise.all(
         timeSlots.map(async (slot) => {
           const slotDate = new Date(selectedDate);
@@ -41,6 +66,11 @@ const TimeSlotSelector = ({
               p_consulate_id: consulateId
             }
           );
+
+          console.log("Slot availability check:", {
+            slot: `${slot.hour}:${slot.minute}`,
+            isAvailable
+          });
 
           return {
             ...slot,
