@@ -30,14 +30,16 @@ const TimeSlotSelector = ({
 
       console.log("Fetching availabilities for consulate:", consulateId);
       
-      // Get the day of week (0-6, Sunday is 0)
-      const dayOfWeek = selectedDate.getDay();
+      // Convertir le jour JavaScript (0-6, Dimanche = 0) en jour de la semaine (1-7, Lundi = 1)
+      const jsDay = selectedDate.getDay();
+      const dayOfWeek = jsDay === 0 ? 7 : jsDay;
       
       console.log("Checking availability for:", {
         date: selectedDate,
         consulateId,
         serviceId,
-        dayOfWeek
+        jsDay,
+        convertedDayOfWeek: dayOfWeek
       });
 
       // Vérifier les disponibilités récurrentes d'abord
