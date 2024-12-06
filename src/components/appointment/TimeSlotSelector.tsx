@@ -61,9 +61,8 @@ const TimeSlotSelector = ({
       }
 
       console.log("Fetched availabilities:", data);
-      return data;
-    },
-    enabled: !!consulateId
+      return data || [];
+    }
   });
 
   const isTimeSlotAvailable = (slot: TimeSlot) => {
