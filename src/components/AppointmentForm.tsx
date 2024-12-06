@@ -1,17 +1,14 @@
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { isBefore, startOfDay, endOfDay } from "date-fns";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { isBefore } from "date-fns";
 import TimeSlotSelector from "./appointment/TimeSlotSelector";
-import { TIME_SLOTS, getAppointmentDate, disabledDays, TimeSlot } from "@/utils/appointment";
+import { TIME_SLOTS, getAppointmentDate, TimeSlot } from "@/utils/appointment";
+import AppointmentFormFields from "./appointment/AppointmentFormFields";
+import DateSelector from "./appointment/DateSelector";
 
 interface AppointmentFormProps {
   onSuccess?: () => void;
@@ -51,7 +48,6 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
         return;
       }
 
-      // First, check if the slot is available
       const { data: availabilityCheck, error: availabilityError } = await supabase
         .rpc('check_appointment_availability', {
           p_appointment_date: appointmentDate.toISOString(),
@@ -131,43 +127,14 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="title">Titre du rendez-vous *</Label>
-        <Input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Ex: Consultation initiale"
-          required
-        />
-      </div>
+      <AppointmentFormFields
+        title={title}
+        setTitle={setTitle}
+        description={description}
+        setDescription={setDescription}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="description">Description détaillée</Label>
-        <Textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Décrivez l'objet de votre rendez-vous..."
-          className="min-h-[100px]"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Date du rendez-vous *</Label>
-        <Card>
-          <CardContent className="p-4">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              disabled={disabledDays}
-              className="mx-auto"
-              locale={fr}
-            />
-          </CardContent>
-        </Card>
-      </div>
+      <DateSelector date={date} setDate={setDate} />
 
       <TimeSlotSelector
         selectedTime={selectedTime}
