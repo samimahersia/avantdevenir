@@ -41,13 +41,13 @@ const TimeSlotSelector = ({
     );
   }
 
-  // Get day of week (1-7, Monday-Sunday)
+  // Get day of week (0-6, Sunday-Saturday) and adjust to (1-7, Monday-Sunday)
   const dayOfWeek = selectedDate.getDay();
   const adjustedDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
 
-  console.log("Fetching availabilities for consulate:", consulateId, "day:", adjustedDayOfWeek);
+  console.log("Fetching availabilities for consulate:", consulateId, "day:", adjustedDayOfWeek, "date:", selectedDate);
 
-  const { data: availabilities = [], isLoading } = useQuery({
+  const { data: availabilities = [], isLoading, error } = useQuery({
     queryKey: ["recurring-availabilities", consulateId, adjustedDayOfWeek],
     queryFn: async () => {
       console.log("Fetching availabilities...");
@@ -65,20 +65,39 @@ const TimeSlotSelector = ({
 
       console.log("Fetched availabilities:", data);
       return data || [];
-    },
-    enabled: true // On active toujours la requête quand le composant est monté
+    }
   });
 
-  const isTimeSlotAvailable = (slot: TimeSlot) => {
-    if (!availabilities.length) return false;
-
-    return availabilities.some(availability => 
-      slot.hour >= availability.start_hour && 
-      slot.hour < availability.end_hour
+  if (error) {
+    console.error("Error in availability query:", error);
+    return (
+      <div className="space-y-2">
+        <Label>Heure du rendez-vous *</Label>
+        <p className="text-center text-red-500">
+          Erreur lors du chargement des créneaux disponibles
+        </p>
+      </div>
     );
+  }
+
+  const isTimeSlotAvailable = (slot: TimeSlot) => {
+    if (!availabilities.length) {
+      console.log("No availabilities found for this day");
+      return false;
+    }
+
+    const isAvailable = availabilities.some(availability => {
+      const isInRange = slot.hour >= availability.start_hour && 
+                       slot.hour < availability.end_hour;
+      console.log(`Checking slot ${slot.hour}:${slot.minute} - In range: ${isInRange}`);
+      return isInRange;
+    });
+
+    return isAvailable;
   };
 
   const availableTimeSlots = timeSlots.filter(isTimeSlotAvailable);
+  console.log("Available time slots:", availableTimeSlots);
 
   if (isLoading) {
     return (
