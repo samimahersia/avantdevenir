@@ -41,7 +41,7 @@ const TimeSlotSelector = ({
     );
   }
 
-  // Get day of week (0-6, Sunday-Saturday) and adjust to (1-7, Monday-Sunday)
+  // Get day of week (1-7, Monday-Sunday)
   const dayOfWeek = selectedDate.getDay();
   const adjustedDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
 
