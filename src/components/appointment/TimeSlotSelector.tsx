@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TimeSlot } from "@/utils/appointment";
+import { format } from "date-fns";
 
 interface TimeSlotSelectorProps {
   selectedTime?: TimeSlot;
@@ -42,34 +43,51 @@ const TimeSlotSelector = ({
   }
 
   // Get day of week (1-7, Monday-Sunday)
-  const dayOfWeek = selectedDate.getDay();
-  const adjustedDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
+  const dayOfWeek = selectedDate.getDay() || 7; // Convert Sunday (0) to 7
+  const formattedDate = format(selectedDate, 'yyyy-MM-dd');
 
-  console.log("Fetching availabilities for consulate:", consulateId, "day:", adjustedDayOfWeek, "date:", selectedDate);
+  console.log("Checking availability for:", {
+    consulateId,
+    dayOfWeek,
+    date: formattedDate
+  });
 
   const { data: availabilities = [], isLoading } = useQuery({
-    queryKey: ["recurring-availabilities", consulateId, adjustedDayOfWeek, selectedDate],
+    queryKey: ["recurring-availabilities", consulateId, dayOfWeek, formattedDate],
     queryFn: async () => {
       console.log("Fetching availabilities...");
       
-      const { data, error } = await supabase
+      const { data: recurringAvailabilities, error: recurringError } = await supabase
         .from("recurring_availabilities")
         .select("*")
         .eq("consulate_id", consulateId)
-        .eq("day_of_week", adjustedDayOfWeek);
+        .eq("day_of_week", dayOfWeek);
 
-      if (error) {
-        console.error("Error fetching availabilities:", error);
-        throw error;
+      if (recurringError) {
+        console.error("Error fetching recurring availabilities:", recurringError);
+        throw recurringError;
       }
 
-      console.log("Fetched availabilities:", data);
-      return data || [];
-    },
-    meta: {
-      onError: (error) => {
-        console.error("Error in availability query:", error);
+      // Vérifier s'il y a des jours fériés
+      const { data: holidays, error: holidayError } = await supabase
+        .from("consulate_holidays")
+        .select("*")
+        .eq("consulate_id", consulateId)
+        .eq("date", formattedDate);
+
+      if (holidayError) {
+        console.error("Error fetching holidays:", holidayError);
+        throw holidayError;
       }
+
+      // Si c'est un jour férié, retourner un tableau vide
+      if (holidays && holidays.length > 0) {
+        console.log("Holiday found for this date");
+        return [];
+      }
+
+      console.log("Recurring availabilities found:", recurringAvailabilities);
+      return recurringAvailabilities || [];
     }
   });
 
