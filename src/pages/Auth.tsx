@@ -19,7 +19,7 @@ const Auth = () => {
             <CardTitle className="text-2xl text-center">
               {activeTab === "login" ? "Connexion" : "Inscription"}
             </CardTitle>
-            <CardDescription className="text-center">
+            <CardDescription className="text-center font-bold italic">
               {activeTab === "login"
                 ? "Connectez-vous à votre compte"
                 : "Créez votre compte"}
