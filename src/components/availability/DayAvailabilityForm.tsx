@@ -68,34 +68,47 @@ export const DayAvailabilityForm = ({
         selectedOrganismee
       });
 
-      // First, try to find an existing record
       const { data: existingData, error: fetchError } = await supabase
         .from("recurring_availabilities")
-        .select("id")
+        .select("*")
         .eq("consulate_id", selectedOrganismee)
         .eq("day_of_week", dayIndex)
         .single();
 
-      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 means no rows returned
+      if (fetchError && fetchError.code !== 'PGRST116') {
         console.error("Error checking existing availability:", fetchError);
         throw fetchError;
       }
 
-      const { error: upsertError } = await supabase
-        .from("recurring_availabilities")
-        .upsert({
-          id: existingData?.id,
-          day_of_week: dayIndex,
-          start_hour: availability.startHour,
-          end_hour: availability.endHour,
-          consulate_id: selectedOrganismee,
-        });
+      const availabilityData = {
+        day_of_week: dayIndex,
+        start_hour: availability.startHour,
+        end_hour: availability.endHour,
+        consulate_id: selectedOrganismee,
+      };
 
-      if (upsertError) {
-        console.error("Error saving availability:", upsertError);
-        throw upsertError;
-      }
+      let error;
       
+      if (existingData) {
+        // Update existing record
+        const { error: updateError } = await supabase
+          .from("recurring_availabilities")
+          .update(availabilityData)
+          .eq("id", existingData.id);
+        error = updateError;
+      } else {
+        // Insert new record
+        const { error: insertError } = await supabase
+          .from("recurring_availabilities")
+          .insert([availabilityData]);
+        error = insertError;
+      }
+
+      if (error) {
+        console.error("Error saving availability:", error);
+        throw error;
+      }
+
       toast.success("Disponibilités mises à jour");
       refetchAvailabilities();
     } catch (error) {
