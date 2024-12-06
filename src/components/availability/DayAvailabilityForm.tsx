@@ -35,6 +35,11 @@ export const DayAvailabilityForm = ({
       return;
     }
 
+    if (!availability.startHour || !availability.endHour) {
+      toast.error("Veuillez sélectionner les heures d'ouverture et de fermeture");
+      return;
+    }
+
     if (availability.startHour >= availability.endHour) {
       toast.error("L'heure de début doit être inférieure à l'heure de fin");
       return;
@@ -47,7 +52,10 @@ export const DayAvailabilityForm = ({
 
     try {
       console.log("Saving availability for day", dayIndex, ":", availability);
-      await handleSave(availability);
+      await handleSave({
+        startHour: availability.startHour,
+        endHour: availability.endHour
+      });
       toast.success(`Disponibilités enregistrées pour ${day}`);
     } catch (error) {
       console.error("Erreur lors de la sauvegarde:", error);
@@ -62,24 +70,25 @@ export const DayAvailabilityForm = ({
       <TimeRangeSelector
         startHour={availability?.startHour}
         endHour={availability?.endHour}
-        onStartHourChange={(hour) => onAvailabilityChange({ 
-          ...availability, 
-          startHour: hour 
-        })}
-        onEndHourChange={(hour) => onAvailabilityChange({ 
-          ...availability, 
-          endHour: hour 
-        })}
+        onStartHourChange={(hour) => {
+          console.log("Start hour changed:", hour);
+          onAvailabilityChange({ 
+            startHour: hour,
+            endHour: availability?.endHour || 0
+          });
+        }}
+        onEndHourChange={(hour) => {
+          console.log("End hour changed:", hour);
+          onAvailabilityChange({ 
+            startHour: availability?.startHour || 0,
+            endHour: hour
+          });
+        }}
       />
 
       <Button
         onClick={handleSubmit}
-        disabled={
-          !selectedOrganismee ||
-          !availability?.startHour ||
-          !availability?.endHour ||
-          isSubmitting
-        }
+        disabled={isSubmitting}
         className="w-full md:w-auto"
       >
         {isSubmitting ? "Enregistrement..." : "Enregistrer"}
