@@ -8,8 +8,10 @@ export interface TimeSlot {
 // Generate time slots from 9h to 14h with 15min intervals
 export const generateTimeSlots = () => {
   const slots: TimeSlot[] = [];
-  for (let hour = 9; hour < 14; hour++) {
+  for (let hour = 9; hour <= 14; hour++) {
     for (let minute = 0; minute < 60; minute += 15) {
+      // Ne pas inclure 14:15, 14:30, 14:45
+      if (hour === 14 && minute > 0) continue;
       slots.push({ hour, minute });
     }
   }
