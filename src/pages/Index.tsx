@@ -22,24 +22,37 @@ const Index = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("appointments");
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     console.log("Checking initial session");
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("Initial session check result:", session ? "Logged in" : "Not logged in");
-      if (!session) {
-        navigate("/auth");
-        return;
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log("Initial session check result:", session ? "Logged in" : "Not logged in");
+        
+        if (!session) {
+          console.log("No session found, redirecting to auth");
+          navigate("/auth");
+          return;
+        }
+        
+        setSession(session);
+      } catch (err) {
+        console.error("Session check error:", err);
+        setError("Erreur lors de la vérification de la session");
       }
-      setSession(session);
-    });
+    };
+
+    checkSession();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       console.log("Auth state changed:", _event);
       if (!session) {
+        console.log("Session ended, redirecting to auth");
         navigate("/auth");
         return;
       }
@@ -54,22 +67,20 @@ const Index = () => {
       try {
         console.log("Checking auth and loading profile");
         setIsLoading(true);
-        const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
-          console.log("No session found, redirecting to auth");
-          navigate("/auth");
+          console.log("No active session");
           return;
         }
 
-        const { data: profile, error } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', session.user.id)
           .single();
         
-        if (error) {
-          console.error("Error fetching profile:", error);
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
           toast.error("Erreur lors du chargement du profil");
           return;
         }
@@ -92,7 +103,23 @@ const Index = () => {
     if (session) {
       checkAuth();
     }
-  }, [userType, navigate, session]);
+  }, [session, userType]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="text-center text-red-600">
+          <p>{error}</p>
+          <Button 
+            onClick={() => navigate("/auth")} 
+            className="mt-4"
+          >
+            Retour à la connexion
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     console.log("Rendering loading state");
@@ -107,7 +134,8 @@ const Index = () => {
   }
 
   if (!session) {
-    console.log("No session, rendering null");
+    console.log("No session, redirecting to auth");
+    navigate("/auth");
     return null;
   }
 
