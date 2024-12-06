@@ -28,13 +28,15 @@ export const MobileNavigation = ({
       </SheetTrigger>
       <SheetContent side="left" className="w-[300px] sm:w-[400px]">
         <div className="flex flex-col gap-4 py-4">
-          <Button
-            variant={userType === "client" ? "default" : "outline"}
-            onClick={() => setUserType("client")}
-            className="w-full"
-          >
-            Mode Client
-          </Button>
+          {userRole !== "admin" && (
+            <Button
+              variant={userType === "client" ? "default" : "outline"}
+              onClick={() => setUserType("client")}
+              className="w-full"
+            >
+              Mode Client
+            </Button>
+          )}
           {userRole === "admin" && (
             <div className="space-y-2">
               <Button
