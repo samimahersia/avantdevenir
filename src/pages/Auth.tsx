@@ -10,9 +10,13 @@ const Auth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("Auth component mounted");
+    
     // Redirect to home if already authenticated
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Session check result:", session ? "User is logged in" : "No session");
       if (session) {
+        console.log("Redirecting to home page");
         navigate("/");
       }
     });
@@ -21,12 +25,17 @@ const Auth = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("Auth state changed:", _event);
       if (session) {
-        navigate("/");
+        console.log("Session found, redirecting to home");
+        navigate("/", { replace: true });
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log("Auth component unmounting, cleaning up subscription");
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   return (

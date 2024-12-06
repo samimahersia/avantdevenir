@@ -28,6 +28,7 @@ const LoginForm = () => {
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
+      console.log("Starting login process");
       setIsLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
@@ -35,21 +36,22 @@ const LoginForm = () => {
       });
 
       if (error) {
+        console.error("Login error:", error);
         if (error.message === "Invalid login credentials") {
           toast.error("Email ou mot de passe incorrect");
         } else {
-          console.error("Error:", error);
           toast.error("Erreur lors de la connexion");
         }
         return;
       }
 
       if (data?.user) {
+        console.log("Login successful, user:", data.user.id);
         toast.success("Connexion réussie");
-        navigate("/");
+        navigate("/", { replace: true });
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Login error:", error);
       toast.error("Erreur lors de la connexion");
     } finally {
       setIsLoading(false);
