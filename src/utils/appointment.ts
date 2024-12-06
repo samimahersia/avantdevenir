@@ -21,7 +21,15 @@ export const generateTimeSlots = () => {
 export const TIME_SLOTS = generateTimeSlots();
 
 export const getAppointmentDate = (date: Date, selectedTime: TimeSlot) => {
-  return setMinutes(setHours(date, selectedTime.hour), selectedTime.minute);
+  const appointmentDate = new Date(date);
+  appointmentDate.setHours(selectedTime.hour, selectedTime.minute, 0, 0);
+  console.log("Generated appointment date:", {
+    originalDate: date,
+    selectedTime,
+    appointmentDate,
+    hour: appointmentDate.getHours()
+  });
+  return appointmentDate;
 };
 
 // Disable Mondays (1), Sundays (0) and Saturdays (6)
