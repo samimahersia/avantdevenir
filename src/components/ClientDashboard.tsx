@@ -8,7 +8,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Pencil, X } from "lucide-react";
+import { X } from "lucide-react";
 
 interface ClientDashboardProps {
   selectedConsulate?: string;
@@ -85,33 +85,8 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
     return appointment.status === "en_attente" && new Date(appointment.date) > new Date();
   };
 
-  if (!selectedConsulate || !selectedService) {
-    return (
-      <Card className="border-none shadow-none">
-        <CardContent className="text-center py-8">
-          <p className="text-muted-foreground">
-            {t('dashboard.selectPrompt')}
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <div className="space-y-8">
-      <Card className="border-none shadow-none">
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold">{t('dashboard.newAppointment')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <AppointmentForm 
-            onSuccess={refetch} 
-            selectedConsulate={selectedConsulate}
-            selectedService={selectedService}
-          />
-        </CardContent>
-      </Card>
-
       <Card className="border-none shadow-none">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold">{t('dashboard.myAppointments')}</CardTitle>
@@ -161,6 +136,29 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
           </div>
         </CardContent>
       </Card>
+
+      {!selectedConsulate || !selectedService ? (
+        <Card className="border-none shadow-none">
+          <CardContent className="text-center py-8">
+            <p className="text-muted-foreground">
+              {t('dashboard.selectPrompt')}
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="border-none shadow-none">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold">{t('dashboard.newAppointment')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AppointmentForm 
+              onSuccess={refetch} 
+              selectedConsulate={selectedConsulate}
+              selectedService={selectedService}
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
