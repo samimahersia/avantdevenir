@@ -14,6 +14,7 @@ import { DashboardContent } from "@/components/DashboardContent";
 import { LanguageSelector } from "@/components/LanguageSelector";
 
 const Index = () => {
+  console.log("Index component rendering");
   const navigate = useNavigate();
   const [userType, setUserType] = useState<"client" | "admin">("client");
   const [selectedConsulate, setSelectedConsulate] = useState<string>();
@@ -24,7 +25,9 @@ const Index = () => {
   const [session, setSession] = useState(null);
 
   useEffect(() => {
+    console.log("Checking initial session");
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("Initial session check result:", session ? "Logged in" : "Not logged in");
       if (!session) {
         navigate("/auth");
         return;
@@ -35,6 +38,7 @@ const Index = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("Auth state changed:", _event);
       if (!session) {
         navigate("/auth");
         return;
@@ -48,10 +52,12 @@ const Index = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log("Checking auth and loading profile");
         setIsLoading(true);
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
+          console.log("No session found, redirecting to auth");
           navigate("/auth");
           return;
         }
@@ -68,6 +74,7 @@ const Index = () => {
           return;
         }
 
+        console.log("Profile loaded:", profile);
         setUserRole(profile?.role || null);
         
         if (userType === "admin" && profile?.role !== "admin") {
@@ -88,6 +95,7 @@ const Index = () => {
   }, [userType, navigate, session]);
 
   if (isLoading) {
+    console.log("Rendering loading state");
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
         <div className="text-center">
@@ -99,9 +107,11 @@ const Index = () => {
   }
 
   if (!session) {
+    console.log("No session, rendering null");
     return null;
   }
 
+  console.log("Rendering main content");
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-[100vw] mx-auto">
