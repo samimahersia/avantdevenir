@@ -1,10 +1,6 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-
-const HOURS = Array.from({ length: 24 }, (_, i) => i);
+import { TimeRangeSelector } from "./TimeRangeSelector";
+import { useAvailability } from "@/hooks/use-availability";
 
 interface DayAvailabilityFormProps {
   day: string;
@@ -26,7 +22,11 @@ export const DayAvailabilityForm = ({
   onAvailabilityChange,
   refetchAvailabilities
 }: DayAvailabilityFormProps) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isSubmitting, handleSave } = useAvailability({
+    dayIndex,
+    selectedOrganismee,
+    refetchAvailabilities
+  });
 
   const handleHourChange = (
     type: "startHour" | "endHour",
@@ -46,124 +46,19 @@ export const DayAvailabilityForm = ({
     });
   };
 
-  const handleSave = async () => {
-    if (!selectedOrganismee) {
-      toast.error("Veuillez sélectionner un organisme");
-      return;
-    }
-
-    if (!availability) return;
-
-    if (availability.startHour >= availability.endHour) {
-      toast.error("L'heure de début doit être inférieure à l'heure de fin");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      console.log("Saving availability:", {
-        dayIndex,
-        availability,
-        selectedOrganismee
-      });
-
-      // First, get all existing records for this day and consulate
-      const { data: existingRecords, error: fetchError } = await supabase
-        .from("recurring_availabilities")
-        .select("*")
-        .eq("consulate_id", selectedOrganismee)
-        .eq("day_of_week", dayIndex);
-
-      if (fetchError) {
-        console.error("Error checking existing availabilities:", fetchError);
-        throw fetchError;
-      }
-
-      // Delete all existing records for this day and consulate
-      if (existingRecords && existingRecords.length > 0) {
-        const { error: deleteError } = await supabase
-          .from("recurring_availabilities")
-          .delete()
-          .eq("consulate_id", selectedOrganismee)
-          .eq("day_of_week", dayIndex);
-
-        if (deleteError) {
-          console.error("Error deleting existing availabilities:", deleteError);
-          throw deleteError;
-        }
-      }
-
-      // Insert the new record
-      const { error: insertError } = await supabase
-        .from("recurring_availabilities")
-        .insert([{
-          day_of_week: dayIndex,
-          start_hour: availability.startHour,
-          end_hour: availability.endHour,
-          consulate_id: selectedOrganismee,
-        }]);
-
-      if (insertError) {
-        console.error("Error saving availability:", insertError);
-        throw insertError;
-      }
-
-      toast.success("Disponibilités mises à jour");
-      refetchAvailabilities();
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error("Erreur lors de la mise à jour des disponibilités");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <div className="space-y-4 p-4 border rounded-lg">
       <h3 className="font-medium text-lg">{day}</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Heure de début</Label>
-          <select
-            className="w-full border rounded-md p-2"
-            value={availability?.startHour ?? ""}
-            onChange={(e) =>
-              handleHourChange("startHour", parseInt(e.target.value))
-            }
-          >
-            <option value="">Sélectionner une heure</option>
-            {HOURS.map((hour) => (
-              <option key={hour} value={hour}>
-                {hour}:00
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="space-y-2">
-          <Label>Heure de fin</Label>
-          <select
-            className="w-full border rounded-md p-2"
-            value={availability?.endHour ?? ""}
-            onChange={(e) =>
-              handleHourChange("endHour", parseInt(e.target.value))
-            }
-          >
-            <option value="">Sélectionner une heure</option>
-            {HOURS.map((hour) => (
-              <option
-                key={hour}
-                value={hour}
-                disabled={hour <= (availability?.startHour ?? -1)}
-              >
-                {hour}:00
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      
+      <TimeRangeSelector
+        startHour={availability?.startHour}
+        endHour={availability?.endHour}
+        onStartHourChange={(hour) => handleHourChange("startHour", hour)}
+        onEndHourChange={(hour) => handleHourChange("endHour", hour)}
+      />
+
       <Button
-        onClick={handleSave}
+        onClick={() => availability && handleSave(availability)}
         disabled={
           !selectedOrganismee ||
           !availability?.startHour ||
