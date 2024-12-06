@@ -39,15 +39,19 @@ const RecurringAvailabilityForm = () => {
       return data;
     },
     enabled: !!selectedOrganismee,
-    onSuccess: (data) => {
-      const newAvailabilities = data.reduce((acc, curr) => ({
-        ...acc,
-        [curr.day_of_week]: {
-          startHour: curr.start_hour,
-          endHour: curr.end_hour
+    meta: {
+      onSettled: (data) => {
+        if (data) {
+          const newAvailabilities = data.reduce((acc, curr) => ({
+            ...acc,
+            [curr.day_of_week]: {
+              startHour: curr.start_hour,
+              endHour: curr.end_hour
+            }
+          }), {});
+          setAvailabilities(newAvailabilities);
         }
-      }), {});
-      setAvailabilities(newAvailabilities);
+      }
     }
   });
 
