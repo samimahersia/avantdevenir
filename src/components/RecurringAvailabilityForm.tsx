@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { OrganismeeSelector } from "./OrganismeeSelector";
 import { useQuery } from "@tanstack/react-query";
+import { DayAvailabilityForm } from "./availability/DayAvailabilityForm";
 
 const DAYS_OF_WEEK = [
   "Lundi",
@@ -16,8 +17,6 @@ const DAYS_OF_WEEK = [
   "Samedi",
   "Dimanche",
 ];
-
-const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
 const RecurringAvailabilityForm = () => {
   const [selectedOrganismee, setSelectedOrganismee] = useState<string>("");
@@ -43,7 +42,7 @@ const RecurringAvailabilityForm = () => {
       }
 
       console.log("Fetched availabilities:", data);
-      return data;
+      return data || [];
     },
     enabled: !!selectedOrganismee,
     meta: {
@@ -62,68 +61,6 @@ const RecurringAvailabilityForm = () => {
     }
   });
 
-  const handleHourChange = (
-    dayIndex: number,
-    type: "startHour" | "endHour",
-    hour: number
-  ) => {
-    setAvailabilities((prev) => ({
-      ...prev,
-      [dayIndex]: {
-        ...prev[dayIndex],
-        [type]: hour,
-      },
-    }));
-  };
-
-  const handleSave = async (dayIndex: number) => {
-    if (!selectedOrganismee) {
-      toast.error("Veuillez sélectionner un organisme");
-      return;
-    }
-
-    const availability = availabilities[dayIndex];
-    if (!availability) return;
-
-    if (availability.startHour >= availability.endHour) {
-      toast.error("L'heure de début doit être inférieure à l'heure de fin");
-      return;
-    }
-
-    try {
-      console.log("Saving availability:", {
-        dayIndex,
-        availability,
-        selectedOrganismee
-      });
-
-      const existingAvailability = existingAvailabilities.find(
-        a => a.day_of_week === dayIndex
-      );
-
-      const { error } = await supabase
-        .from("recurring_availabilities")
-        .upsert({
-          id: existingAvailability?.id,
-          day_of_week: dayIndex,
-          start_hour: availability.startHour,
-          end_hour: availability.endHour,
-          consulate_id: selectedOrganismee,
-        });
-
-      if (error) {
-        console.error("Error saving availability:", error);
-        throw error;
-      }
-      
-      toast.success("Disponibilités mises à jour");
-      refetch();
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error("Erreur lors de la mise à jour des disponibilités");
-    }
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -139,60 +76,20 @@ const RecurringAvailabilityForm = () => {
         </div>
 
         {DAYS_OF_WEEK.map((day, index) => (
-          <div key={day} className="space-y-4 p-4 border rounded-lg">
-            <h3 className="font-medium text-lg">{day}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Heure de début</Label>
-                <select
-                  className="w-full border rounded-md p-2"
-                  value={availabilities[index + 1]?.startHour ?? ""}
-                  onChange={(e) =>
-                    handleHourChange(index + 1, "startHour", parseInt(e.target.value))
-                  }
-                >
-                  <option value="">Sélectionner une heure</option>
-                  {HOURS.map((hour) => (
-                    <option key={hour} value={hour}>
-                      {hour}:00
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <Label>Heure de fin</Label>
-                <select
-                  className="w-full border rounded-md p-2"
-                  value={availabilities[index + 1]?.endHour ?? ""}
-                  onChange={(e) =>
-                    handleHourChange(index + 1, "endHour", parseInt(e.target.value))
-                  }
-                >
-                  <option value="">Sélectionner une heure</option>
-                  {HOURS.map((hour) => (
-                    <option
-                      key={hour}
-                      value={hour}
-                      disabled={hour <= (availabilities[index + 1]?.startHour ?? -1)}
-                    >
-                      {hour}:00
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <Button
-              onClick={() => handleSave(index + 1)}
-              disabled={
-                !selectedOrganismee ||
-                !availabilities[index + 1]?.startHour ||
-                !availabilities[index + 1]?.endHour
-              }
-              className="w-full md:w-auto"
-            >
-              Enregistrer
-            </Button>
-          </div>
+          <DayAvailabilityForm
+            key={day}
+            day={day}
+            dayIndex={index + 1}
+            selectedOrganismee={selectedOrganismee}
+            availability={availabilities[index + 1]}
+            onAvailabilityChange={(newAvailability) => {
+              setAvailabilities(prev => ({
+                ...prev,
+                [index + 1]: newAvailability
+              }));
+            }}
+            refetchAvailabilities={refetch}
+          />
         ))}
       </CardContent>
     </Card>
