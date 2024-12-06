@@ -47,8 +47,8 @@ const TimeSlotSelector = ({
 
   console.log("Fetching availabilities for consulate:", consulateId, "day:", adjustedDayOfWeek, "date:", selectedDate);
 
-  const { data: availabilities = [], isLoading, error } = useQuery({
-    queryKey: ["recurring-availabilities", consulateId, adjustedDayOfWeek],
+  const { data: availabilities = [], isLoading } = useQuery({
+    queryKey: ["recurring-availabilities", consulateId, adjustedDayOfWeek, selectedDate],
     queryFn: async () => {
       console.log("Fetching availabilities...");
       
@@ -67,18 +67,6 @@ const TimeSlotSelector = ({
       return data || [];
     }
   });
-
-  if (error) {
-    console.error("Error in availability query:", error);
-    return (
-      <div className="space-y-2">
-        <Label>Heure du rendez-vous *</Label>
-        <p className="text-center text-red-500">
-          Erreur lors du chargement des créneaux disponibles
-        </p>
-      </div>
-    );
-  }
 
   const isTimeSlotAvailable = (slot: TimeSlot) => {
     if (!availabilities.length) {
