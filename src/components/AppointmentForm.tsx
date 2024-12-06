@@ -173,6 +173,8 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
         selectedTime={selectedTime}
         onTimeSelect={setSelectedTime}
         timeSlots={TIME_SLOTS}
+        selectedDate={date}
+        consulateId={selectedConsulate}
       />
 
       <Button 

@@ -12,7 +12,7 @@ interface TimeSlotSelectorProps {
   selectedTime?: TimeSlot;
   onTimeSelect: (time: TimeSlot) => void;
   timeSlots: TimeSlot[];
-  selectedDate: Date;
+  selectedDate?: Date;
   consulateId?: string;
 }
 
@@ -23,6 +23,18 @@ const TimeSlotSelector = ({
   selectedDate,
   consulateId 
 }: TimeSlotSelectorProps) => {
+  // If no date is selected, show message
+  if (!selectedDate) {
+    return (
+      <div className="space-y-2">
+        <Label>Heure du rendez-vous *</Label>
+        <p className="text-center text-muted-foreground">
+          Veuillez d'abord sélectionner une date
+        </p>
+      </div>
+    );
+  }
+
   const dayOfWeek = selectedDate.getDay();
   // Convert Sunday (0) to 7 to match our database convention
   const adjustedDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
