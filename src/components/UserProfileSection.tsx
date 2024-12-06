@@ -66,8 +66,11 @@ export function UserProfileSection() {
         return;
       }
       
+      // Attendre un court instant pour s'assurer que la session est bien détruite
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       toast.success("Déconnexion réussie");
-      navigate("/auth");
+      navigate("/auth", { replace: true });
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Erreur lors de la déconnexion");
