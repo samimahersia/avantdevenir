@@ -3,8 +3,6 @@ import { Label } from "@/components/ui/label";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TimeSlot } from "@/utils/appointment";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 
 interface TimeSlotSelectorProps {
   selectedTime?: TimeSlot;
@@ -56,11 +54,8 @@ const TimeSlotSelector = ({
         return [];
       }
 
-      // Ne garder que les créneaux après 9h00
-      const filteredTimeSlots = timeSlots.filter(slot => slot.hour >= 9);
-
       const results = await Promise.all(
-        filteredTimeSlots.map(async (slot) => {
+        timeSlots.map(async (slot) => {
           const slotDate = new Date(selectedDate);
           slotDate.setHours(slot.hour, slot.minute);
 
