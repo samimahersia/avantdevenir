@@ -95,7 +95,7 @@ const RecentAppointments = () => {
         <div className="space-y-6">
           {Object.entries(groupedAvailabilities).map(([consulateName, availabilities], index) => (
             <div key={consulateName} className="space-y-2">
-              <h3 className="font-medium text-red-800 text-center text-lg">{consulateName}</h3>
+              <h3 className="font-bold text-red-800 text-center text-xl">{consulateName}</h3>
               <div className="space-y-2">
                 {availabilities.map((availability) => (
                   <div
