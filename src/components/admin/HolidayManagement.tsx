@@ -28,20 +28,6 @@ const HolidayManagement = () => {
     }
   });
 
-  const { data: recentAppointments = [] } = useQuery({
-    queryKey: ["recent-appointments"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("appointments")
-        .select("date, title")
-        .order("date", { ascending: false })
-        .limit(5);
-      
-      if (error) throw error;
-      return data;
-    }
-  });
-
   const handleAddHoliday = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDate) {
@@ -138,7 +124,7 @@ const HolidayManagement = () => {
               onDelete={handleDeleteHoliday}
               onEdit={handleEditHoliday}
             />
-            <RecentAppointments appointments={recentAppointments} />
+            <RecentAppointments />
           </div>
         </div>
 
