@@ -1,8 +1,7 @@
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash, Pencil } from "lucide-react";
+import { Edit2, Trash2 } from "lucide-react";
 
 interface Holiday {
   id: string;
@@ -18,23 +17,23 @@ interface HolidayListProps {
 
 const HolidayList = ({ holidays, onDelete, onEdit }: HolidayListProps) => {
   return (
-    <Card className="bg-[#E8F5E9]">
-      <CardHeader>
-        <CardTitle className="text-lg">Jours fériés</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="space-y-4">
+      <h3 className="font-semibold">Jours fériés configurés</h3>
+      {holidays.length === 0 ? (
+        <p className="text-muted-foreground">Aucun jour férié configuré</p>
+      ) : (
         <div className="space-y-2">
           {holidays.map((holiday) => (
             <div
               key={holiday.id}
-              className="p-2 bg-white/50 rounded-md flex justify-between items-center"
+              className="flex items-center justify-between p-4 bg-white rounded-lg border"
             >
               <div>
                 <p className="font-medium">
-                  {format(new Date(holiday.date), "dd MMMM yyyy", { locale: fr })}
+                  {format(new Date(holiday.date), "EEEE d MMMM yyyy", { locale: fr })}
                 </p>
                 {holiday.description && (
-                  <p className="text-sm text-gray-600">{holiday.description}</p>
+                  <p className="text-sm text-muted-foreground">{holiday.description}</p>
                 )}
               </div>
               <div className="flex gap-2">
@@ -42,27 +41,23 @@ const HolidayList = ({ holidays, onDelete, onEdit }: HolidayListProps) => {
                   variant="ghost"
                   size="icon"
                   onClick={() => onEdit(holiday)}
-                  className="h-8 w-8"
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Edit2 className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => onDelete(holiday.id)}
-                  className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                  className="text-red-500 hover:text-red-700"
                 >
-                  <Trash className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </div>
           ))}
-          {holidays.length === 0 && (
-            <p className="text-gray-600 text-sm">Aucun jour férié enregistré</p>
-          )}
         </div>
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
 };
 
