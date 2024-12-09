@@ -57,20 +57,33 @@ export function UserProfileSection() {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
-      
-      // Attendre un court instant pour s'assurer que la session est bien détruite
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Déconnexion locale d'abord
-      await supabase.auth.signOut();
-      
-      // Redirection immédiate
-      navigate("/auth", { replace: true });
-      
+      console.log("Starting logout process");
+
+      // Récupérer la session actuelle
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log("Current session:", session);
+
+      // Déconnexion avec gestion d'erreur
+      const { error } = await supabase.auth.signOut({
+        scope: session ? 'global' : 'local'
+      });
+
+      if (error) {
+        console.error("Logout error:", error);
+        // En cas d'erreur, on force une déconnexion locale
+        await supabase.auth.signOut({ scope: 'local' });
+      }
+
+      // Nettoyage du cache de React Query
+      // @ts-ignore - queryClient might not be typed correctly
+      queryClient?.clear();
+
+      // Redirection et notification
       toast.success("Déconnexion réussie");
+      navigate("/auth", { replace: true });
     } catch (error) {
       console.error("Logout error:", error);
-      // En cas d'erreur, on redirige quand même vers la page d'authentification
+      // En cas d'erreur, on force quand même la redirection
       navigate("/auth", { replace: true });
     } finally {
       setIsLoading(false);
