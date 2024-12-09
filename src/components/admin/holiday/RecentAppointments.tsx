@@ -14,7 +14,11 @@ interface Appointment {
 }
 
 interface GroupedAppointments {
-  [consulateName: string]: Appointment[];
+  [consulateName: string]: {
+    date: string;
+    dayOfWeek: string;
+    hour: string;
+  }[];
 }
 
 const RecentAppointments = () => {
@@ -35,50 +39,75 @@ const RecentAppointments = () => {
         `)
         .gte("date", startDate.toISOString())
         .lte("date", endDate.toISOString())
-        .order("date", { ascending: false });
+        .order("date", { ascending: true });
       
       if (error) throw error;
       return data as Appointment[];
     }
   });
 
-  // Grouper les rendez-vous par organisme
+  // Grouper les rendez-vous par organisme et jour
   const groupedAppointments = appointments.reduce((acc: GroupedAppointments, appointment) => {
     const consulateName = appointment.consulates?.name || "Sans organisme";
+    const date = new Date(appointment.date);
+    const dayOfWeek = format(date, "EEEE", { locale: fr });
+    const hour = format(date, "HH'H'mm", { locale: fr });
+
     if (!acc[consulateName]) {
       acc[consulateName] = [];
     }
-    acc[consulateName].push(appointment);
+
+    // Vérifier si nous avons déjà un créneau pour ce jour
+    const existingDay = acc[consulateName].find(a => 
+      format(new Date(a.date), "EEEE", { locale: fr }) === dayOfWeek
+    );
+
+    if (!existingDay) {
+      acc[consulateName].push({
+        date: appointment.date,
+        dayOfWeek,
+        hour
+      });
+    }
+
     return acc;
   }, {});
+
+  // Couleurs pastel pour les différents organismes
+  const gradients = [
+    "from-[#E5DEFF] to-[#D3E4FD]",
+    "from-[#FDE1D3] to-[#FFE8E8]",
+    "from-[#F2FCE2] to-[#E8F5E9]",
+    "from-[#FEF7CD] to-[#FFF3C4]",
+    "from-[#FFDEE2] to-[#FFE8E8]"
+  ];
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Créneaux de la semaine</CardTitle>
+        <CardTitle className="text-lg">Horaires par organisme</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {Object.entries(groupedAppointments).map(([consulateName, consulateAppointments]) => (
+        <div className="space-y-6">
+          {Object.entries(groupedAppointments).map(([consulateName, slots], index) => (
             <div key={consulateName} className="space-y-2">
-              <h3 className="font-medium text-sm text-gray-600">{consulateName}</h3>
+              <h3 className="font-medium text-gray-600">{consulateName}</h3>
               <div className="space-y-2">
-                {consulateAppointments.map((appointment, index) => (
+                {slots.map((slot, slotIndex) => (
                   <div
-                    key={index}
-                    className="p-3 rounded-md bg-[#E5DEFF] bg-opacity-50"
+                    key={slotIndex}
+                    className={`p-4 rounded-lg bg-gradient-to-r ${gradients[index % gradients.length]}`}
                   >
-                    <p className="font-medium">
-                      {format(new Date(appointment.date), "EEEE d MMMM à HH:mm", { locale: fr })}
+                    <p className="font-medium capitalize">
+                      {slot.dayOfWeek} de {slot.hour}
                     </p>
-                    <p className="text-sm text-gray-600">{appointment.title}</p>
                   </div>
                 ))}
               </div>
             </div>
           ))}
           {Object.keys(groupedAppointments).length === 0 && (
-            <p className="text-gray-600 text-sm">Aucun rendez-vous cette semaine</p>
+            <p className="text-gray-600 text-sm">Aucun créneau cette semaine</p>
           )}
         </div>
       </CardContent>
