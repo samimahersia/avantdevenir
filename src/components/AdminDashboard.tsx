@@ -32,12 +32,14 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
   };
 
   return (
-    <div className="space-y-6 bg-gradient-to-br from-[#D3E4FD] to-[#E5DEFF] p-6 rounded-lg">
-      <h2 className="text-2xl font-semibold text-center">Tableau de bord administrateur</h2>
+    <div className="space-y-6 p-4 md:p-6 rounded-lg bg-gradient-to-br from-[#D3E4FD] to-[#E5DEFF]">
+      <h2 className="text-xl md:text-2xl font-semibold text-center mb-4 md:mb-6">
+        Tableau de bord administrateur
+      </h2>
       
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         {!isMobile && (
-          <TabsList className="grid w-full grid-cols-1 md:grid-cols-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2">
             <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
             <TabsTrigger value="calendar">Calendrier</TabsTrigger>
             <TabsTrigger value="stats">Statistiques</TabsTrigger>
@@ -49,35 +51,35 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
           </TabsList>
         )}
         
-        <TabsContent value="appointments" className="mt-6">
+        <TabsContent value="appointments" className="mt-4 md:mt-6">
           <AppointmentManagement />
         </TabsContent>
         
-        <TabsContent value="calendar" className="mt-6">
+        <TabsContent value="calendar" className="mt-4 md:mt-6">
           <AppointmentCalendar />
         </TabsContent>
 
-        <TabsContent value="stats" className="mt-6">
+        <TabsContent value="stats" className="mt-4 md:mt-6">
           <AppointmentStats />
         </TabsContent>
         
-        <TabsContent value="users" className="mt-6">
+        <TabsContent value="users" className="mt-4 md:mt-6">
           <UserManagement />
         </TabsContent>
 
-        <TabsContent value="consulates" className="mt-6">
+        <TabsContent value="consulates" className="mt-4 md:mt-6">
           <ConsulateManagement />
         </TabsContent>
 
-        <TabsContent value="services" className="mt-6">
+        <TabsContent value="services" className="mt-4 md:mt-6">
           <ServiceManagement />
         </TabsContent>
         
-        <TabsContent value="settings" className="mt-6">
-          <div className="grid gap-6">
+        <TabsContent value="settings" className="mt-4 md:mt-6">
+          <div className="grid gap-4 md:gap-6">
             <Card>
-              <CardContent className="pt-6">
-                <h3 className="text-lg font-semibold mb-4">Horaires d'ouverture</h3>
+              <CardContent className="pt-4 md:pt-6">
+                <h3 className="text-base md:text-lg font-semibold mb-4">Horaires d'ouverture</h3>
                 <RecurringAvailabilityForm />
               </CardContent>
             </Card>
@@ -85,15 +87,15 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
             <HolidayManagement />
             
             <Card>
-              <CardContent className="pt-6">
-                <h3 className="text-lg font-semibold mb-4">Paramètres des notifications</h3>
+              <CardContent className="pt-4 md:pt-6">
+                <h3 className="text-base md:text-lg font-semibold mb-4">Paramètres des notifications</h3>
                 <NotificationSettings />
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
-        <TabsContent value="support" className="mt-6">
+        <TabsContent value="support" className="mt-4 md:mt-6">
           <TechnicalSupport />
         </TabsContent>
       </Tabs>

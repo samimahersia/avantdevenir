@@ -86,20 +86,23 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       <Card className="border-none shadow-none">
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold">{t('dashboard.myAppointments')}</CardTitle>
+        <CardHeader className="px-4 md:px-6">
+          <CardTitle className="text-xl md:text-2xl font-semibold">{t('dashboard.myAppointments')}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 md:px-6">
           <div className="space-y-4">
             {appointments.map((appointment) => (
               <div
                 key={appointment.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
+                className="flex flex-col p-4 md:p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
               >
-                <div className="space-y-2 mb-4 sm:mb-0">
-                  <h3 className="text-lg font-medium">{appointment.title}</h3>
+                <div className="space-y-2 mb-4">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                    <h3 className="text-base md:text-lg font-medium">{appointment.title}</h3>
+                    {getStatusBadge(appointment.status)}
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     {t('dashboard.service')} : {appointment.services?.name}
                   </p>
@@ -110,22 +113,19 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
                     {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
                   </p>
                 </div>
-                <div className="flex flex-col sm:flex-row items-center gap-2">
-                  {getStatusBadge(appointment.status)}
-                  {canModifyAppointment(appointment) && (
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-red-600 hover:text-red-700"
-                        onClick={() => handleCancel(appointment.id)}
-                      >
-                        <X className="h-4 w-4" />
-                        <span className="sr-only">Annuler</span>
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                {canModifyAppointment(appointment) && (
+                  <div className="flex justify-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-red-600 hover:text-red-700"
+                      onClick={() => handleCancel(appointment.id)}
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      <span>Annuler</span>
+                    </Button>
+                  </div>
+                )}
               </div>
             ))}
             {appointments.length === 0 && (
@@ -139,7 +139,7 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
 
       {!selectedConsulate || !selectedService ? (
         <Card className="border-none shadow-none">
-          <CardContent className="text-center py-8">
+          <CardContent className="text-center py-6 md:py-8">
             <p className="text-muted-foreground">
               {t('dashboard.selectPrompt')}
             </p>
@@ -147,10 +147,10 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
         </Card>
       ) : (
         <Card className="border-none shadow-none">
-          <CardHeader>
-            <CardTitle className="text-2xl font-semibold">{t('dashboard.newAppointment')}</CardTitle>
+          <CardHeader className="px-4 md:px-6">
+            <CardTitle className="text-xl md:text-2xl font-semibold">{t('dashboard.newAppointment')}</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 md:px-6">
             <AppointmentForm 
               onSuccess={refetch} 
               selectedConsulate={selectedConsulate}

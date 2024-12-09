@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfileSection } from "@/components/UserProfileSection";
@@ -107,12 +105,12 @@ const Index = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-        <div className="text-center text-red-600">
-          <p>{error}</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
           <Button 
             onClick={() => navigate("/auth")} 
-            className="mt-4"
+            className="w-full md:w-auto"
           >
             Retour à la connexion
           </Button>
@@ -122,9 +120,8 @@ const Index = () => {
   }
 
   if (isLoading) {
-    console.log("Rendering loading state");
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Chargement...</p>
@@ -139,7 +136,6 @@ const Index = () => {
     return null;
   }
 
-  console.log("Rendering main content");
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-[100vw] mx-auto">
@@ -151,15 +147,15 @@ const Index = () => {
             activeTab={activeTab} 
             setActiveTab={setActiveTab} 
           />
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <LanguageSelector />
             <UserProfileSection />
           </div>
         </div>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-lg overflow-hidden">
           <PageHeader userType={userType} setUserType={setUserType} userRole={userRole} />
-          <CardContent>
+          <CardContent className="p-4 md:p-6">
             <DashboardContent 
               userType={userType}
               userRole={userRole}
