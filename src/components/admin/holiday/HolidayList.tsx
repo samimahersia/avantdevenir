@@ -24,7 +24,7 @@ const HolidayList = ({ holidays, onDelete, onEdit }: HolidayListProps) => {
 
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#D3E4FD] to-[#E5DEFF]">
+      <h3 className="font-semibold text-black">
         Jours fériés configurés
       </h3>
       {holidays.length === 0 ? (
@@ -34,7 +34,7 @@ const HolidayList = ({ holidays, onDelete, onEdit }: HolidayListProps) => {
           {holidays.map((holiday) => (
             <div
               key={holiday.id}
-              className="flex items-center justify-between p-4 bg-white rounded-lg border"
+              className="flex items-center justify-between p-4 bg-gradient-to-r from-[#D3E4FD] to-[#E5DEFF] rounded-lg border"
             >
               <div>
                 <p className="font-medium">
