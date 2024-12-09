@@ -32,21 +32,14 @@ export const getAppointmentDate = (date: Date, selectedTime: TimeSlot) => {
     0
   );
 
-  // Calculer le décalage horaire en minutes
-  const timezoneOffset = appointmentDate.getTimezoneOffset();
-  
-  // Ajuster la date pour compenser le décalage horaire
-  appointmentDate.setMinutes(appointmentDate.getMinutes() - timezoneOffset);
-
   console.log("Generated appointment date:", {
     originalDate: date,
     selectedTime,
     appointmentDate: appointmentDate.toISOString(),
     localTime: appointmentDate.toLocaleTimeString(),
     hour: appointmentDate.getHours(),
-    localHour: new Date(appointmentDate).getHours(),
+    localHour: appointmentDate.getHours(),
     utcHour: appointmentDate.getUTCHours(),
-    timezoneOffset,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
   });
   
