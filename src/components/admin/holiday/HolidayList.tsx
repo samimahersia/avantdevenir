@@ -17,8 +17,9 @@ interface HolidayListProps {
 
 const HolidayList = ({ holidays, onDelete, onEdit }: HolidayListProps) => {
   const formatDate = (dateString: string) => {
-    // Créer la date en préservant le jour correct
-    const date = new Date(dateString + 'T12:00:00');
+    // Créer la date en préservant le jour correct en utilisant midi comme heure de référence
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day, 12, 0, 0);
     return format(date, "EEEE d MMMM yyyy", { locale: fr });
   };
 

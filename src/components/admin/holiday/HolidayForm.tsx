@@ -22,6 +22,17 @@ const HolidayForm = ({
   isSubmitting,
   onSubmit
 }: HolidayFormProps) => {
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      // Fixer l'heure à midi pour éviter les problèmes de fuseau horaire
+      const normalizedDate = new Date(date);
+      normalizedDate.setHours(12, 0, 0, 0);
+      setSelectedDate(normalizedDate);
+    } else {
+      setSelectedDate(undefined);
+    }
+  };
+
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -29,7 +40,7 @@ const HolidayForm = ({
         <Calendar
           mode="single"
           selected={selectedDate}
-          onSelect={setSelectedDate}
+          onSelect={handleDateSelect}
           locale={fr}
           className="rounded-md border"
         />

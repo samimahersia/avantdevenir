@@ -36,10 +36,14 @@ const HolidayManagement = () => {
 
     setIsSubmitting(true);
     try {
+      // Normaliser la date pour la stocker sans l'heure
+      const dateToStore = selectedDate.toISOString().split('T')[0];
+      console.log("Date being stored:", dateToStore);
+
       const { error } = await supabase
         .from("consulate_holidays")
         .insert({
-          date: selectedDate.toISOString().split('T')[0],
+          date: dateToStore,
           description: description.trim() || null
         });
 
