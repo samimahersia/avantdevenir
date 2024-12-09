@@ -4,8 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { startOfWeek, endOfWeek } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Edit2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface RecurringAvailability {
+  id: string;
   day_of_week: number;
   start_hour: number;
   end_hour: number;
@@ -15,12 +19,13 @@ interface RecurringAvailability {
 }
 
 const RecentAppointments = () => {
-  const { data: availabilities = [] } = useQuery({
+  const { data: availabilities = [], refetch } = useQuery({
     queryKey: ["recurring-availabilities"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("recurring_availabilities")
         .select(`
+          id,
           day_of_week,
           start_hour,
           end_hour,
@@ -34,6 +39,28 @@ const RecentAppointments = () => {
       return data as RecurringAvailability[];
     }
   });
+
+  const handleDelete = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("recurring_availabilities")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      toast.success("Créneau supprimé avec succès");
+      refetch();
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error);
+      toast.error("Erreur lors de la suppression du créneau");
+    }
+  };
+
+  const handleEdit = (availability: RecurringAvailability) => {
+    // Pour l'instant, on affiche juste un message
+    toast.info("Fonctionnalité de modification à venir");
+  };
 
   // Grouper les disponibilités par organisme
   const groupedAvailabilities = availabilities.reduce((acc: { [key: string]: RecurringAvailability[] }, availability) => {
@@ -71,14 +98,32 @@ const RecentAppointments = () => {
             <div key={consulateName} className="space-y-2">
               <h3 className="font-medium text-gray-600">{consulateName}</h3>
               <div className="space-y-2">
-                {availabilities.map((availability, slotIndex) => (
+                {availabilities.map((availability) => (
                   <div
-                    key={slotIndex}
-                    className={`p-4 rounded-lg bg-gradient-to-r ${gradients[index % gradients.length]}`}
+                    key={availability.id}
+                    className={`p-4 rounded-lg bg-gradient-to-r ${gradients[index % gradients.length]} flex justify-between items-center`}
                   >
                     <p className="font-medium capitalize">
                       {getDayName(availability.day_of_week)} de {availability.start_hour.toString().padStart(2, '0')}H00 à {availability.end_hour.toString().padStart(2, '0')}H00
                     </p>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(availability)}
+                        className="h-8 w-8"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(availability.id)}
+                        className="h-8 w-8 text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
