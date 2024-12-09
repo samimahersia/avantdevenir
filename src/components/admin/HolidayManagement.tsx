@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import HolidayForm from "./holiday/HolidayForm";
 import HolidayList from "./holiday/HolidayList";
-import RecentAppointments from "./holiday/RecentAppointments";
 import EditHolidayDialog from "./holiday/EditHolidayDialog";
 
 const HolidayManagement = () => {
@@ -124,7 +123,6 @@ const HolidayManagement = () => {
               onDelete={handleDeleteHoliday}
               onEdit={handleEditHoliday}
             />
-            <RecentAppointments />
           </div>
         </div>
 
