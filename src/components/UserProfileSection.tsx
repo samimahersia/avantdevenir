@@ -50,7 +50,6 @@ export function UserProfileSection() {
         console.error('Error fetching profile:', error);
         toast.error("Erreur lors du chargement du profil");
         setIsLoading(false);
-        navigate("/auth");
       }
     }
   });
@@ -58,6 +57,16 @@ export function UserProfileSection() {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
+      
+      // Vérifier d'abord s'il y a une session active
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // Si pas de session, rediriger directement vers la page d'authentification
+        navigate("/auth", { replace: true });
+        return;
+      }
+
       const { error } = await supabase.auth.signOut();
       
       if (error) {
