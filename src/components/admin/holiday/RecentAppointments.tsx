@@ -3,7 +3,6 @@ import { fr } from "date-fns/locale";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { startOfWeek, endOfWeek } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Edit2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -96,7 +95,7 @@ const RecentAppointments = () => {
         <div className="space-y-6">
           {Object.entries(groupedAvailabilities).map(([consulateName, availabilities], index) => (
             <div key={consulateName} className="space-y-2">
-              <h3 className="font-medium text-gray-600">{consulateName}</h3>
+              <h3 className="font-medium text-red-800 text-center text-lg">{consulateName}</h3>
               <div className="space-y-2">
                 {availabilities.map((availability) => (
                   <div
