@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,8 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { ProfileEmail } from "./profile/ProfileEmail";
+import { LogoutButton } from "./profile/LogoutButton";
 
-interface Profile {
+export interface Profile {
   id: string;
   first_name: string | null;
   last_name: string | null;
@@ -17,7 +18,6 @@ interface Profile {
 
 export function UserProfileSection() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
   const { data: profile, isError } = useQuery({
@@ -49,26 +49,9 @@ export function UserProfileSection() {
       onError: (error: Error) => {
         console.error('Error fetching profile:', error);
         toast.error("Erreur lors du chargement du profil");
-        setIsLoading(false);
       }
     }
   });
-
-  const handleLogout = async () => {
-    try {
-      setIsLoading(true);
-      await supabase.auth.signOut();
-      localStorage.clear();
-      sessionStorage.clear();
-      navigate("/auth", { replace: true });
-      toast.success("Déconnexion réussie");
-    } catch (error) {
-      console.error("Logout error:", error);
-      navigate("/auth", { replace: true });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   if (isError || !profile) {
     return (
@@ -88,19 +71,8 @@ export function UserProfileSection() {
   return (
     <div className="flex items-center justify-end gap-4">
       <div className="flex items-center gap-4">
-        <span className="text-sm text-blue-500 font-medium">
-          {profile.email}
-        </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-2 bg-blue-500 hover:bg-blue-600 text-white"
-          onClick={handleLogout}
-          disabled={isLoading}
-        >
-          <LogOut className="h-4 w-4" />
-          {isLoading ? "Déconnexion..." : "Déconnexion"}
-        </Button>
+        <ProfileEmail profile={profile} />
+        <LogoutButton />
       </div>
     </div>
   );
