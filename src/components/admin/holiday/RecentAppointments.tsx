@@ -5,73 +5,51 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { startOfWeek, endOfWeek } from "date-fns";
 
-interface Appointment {
-  date: string;
-  title: string;
+interface RecurringAvailability {
+  day_of_week: number;
+  start_hour: number;
+  end_hour: number;
   consulates: {
     name: string;
   };
 }
 
-interface GroupedAppointments {
-  [consulateName: string]: {
-    date: string;
-    dayOfWeek: string;
-    hour: string;
-  }[];
-}
-
 const RecentAppointments = () => {
-  const startDate = startOfWeek(new Date(), { weekStartsOn: 1 });
-  const endDate = endOfWeek(new Date(), { weekStartsOn: 1 });
-
-  const { data: appointments = [] } = useQuery({
-    queryKey: ["recent-appointments-by-consulate"],
+  const { data: availabilities = [] } = useQuery({
+    queryKey: ["recurring-availabilities"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("appointments")
+        .from("recurring_availabilities")
         .select(`
-          date,
-          title,
+          day_of_week,
+          start_hour,
+          end_hour,
           consulates (
             name
           )
         `)
-        .gte("date", startDate.toISOString())
-        .lte("date", endDate.toISOString())
-        .order("date", { ascending: true });
+        .order("day_of_week", { ascending: true });
       
       if (error) throw error;
-      return data as Appointment[];
+      return data as RecurringAvailability[];
     }
   });
 
-  // Grouper les rendez-vous par organisme et jour
-  const groupedAppointments = appointments.reduce((acc: GroupedAppointments, appointment) => {
-    const consulateName = appointment.consulates?.name || "Sans organisme";
-    const date = new Date(appointment.date);
-    const dayOfWeek = format(date, "EEEE", { locale: fr });
-    const hour = format(date, "HH'H'mm", { locale: fr });
-
+  // Grouper les disponibilités par organisme
+  const groupedAvailabilities = availabilities.reduce((acc: { [key: string]: RecurringAvailability[] }, availability) => {
+    const consulateName = availability.consulates?.name || "Sans organisme";
     if (!acc[consulateName]) {
       acc[consulateName] = [];
     }
-
-    // Vérifier si nous avons déjà un créneau pour ce jour
-    const existingDay = acc[consulateName].find(a => 
-      format(new Date(a.date), "EEEE", { locale: fr }) === dayOfWeek
-    );
-
-    if (!existingDay) {
-      acc[consulateName].push({
-        date: appointment.date,
-        dayOfWeek,
-        hour
-      });
-    }
-
+    acc[consulateName].push(availability);
     return acc;
   }, {});
+
+  // Fonction pour convertir le numéro du jour en nom en français
+  const getDayName = (dayNumber: number) => {
+    const date = new Date(2024, 0, dayNumber + 1); // Le 1er janvier 2024 était un lundi
+    return format(date, "EEEE", { locale: fr });
+  };
 
   // Couleurs pastel pour les différents organismes
   const gradients = [
@@ -89,25 +67,25 @@ const RecentAppointments = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {Object.entries(groupedAppointments).map(([consulateName, slots], index) => (
+          {Object.entries(groupedAvailabilities).map(([consulateName, availabilities], index) => (
             <div key={consulateName} className="space-y-2">
               <h3 className="font-medium text-gray-600">{consulateName}</h3>
               <div className="space-y-2">
-                {slots.map((slot, slotIndex) => (
+                {availabilities.map((availability, slotIndex) => (
                   <div
                     key={slotIndex}
                     className={`p-4 rounded-lg bg-gradient-to-r ${gradients[index % gradients.length]}`}
                   >
                     <p className="font-medium capitalize">
-                      {slot.dayOfWeek} de {slot.hour}
+                      {getDayName(availability.day_of_week)} de {availability.start_hour.toString().padStart(2, '0')}H00 à {availability.end_hour.toString().padStart(2, '0')}H00
                     </p>
                   </div>
                 ))}
               </div>
             </div>
           ))}
-          {Object.keys(groupedAppointments).length === 0 && (
-            <p className="text-gray-600 text-sm">Aucun créneau cette semaine</p>
+          {Object.keys(groupedAvailabilities).length === 0 && (
+            <p className="text-gray-600 text-sm">Aucun horaire configuré</p>
           )}
         </div>
       </CardContent>
