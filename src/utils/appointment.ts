@@ -21,18 +21,22 @@ export const generateTimeSlots = () => {
 export const TIME_SLOTS = generateTimeSlots();
 
 export const getAppointmentDate = (date: Date, selectedTime: TimeSlot) => {
-  // Créer une nouvelle date avec la date sélectionnée
+  // Créer une nouvelle date avec la date sélectionnée dans le fuseau horaire local
   const appointmentDate = new Date(
     date.getFullYear(),
     date.getMonth(),
-    date.getDate()
+    date.getDate(),
+    selectedTime.hour,
+    selectedTime.minute,
+    0,
+    0
   );
+
+  // Calculer le décalage horaire en minutes
+  const timezoneOffset = appointmentDate.getTimezoneOffset();
   
-  // Définir l'heure et les minutes directement
-  appointmentDate.setHours(selectedTime.hour);
-  appointmentDate.setMinutes(selectedTime.minute);
-  appointmentDate.setSeconds(0);
-  appointmentDate.setMilliseconds(0);
+  // Ajuster la date pour compenser le décalage horaire
+  appointmentDate.setMinutes(appointmentDate.getMinutes() - timezoneOffset);
 
   console.log("Generated appointment date:", {
     originalDate: date,
@@ -40,8 +44,9 @@ export const getAppointmentDate = (date: Date, selectedTime: TimeSlot) => {
     appointmentDate: appointmentDate.toISOString(),
     localTime: appointmentDate.toLocaleTimeString(),
     hour: appointmentDate.getHours(),
-    localHour: appointmentDate.getHours(),
+    localHour: new Date(appointmentDate).getHours(),
     utcHour: appointmentDate.getUTCHours(),
+    timezoneOffset,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
   });
   
