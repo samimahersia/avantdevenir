@@ -16,6 +16,12 @@ interface HolidayListProps {
 }
 
 const HolidayList = ({ holidays, onDelete, onEdit }: HolidayListProps) => {
+  const formatDate = (dateString: string) => {
+    // Créer la date en préservant le jour correct
+    const date = new Date(dateString + 'T12:00:00');
+    return format(date, "EEEE d MMMM yyyy", { locale: fr });
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="font-semibold">Jours fériés configurés</h3>
@@ -30,7 +36,7 @@ const HolidayList = ({ holidays, onDelete, onEdit }: HolidayListProps) => {
             >
               <div>
                 <p className="font-medium">
-                  {format(new Date(holiday.date), "EEEE d MMMM yyyy", { locale: fr })}
+                  {formatDate(holiday.date)}
                 </p>
                 {holiday.description && (
                   <p className="text-sm text-muted-foreground">{holiday.description}</p>
