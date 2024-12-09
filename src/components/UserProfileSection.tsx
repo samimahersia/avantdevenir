@@ -59,20 +59,19 @@ export function UserProfileSection() {
       setIsLoading(true);
       console.log("Starting logout process");
 
-      // Simple local signout first
-      await supabase.auth.signOut({ scope: 'local' });
-      console.log("Local signout completed");
+      // Local signout only
+      await supabase.auth.signOut();
+      console.log("Signout completed");
 
-      // Clear any cached data
+      // Clear storage
       localStorage.clear();
       sessionStorage.clear();
 
-      // Redirect and notify
+      // Notify and redirect
       toast.success("Déconnexion réussie");
       navigate("/auth", { replace: true });
     } catch (error) {
       console.error("Logout error:", error);
-      // Force redirect on error
       navigate("/auth", { replace: true });
     } finally {
       setIsLoading(false);
