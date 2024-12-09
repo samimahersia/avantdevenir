@@ -54,7 +54,7 @@ export const ConsulateSelector = ({ value, onValueChange }: ConsulateSelectorPro
             </SelectItem>
           ))
         ) : (
-          <SelectItem value="" disabled>
+          <SelectItem value="no-data" disabled>
             Aucun consulat disponible
           </SelectItem>
         )}

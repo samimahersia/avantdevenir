@@ -54,7 +54,7 @@ export const OrganismeeSelector = ({ value, onValueChange }: OrganismeeSelectorP
             </SelectItem>
           ))
         ) : (
-          <SelectItem value="" disabled>
+          <SelectItem value="no-data" disabled>
             Aucun organisme disponible
           </SelectItem>
         )}
