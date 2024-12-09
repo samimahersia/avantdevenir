@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import { MobileNavigation } from "@/components/MobileNavigation";
 import { PageHeader } from "@/components/PageHeader";
 import { DashboardContent } from "@/components/DashboardContent";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { useState, useEffect } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -96,12 +97,12 @@ const Index = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4">
-        <div className="text-center w-full max-w-md mx-auto">
-          <p className="text-red-600 mb-4 text-sm sm:text-base">{error}</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-2">
+        <div className="text-center w-full max-w-[350px] mx-auto">
+          <p className="text-red-600 mb-4 text-sm">{error}</p>
           <Button 
             onClick={() => navigate("/auth")} 
-            className="w-full sm:w-auto"
+            className="w-full"
           >
             Retour à la connexion
           </Button>
@@ -112,10 +113,10 @@ const Index = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4">
-        <div className="text-center w-full max-w-md mx-auto">
-          <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground text-sm sm:text-base">Chargement...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-2">
+        <div className="text-center w-full max-w-[350px] mx-auto">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground text-sm">Chargement...</p>
         </div>
       </div>
     );
@@ -127,9 +128,9 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen p-2 sm:p-4 md:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen p-2 md:p-4 lg:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-[100vw] mx-auto">
-        <div className="flex justify-between items-center mb-4 sm:mb-6">
+        <div className="flex justify-between items-center mb-4 gap-2">
           <MobileNavigation 
             userType={userType} 
             setUserType={setUserType} 
@@ -137,7 +138,7 @@ const Index = () => {
             activeTab={activeTab} 
             setActiveTab={setActiveTab} 
           />
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-2">
             <LanguageSelector />
             <UserProfileSection />
           </div>
@@ -145,7 +146,7 @@ const Index = () => {
 
         <Card className="shadow-lg overflow-hidden">
           <PageHeader userType={userType} setUserType={setUserType} userRole={userRole} />
-          <CardContent className="p-2 sm:p-4 md:p-6">
+          <CardContent className="p-2 md:p-4">
             <DashboardContent 
               userType={userType}
               userRole={userRole}
