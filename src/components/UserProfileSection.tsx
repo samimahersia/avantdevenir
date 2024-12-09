@@ -58,31 +58,20 @@ export function UserProfileSection() {
     try {
       setIsLoading(true);
       
-      // Vérifier d'abord s'il y a une session active
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        // Si pas de session, rediriger directement vers la page d'authentification
-        navigate("/auth", { replace: true });
-        return;
-      }
-
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error("Logout error:", error);
-        toast.error("Erreur lors de la déconnexion");
-        return;
-      }
-      
       // Attendre un court instant pour s'assurer que la session est bien détruite
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      toast.success("Déconnexion réussie");
+      // Déconnexion locale d'abord
+      await supabase.auth.signOut();
+      
+      // Redirection immédiate
       navigate("/auth", { replace: true });
+      
+      toast.success("Déconnexion réussie");
     } catch (error) {
       console.error("Logout error:", error);
-      toast.error("Erreur lors de la déconnexion");
+      // En cas d'erreur, on redirige quand même vers la page d'authentification
+      navigate("/auth", { replace: true });
     } finally {
       setIsLoading(false);
     }
