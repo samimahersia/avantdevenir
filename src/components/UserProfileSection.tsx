@@ -57,19 +57,11 @@ export function UserProfileSection() {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
-      console.log("Starting logout process");
-
-      // Local signout only
       await supabase.auth.signOut();
-      console.log("Signout completed");
-
-      // Clear storage
       localStorage.clear();
       sessionStorage.clear();
-
-      // Notify and redirect
-      toast.success("Déconnexion réussie");
       navigate("/auth", { replace: true });
+      toast.success("Déconnexion réussie");
     } catch (error) {
       console.error("Logout error:", error);
       navigate("/auth", { replace: true });
