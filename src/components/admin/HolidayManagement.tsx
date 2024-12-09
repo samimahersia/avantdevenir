@@ -9,14 +9,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useQuery } from "@tanstack/react-query";
+import { Trash, Pencil } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 const HolidayManagement = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingHoliday, setEditingHoliday] = useState<any>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
 
   // Fetch holidays
-  const { data: holidays = [] } = useQuery({
+  const { data: holidays = [], refetch } = useQuery({
     queryKey: ["holidays"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -65,11 +69,59 @@ const HolidayManagement = () => {
       toast.success("Jour férié ajouté avec succès");
       setSelectedDate(undefined);
       setDescription("");
+      refetch();
     } catch (error) {
       console.error("Error adding holiday:", error);
       toast.error("Erreur lors de l'ajout du jour férié");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteHoliday = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("consulate_holidays")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      toast.success("Jour férié supprimé avec succès");
+      refetch();
+    } catch (error) {
+      console.error("Error deleting holiday:", error);
+      toast.error("Erreur lors de la suppression du jour férié");
+    }
+  };
+
+  const handleEditHoliday = (holiday: any) => {
+    setEditingHoliday(holiday);
+    setDescription(holiday.description || "");
+    setShowEditDialog(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingHoliday) return;
+
+    try {
+      const { error } = await supabase
+        .from("consulate_holidays")
+        .update({
+          description: description.trim() || null
+        })
+        .eq("id", editingHoliday.id);
+
+      if (error) throw error;
+
+      toast.success("Jour férié modifié avec succès");
+      setShowEditDialog(false);
+      setEditingHoliday(null);
+      setDescription("");
+      refetch();
+    } catch (error) {
+      console.error("Error updating holiday:", error);
+      toast.error("Erreur lors de la modification du jour férié");
     }
   };
 
@@ -117,14 +169,34 @@ const HolidayManagement = () => {
                   {holidays.map((holiday) => (
                     <div
                       key={holiday.id}
-                      className="p-2 bg-white/50 rounded-md"
+                      className="p-2 bg-white/50 rounded-md flex justify-between items-center"
                     >
-                      <p className="font-medium">
-                        {format(new Date(holiday.date), "dd MMMM yyyy", { locale: fr })}
-                      </p>
-                      {holiday.description && (
-                        <p className="text-sm text-gray-600">{holiday.description}</p>
-                      )}
+                      <div>
+                        <p className="font-medium">
+                          {format(new Date(holiday.date), "dd MMMM yyyy", { locale: fr })}
+                        </p>
+                        {holiday.description && (
+                          <p className="text-sm text-gray-600">{holiday.description}</p>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEditHoliday(holiday)}
+                          className="h-8 w-8"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteHoliday(holiday.id)}
+                          className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
                   {holidays.length === 0 && (
@@ -160,6 +232,33 @@ const HolidayManagement = () => {
           </div>
         </div>
       </CardContent>
+
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Modifier le jour férié</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Description</Label>
+              <Input
+                id="edit-description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Ex: Jour de l'an"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+              Annuler
+            </Button>
+            <Button onClick={handleSaveEdit}>
+              Enregistrer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
