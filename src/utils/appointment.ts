@@ -21,9 +21,14 @@ export const generateTimeSlots = () => {
 export const TIME_SLOTS = generateTimeSlots();
 
 export const getAppointmentDate = (date: Date, selectedTime: TimeSlot) => {
-  // Créer une nouvelle date en préservant le fuseau horaire local
-  const appointmentDate = new Date(date);
-  // Définir les heures et minutes sans conversion de fuseau horaire
+  // Créer une nouvelle date avec la date sélectionnée
+  const appointmentDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
+  
+  // Définir l'heure et les minutes directement
   appointmentDate.setHours(selectedTime.hour);
   appointmentDate.setMinutes(selectedTime.minute);
   appointmentDate.setSeconds(0);
@@ -32,10 +37,12 @@ export const getAppointmentDate = (date: Date, selectedTime: TimeSlot) => {
   console.log("Generated appointment date:", {
     originalDate: date,
     selectedTime,
-    appointmentDate,
+    appointmentDate: appointmentDate.toISOString(),
+    localTime: appointmentDate.toLocaleTimeString(),
     hour: appointmentDate.getHours(),
     localHour: appointmentDate.getHours(),
-    utcHour: appointmentDate.getUTCHours()
+    utcHour: appointmentDate.getUTCHours(),
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
   });
   
   return appointmentDate;
