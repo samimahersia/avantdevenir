@@ -1,4 +1,4 @@
-import { addHours, setHours, setMinutes, startOfToday } from "date-fns";
+import { startOfToday } from "date-fns";
 
 export interface TimeSlot {
   hour: number;
@@ -21,14 +21,23 @@ export const generateTimeSlots = () => {
 export const TIME_SLOTS = generateTimeSlots();
 
 export const getAppointmentDate = (date: Date, selectedTime: TimeSlot) => {
+  // Créer une nouvelle date en préservant le fuseau horaire local
   const appointmentDate = new Date(date);
-  appointmentDate.setHours(selectedTime.hour, selectedTime.minute, 0, 0);
+  // Définir les heures et minutes sans conversion de fuseau horaire
+  appointmentDate.setHours(selectedTime.hour);
+  appointmentDate.setMinutes(selectedTime.minute);
+  appointmentDate.setSeconds(0);
+  appointmentDate.setMilliseconds(0);
+
   console.log("Generated appointment date:", {
     originalDate: date,
     selectedTime,
     appointmentDate,
-    hour: appointmentDate.getHours()
+    hour: appointmentDate.getHours(),
+    localHour: appointmentDate.getHours(),
+    utcHour: appointmentDate.getUTCHours()
   });
+  
   return appointmentDate;
 };
 
