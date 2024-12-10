@@ -16,10 +16,17 @@ interface HolidayListProps {
 }
 
 const HolidayList = ({ holidays, onDelete, onEdit }: HolidayListProps) => {
-  const formatDate = (dateString: string) => {
-    const [year, month, day] = dateString.split('-').map(Number);
-    const date = new Date(year, month - 1, day, 12, 0, 0);
-    return format(date, "EEEE d MMMM yyyy", { locale: fr });
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return "Date invalide";
+    
+    try {
+      const [year, month, day] = dateString.split('-').map(Number);
+      const date = new Date(year, month - 1, day, 12, 0, 0);
+      return format(date, "EEEE d MMMM yyyy", { locale: fr });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "Date invalide";
+    }
   };
 
   return (
