@@ -128,14 +128,14 @@ const AppointmentCalendar = () => {
               disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
             />
           </div>
-          <div className="mt-4">
+          <div className="mt-4 px-2">
             <Button 
               onClick={generatePDF}
-              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700"
+              className="w-full md:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm py-2 h-auto"
               variant="outline"
             >
               <FileDown className="mr-2 h-4 w-4" />
-              Exporter les rendez-vous en PDF
+              <span className="whitespace-normal text-center">Exporter les rendez-vous en PDF</span>
             </Button>
           </div>
         </CardContent>
