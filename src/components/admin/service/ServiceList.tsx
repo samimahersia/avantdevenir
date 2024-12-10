@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
 
 interface ServiceListProps {
   services: any[];
@@ -53,9 +54,22 @@ const ServiceList = ({ services, onEdit, onDelete }: ServiceListProps) => {
             <p className="text-sm text-muted-foreground">
               Durée: {service.duration} minutes, Max concurrent: {service.max_concurrent}
             </p>
-            <p className="text-sm text-muted-foreground">
-              Consulats liés: {serviceConsulates[service.id]?.join(", ") || "Aucun"}
-            </p>
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="text-sm text-muted-foreground">Consulats liés:</span>
+              {serviceConsulates[service.id]?.length > 0 ? (
+                serviceConsulates[service.id].map((consulateName: string) => (
+                  <Badge 
+                    key={consulateName}
+                    variant="secondary" 
+                    className="bg-[#E5DEFF] text-[#6E59A5] hover:bg-[#D6BCFA]"
+                  >
+                    {consulateName}
+                  </Badge>
+                ))
+              ) : (
+                <span className="text-sm text-gray-500">Aucun</span>
+              )}
+            </div>
           </div>
           <div className="flex gap-2">
             <Button
