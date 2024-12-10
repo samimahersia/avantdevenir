@@ -3,6 +3,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 interface MobileNavigationProps {
   userType: "client" | "admin";
@@ -20,27 +21,20 @@ export const MobileNavigation = ({
   setActiveTab
 }: MobileNavigationProps) => {
   const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    // Fermer le menu après la sélection en utilisant l'API du Sheet
-    const sheetCloseButton = document.querySelector('[data-radix-collection-item]');
-    if (sheetCloseButton instanceof HTMLElement) {
-      sheetCloseButton.click();
-    }
+    setIsOpen(false); // Ferme le menu après la sélection d'un onglet
   };
 
   const handleUserTypeChange = (type: "client" | "admin") => {
     setUserType(type);
-    // Fermer le menu après le changement de type d'utilisateur
-    const sheetCloseButton = document.querySelector('[data-radix-collection-item]');
-    if (sheetCloseButton instanceof HTMLElement) {
-      sheetCloseButton.click();
-    }
+    setIsOpen(false); // Ferme le menu après le changement de type d'utilisateur
   };
 
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button 
           variant="ghost" 
