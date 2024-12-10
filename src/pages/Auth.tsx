@@ -1,11 +1,79 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Pencil } from "lucide-react";
+import { toast } from "sonner";
 import LoginForm from "@/components/auth/LoginForm";
 import RegisterForm from "@/components/auth/RegisterForm";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const [activeTab, setActiveTab] = useState("login");
+  const [welcomeText, setWelcomeText] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedText, setEditedText] = useState("");
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchWelcomeText();
+    checkUserRole();
+  }, []);
+
+  const fetchWelcomeText = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('site_content')
+        .select('content')
+        .eq('key', 'login_welcome_text')
+        .single();
+
+      if (error) throw error;
+      if (data) setWelcomeText(data.content);
+    } catch (error) {
+      console.error('Error fetching welcome text:', error);
+      toast.error("Erreur lors du chargement du texte de bienvenue");
+    }
+  };
+
+  const checkUserRole = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+      if (!error && data) {
+        setUserRole(data.role);
+      }
+    }
+  };
+
+  const handleSaveText = async () => {
+    try {
+      const { error } = await supabase
+        .from('site_content')
+        .update({ content: editedText })
+        .eq('key', 'login_welcome_text');
+
+      if (error) throw error;
+
+      setWelcomeText(editedText);
+      setIsEditing(false);
+      toast.success("Texte de bienvenue mis à jour avec succès");
+    } catch (error) {
+      console.error('Error updating welcome text:', error);
+      toast.error("Erreur lors de la mise à jour du texte");
+    }
+  };
+
+  const handleEdit = () => {
+    setEditedText(welcomeText);
+    setIsEditing(true);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-gray-100 to-blue-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
@@ -14,13 +82,42 @@ const Auth = () => {
           AvantDeVenir.com
         </h1>
         
-        <p className="text-center text-gray-600 dark:text-gray-300 mb-8 italic">
-          Bienvenue sur AvantDeVenir.com,<br />
-          votre plateforme de gestion de rendez-vous consulaires.<br />
-          Simplifiez vos démarches administratives<br />
-          et gagnez du temps avec notre service<br />
-          de prise de rendez-vous en ligne.
-        </p>
+        <div className="relative mb-8">
+          {isEditing ? (
+            <div className="space-y-2">
+              <Textarea
+                value={editedText}
+                onChange={(e) => setEditedText(e.target.value)}
+                rows={5}
+                className="w-full p-2 text-center"
+              />
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsEditing(false)}>
+                  Annuler
+                </Button>
+                <Button onClick={handleSaveText}>
+                  Enregistrer
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="relative">
+              <p className="text-center text-gray-600 dark:text-gray-300 italic whitespace-pre-line">
+                {welcomeText}
+              </p>
+              {userRole === 'admin' && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-0 right-0"
+                  onClick={handleEdit}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
         
         <Card>
           <CardHeader className="space-y-1">
