@@ -4,11 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface OrganismeeSelectorProps {
-  value?: string;
-  onValueChange: (value: string) => void;
+  value?: string | string[];
+  onValueChange: (value: string | string[]) => void;
+  multiple?: boolean;
 }
 
-export const OrganismeeSelector = ({ value, onValueChange }: OrganismeeSelectorProps) => {
+export const OrganismeeSelector = ({ value, onValueChange, multiple }: OrganismeeSelectorProps) => {
   const { data: organismes = [], isLoading, error } = useQuery({
     queryKey: ["organismes"],
     queryFn: async () => {
