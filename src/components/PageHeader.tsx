@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Pencil } from "lucide-react";
+import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface PageHeaderProps {
   userType: "client" | "admin";
@@ -9,6 +12,14 @@ interface PageHeaderProps {
 }
 
 export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [aboutText, setAboutText] = useState({
+    title: "À propos de nos services",
+    welcome: "Bienvenue sur AvantDeVenir, votre plateforme de gestion de rendez-vous consulaires. Notre service simplifie la prise de rendez-vous et la gestion de vos démarches administratives.",
+    features: "• Une prise de rendez-vous simple et rapide\n• Un suivi en temps réel de vos demandes\n• Des notifications personnalisées\n• Une interface intuitive pour gérer vos documents",
+    support: "Notre équipe est là pour vous accompagner dans toutes vos démarches consulaires et assurer une expérience fluide et efficace."
+  });
+
   return (
     <CardHeader className="text-center pb-3 p-0">
       <div className="max-w-full mx-auto space-y-3">
@@ -22,25 +33,57 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent shadow-2xl"></div>
           </div>
           
-          <ScrollArea className="w-full md:w-1/2 h-40 md:h-48 lg:h-80 rounded-lg border bg-card p-4">
-            <div className="text-sm text-muted-foreground">
-              <h3 className="font-semibold mb-2 text-foreground">À propos de nos services</h3>
-              <p className="mb-4">
-                Bienvenue sur AvantDeVenir, votre plateforme de gestion de rendez-vous consulaires. 
-                Notre service simplifie la prise de rendez-vous et la gestion de vos démarches administratives.
-              </p>
-              <p className="mb-4">
-                Nous proposons :
-                • Une prise de rendez-vous simple et rapide
-                • Un suivi en temps réel de vos demandes
-                • Des notifications personnalisées
-                • Une interface intuitive pour gérer vos documents
-              </p>
-              <p>
-                Notre équipe est là pour vous accompagner dans toutes vos démarches consulaires 
-                et assurer une expérience fluide et efficace.
-              </p>
-            </div>
+          <ScrollArea className="w-full md:w-1/2 h-40 md:h-48 lg:h-80 rounded-lg border bg-card p-4 relative">
+            {userRole === "admin" && !isEditing && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 z-10"
+                onClick={() => setIsEditing(true)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            )}
+            
+            {isEditing ? (
+              <div className="space-y-4">
+                <Textarea
+                  value={aboutText.title}
+                  onChange={(e) => setAboutText({ ...aboutText, title: e.target.value })}
+                  className="font-semibold"
+                />
+                <Textarea
+                  value={aboutText.welcome}
+                  onChange={(e) => setAboutText({ ...aboutText, welcome: e.target.value })}
+                />
+                <Textarea
+                  value={aboutText.features}
+                  onChange={(e) => setAboutText({ ...aboutText, features: e.target.value })}
+                />
+                <Textarea
+                  value={aboutText.support}
+                  onChange={(e) => setAboutText({ ...aboutText, support: e.target.value })}
+                />
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setIsEditing(false)}>
+                    Annuler
+                  </Button>
+                  <Button onClick={() => setIsEditing(false)}>
+                    Enregistrer
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                <h3 className="font-semibold mb-2 text-foreground">{aboutText.title}</h3>
+                <p className="mb-4">{aboutText.welcome}</p>
+                <p className="mb-4 whitespace-pre-line">
+                  Nous proposons :
+                  {aboutText.features}
+                </p>
+                <p>{aboutText.support}</p>
+              </div>
+            )}
           </ScrollArea>
         </div>
         
