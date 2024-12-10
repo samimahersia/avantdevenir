@@ -38,10 +38,29 @@ export const OrganismeeSelector = ({ value, onValueChange, multiple = false }: O
     );
   }
 
+  // Ensure we have a valid string value for the Select component
+  const selectValue = multiple 
+    ? (Array.isArray(value) ? value[0] : undefined)
+    : (typeof value === 'string' ? value : undefined);
+
+  const handleValueChange = (newValue: string) => {
+    if (multiple) {
+      // For multiple selection, maintain array of values
+      const currentValues = Array.isArray(value) ? value : [];
+      const updatedValues = currentValues.includes(newValue)
+        ? currentValues.filter(v => v !== newValue)
+        : [...currentValues, newValue];
+      onValueChange(updatedValues);
+    } else {
+      // For single selection, just pass the value
+      onValueChange(newValue);
+    }
+  };
+
   return (
     <Select 
-      value={value as string} 
-      onValueChange={onValueChange}
+      value={selectValue} 
+      onValueChange={handleValueChange}
     >
       <SelectTrigger className="bg-[#D3E4FD] border-[#D3E4FD] hover:bg-[#C3D4ED]">
         <SelectValue placeholder="Sélectionnez un organisme" />
@@ -53,7 +72,10 @@ export const OrganismeeSelector = ({ value, onValueChange, multiple = false }: O
           </SelectItem>
         ) : organismes.length > 0 ? (
           organismes.map((organisme) => (
-            <SelectItem key={organisme.id} value={organisme.id}>
+            <SelectItem 
+              key={organisme.id} 
+              value={organisme.id}
+            >
               {organisme.name}
             </SelectItem>
           ))
