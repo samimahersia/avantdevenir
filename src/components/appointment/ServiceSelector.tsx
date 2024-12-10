@@ -8,6 +8,11 @@ interface ServiceSelectorProps {
   selectedConsulate?: string;
 }
 
+interface Service {
+  id: string;
+  name: string;
+}
+
 const ServiceSelector = ({ selectedService, onServiceSelect, selectedConsulate }: ServiceSelectorProps) => {
   const { data: services = [], isLoading } = useQuery({
     queryKey: ["services", selectedConsulate],
@@ -34,7 +39,7 @@ const ServiceSelector = ({ selectedService, onServiceSelect, selectedConsulate }
       }
 
       // Transform the data to get the services array
-      const servicesData = data.map(item => item.services);
+      const servicesData = data.map(item => item.services) as Service[];
       console.log("Services fetched:", servicesData);
       return servicesData;
     },

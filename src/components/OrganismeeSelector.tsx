@@ -9,7 +9,7 @@ interface OrganismeeSelectorProps {
   multiple?: boolean;
 }
 
-export const OrganismeeSelector = ({ value, onValueChange, multiple }: OrganismeeSelectorProps) => {
+export const OrganismeeSelector = ({ value, onValueChange, multiple = false }: OrganismeeSelectorProps) => {
   const { data: organismes = [], isLoading, error } = useQuery({
     queryKey: ["organismes"],
     queryFn: async () => {
@@ -38,8 +38,14 @@ export const OrganismeeSelector = ({ value, onValueChange, multiple }: Organisme
     );
   }
 
+  // Si multiple est true, on s'assure que value est un tableau
+  const currentValue = multiple ? (Array.isArray(value) ? value : []) : value as string;
+
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select 
+      value={currentValue as string} 
+      onValueChange={onValueChange}
+    >
       <SelectTrigger className="bg-[#D3E4FD] border-[#D3E4FD] hover:bg-[#C3D4ED]">
         <SelectValue placeholder="Sélectionnez un organisme" />
       </SelectTrigger>
