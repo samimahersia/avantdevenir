@@ -29,6 +29,7 @@ const RecurringAvailabilityForm = ({ initialAvailability }: RecurringAvailabilit
 
   useEffect(() => {
     if (initialAvailability) {
+      console.log("Initial availability received:", initialAvailability);
       setSelectedOrganismee(initialAvailability.consulate_id);
       setAvailabilities({
         [initialAvailability.day_of_week]: {
@@ -63,7 +64,7 @@ const RecurringAvailabilityForm = ({ initialAvailability }: RecurringAvailabilit
     enabled: !!selectedOrganismee,
     meta: {
       onSettled: (data) => {
-        if (data) {
+        if (data && !initialAvailability) {
           const newAvailabilities = data.reduce((acc, curr) => ({
             ...acc,
             [curr.day_of_week]: {
@@ -79,7 +80,9 @@ const RecurringAvailabilityForm = ({ initialAvailability }: RecurringAvailabilit
 
   const handleOrganismeeChange = (value: string) => {
     setSelectedOrganismee(value);
-    setAvailabilities({}); // Reset availabilities when changing organisme
+    if (!initialAvailability) {
+      setAvailabilities({}); // Reset availabilities when changing organisme
+    }
   };
 
   return (

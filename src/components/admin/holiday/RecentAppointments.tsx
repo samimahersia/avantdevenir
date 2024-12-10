@@ -13,6 +13,7 @@ interface RecurringAvailability {
   day_of_week: number;
   start_hour: number;
   end_hour: number;
+  consulate_id: string;
   consulates: {
     name: string;
   };
@@ -30,6 +31,7 @@ const RecentAppointments = () => {
           day_of_week,
           start_hour,
           end_hour,
+          consulate_id,
           consulates (
             name
           )
@@ -60,17 +62,31 @@ const RecentAppointments = () => {
 
   const handleEdit = (availability: RecurringAvailability) => {
     // Naviguer vers l'onglet "settings" avec les informations de disponibilité
-    navigate("/", { 
-      state: { 
-        activeTab: "settings",
-        availabilityToEdit: availability 
+    const state = {
+      activeTab: "settings",
+      availabilityToEdit: {
+        id: availability.id,
+        day_of_week: availability.day_of_week,
+        start_hour: availability.start_hour,
+        end_hour: availability.end_hour,
+        consulate_id: availability.consulate_id
       }
-    });
+    };
+    
+    // Mettre à jour l'URL et l'état
+    navigate("/", { state });
+    
     // Déclencher un événement personnalisé pour informer le composant parent
     window.dispatchEvent(new CustomEvent('switchTab', { 
       detail: { 
         tab: 'settings',
-        availability: availability
+        availability: {
+          id: availability.id,
+          day_of_week: availability.day_of_week,
+          start_hour: availability.start_hour,
+          end_hour: availability.end_hour,
+          consulate_id: availability.consulate_id
+        }
       }
     }));
   };
