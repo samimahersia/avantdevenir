@@ -131,11 +131,12 @@ const AppointmentCalendar = () => {
           <div className="mt-4 px-2">
             <Button 
               onClick={generatePDF}
-              className="w-full md:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm py-2 h-auto"
-              variant="outline"
+              className="p-2 hover:bg-accent"
+              variant="ghost"
+              size="icon"
+              title="Exporter les rendez-vous en PDF"
             >
-              <FileDown className="mr-2 h-4 w-4" />
-              <span className="whitespace-normal text-center">Exporter les rendez-vous en PDF</span>
+              <FileDown className="h-6 w-6 text-red-800" />
             </Button>
           </div>
         </CardContent>
