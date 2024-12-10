@@ -105,6 +105,45 @@ export type Database = {
           },
         ]
       }
+      consulate_services: {
+        Row: {
+          consulate_id: string
+          created_at: string
+          id: string
+          service_id: string
+          updated_at: string
+        }
+        Insert: {
+          consulate_id: string
+          created_at?: string
+          id?: string
+          service_id: string
+          updated_at?: string
+        }
+        Update: {
+          consulate_id?: string
+          created_at?: string
+          id?: string
+          service_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consulate_services_consulate_id_fkey"
+            columns: ["consulate_id"]
+            isOneToOne: false
+            referencedRelation: "consulates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consulate_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consulates: {
         Row: {
           address: string

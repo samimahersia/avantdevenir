@@ -31,13 +31,18 @@ export const DashboardContent = ({
           <div className="w-full">
             <ConsulateSelector 
               value={selectedConsulate} 
-              onValueChange={setSelectedConsulate}
+              onValueChange={(value) => {
+                setSelectedConsulate(value);
+                // Reset selected service when consulate changes
+                setSelectedService(undefined);
+              }}
             />
           </div>
           <div className="w-full">
             <ServiceSelector
               selectedService={selectedService}
               onServiceSelect={setSelectedService}
+              selectedConsulate={selectedConsulate}
             />
           </div>
         </div>
