@@ -75,6 +75,22 @@ const Auth = () => {
     setIsEditing(true);
   };
 
+  const renderWelcomeText = (text: string) => {
+    const lines = text.split('\n');
+    if (lines.length === 0) return null;
+
+    return (
+      <>
+        <p className="text-[1.15em] font-semibold bg-gradient-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent">
+          {lines[0]}
+        </p>
+        {lines.slice(1).map((line, index) => (
+          <p key={index}>{line}</p>
+        ))}
+      </>
+    );
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-gray-100 to-blue-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
       <div className="w-full max-w-md">
@@ -102,9 +118,9 @@ const Auth = () => {
             </div>
           ) : (
             <div className="relative bg-white/80 dark:bg-gray-800/80 p-4 rounded-lg shadow-sm">
-              <pre className="text-center text-gray-600 dark:text-gray-300 whitespace-pre-line font-sans">
-                {welcomeText}
-              </pre>
+              <div className="text-center text-gray-600 dark:text-gray-300 whitespace-pre-line font-sans">
+                {renderWelcomeText(welcomeText)}
+              </div>
               {userRole === 'admin' && (
                 <Button
                   variant="ghost"
