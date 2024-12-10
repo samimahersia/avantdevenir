@@ -24,7 +24,7 @@ export const DayAvailabilityForm = ({
   refetchAvailabilities
 }: DayAvailabilityFormProps) => {
   const { isSubmitting, handleSave } = useAvailability({
-    dayIndex,
+    dayIndex: dayIndex,  // dayIndex is already 1-7 from parent
     selectedOrganismee,
     refetchAvailabilities
   });
