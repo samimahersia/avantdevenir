@@ -22,6 +22,7 @@ export const TIME_SLOTS = generateTimeSlots();
 
 export const getAppointmentDate = (date: Date, selectedTime: TimeSlot) => {
   // Créer une nouvelle date avec la date sélectionnée dans le fuseau horaire local
+  // sans ajouter de décalage supplémentaire
   const appointmentDate = new Date(
     date.getFullYear(),
     date.getMonth(),
