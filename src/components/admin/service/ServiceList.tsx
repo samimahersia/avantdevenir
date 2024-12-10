@@ -36,11 +36,13 @@ const ServiceList = ({ services, onEdit, onDelete }: ServiceListProps) => {
       
       if (error) throw error;
 
+      // Trier les consulats par ordre alphabétique pour chaque service
       return data.reduce((acc, item) => {
         if (!acc[item.service_id]) {
           acc[item.service_id] = [];
         }
         acc[item.service_id].push(item.consulates.name);
+        acc[item.service_id].sort((a: string, b: string) => a.localeCompare(b));
         return acc;
       }, {});
     }
