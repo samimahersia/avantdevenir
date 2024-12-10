@@ -23,10 +23,19 @@ export const MobileNavigation = ({
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    // Fermer le menu après la sélection
-    const closeButton = document.querySelector('[data-sheet-close]');
-    if (closeButton instanceof HTMLElement) {
-      closeButton.click();
+    // Fermer le menu après la sélection en utilisant l'API du Sheet
+    const sheetCloseButton = document.querySelector('[data-radix-collection-item]');
+    if (sheetCloseButton instanceof HTMLElement) {
+      sheetCloseButton.click();
+    }
+  };
+
+  const handleUserTypeChange = (type: "client" | "admin") => {
+    setUserType(type);
+    // Fermer le menu après le changement de type d'utilisateur
+    const sheetCloseButton = document.querySelector('[data-radix-collection-item]');
+    if (sheetCloseButton instanceof HTMLElement) {
+      sheetCloseButton.click();
     }
   };
 
@@ -50,7 +59,7 @@ export const MobileNavigation = ({
           {userRole !== "admin" && (
             <Button
               variant={userType === "client" ? "default" : "outline"}
-              onClick={() => setUserType("client")}
+              onClick={() => handleUserTypeChange("client")}
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground transition-colors"
             >
               Mode Client
@@ -60,7 +69,7 @@ export const MobileNavigation = ({
             <div className="space-y-2">
               <Button
                 variant={userType === "admin" ? "default" : "outline"}
-                onClick={() => setUserType("admin")}
+                onClick={() => handleUserTypeChange("admin")}
                 className="w-full bg-black text-white hover:bg-gray-800 transition-colors"
               >
                 Mode Administrateur
