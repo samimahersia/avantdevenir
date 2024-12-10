@@ -112,20 +112,22 @@ const AppointmentCalendar = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <Card>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+      <Card className="w-full overflow-hidden">
         <CardHeader>
           <CardTitle>Calendrier</CardTitle>
         </CardHeader>
         <CardContent>
-          <Calendar
-            mode="single"
-            selected={selectedDate}
-            onSelect={(date) => date && setSelectedDate(date)}
-            className="rounded-md border"
-            locale={fr}
-            disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-          />
+          <div className="flex justify-center">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={(date) => date && setSelectedDate(date)}
+              className="rounded-md border w-full max-w-[300px]"
+              locale={fr}
+              disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+            />
+          </div>
           <div className="mt-4">
             <Button 
               onClick={generatePDF}
@@ -139,7 +141,7 @@ const AppointmentCalendar = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>
             Rendez-vous du {format(selectedDate, "d MMMM yyyy", { locale: fr })}
