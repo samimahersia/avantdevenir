@@ -89,7 +89,7 @@ const Auth = () => {
                 value={editedText}
                 onChange={(e) => setEditedText(e.target.value)}
                 rows={5}
-                className="w-full p-2 text-center"
+                className="w-full p-2"
               />
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setIsEditing(false)}>
@@ -101,15 +101,15 @@ const Auth = () => {
               </div>
             </div>
           ) : (
-            <div className="relative">
-              <p className="text-center text-gray-600 dark:text-gray-300 italic whitespace-pre-line">
+            <div className="relative bg-white/80 dark:bg-gray-800/80 p-4 rounded-lg shadow-sm">
+              <pre className="text-center text-gray-600 dark:text-gray-300 whitespace-pre-line font-sans">
                 {welcomeText}
-              </p>
+              </pre>
               {userRole === 'admin' && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-0 right-0"
+                  className="absolute top-2 right-2"
                   onClick={handleEdit}
                 >
                   <Pencil className="h-4 w-4" />
