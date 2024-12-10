@@ -20,7 +20,7 @@ import {
   Legend,
 } from "recharts";
 
-const COLORS = ["#10B981", "#F59E0B", "#EF4444"];
+const COLORS = ["#10B981", "#F59E0B", "#EF4444", "#6366F1", "#EC4899", "#8B5CF6"];
 const DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
 
 const AppointmentStats = () => {
@@ -32,7 +32,7 @@ const AppointmentStats = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("appointments")
-        .select("*")
+        .select("*, services(name)")
         .gte("date", startDate.toISOString())
         .lte("date", endDate.toISOString());
       
@@ -52,13 +52,27 @@ const AppointmentStats = () => {
     return acc;
   }, []);
 
-  // Prepare data for appointments by day
-  const appointmentsByDay = DAYS.map(day => ({
-    name: day,
-    appointments: appointments.filter(apt => 
+  // Prepare data for appointments by day and service
+  const appointmentsByDayAndService = DAYS.map(day => {
+    const dayAppointments = appointments.filter(apt => 
       format(new Date(apt.date), "EEEE", { locale: fr }) === day
-    ).length
-  }));
+    );
+
+    // Group appointments by service
+    const serviceGroups = dayAppointments.reduce((acc: { [key: string]: number }, apt) => {
+      const serviceName = apt.services?.name || "Sans service";
+      acc[serviceName] = (acc[serviceName] || 0) + 1;
+      return acc;
+    }, {});
+
+    return {
+      name: day,
+      ...serviceGroups
+    };
+  });
+
+  // Get unique services for the legend
+  const uniqueServices = Array.from(new Set(appointments.map(apt => apt.services?.name || "Sans service")));
 
   // Prepare data for popular time slots
   const timeSlotData = appointments.reduce((acc: any[], appointment) => {
@@ -75,18 +89,27 @@ const AppointmentStats = () => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Appointments by Day */}
+        {/* Appointments by Day and Service */}
         <Card>
           <CardHeader>
-            <CardTitle>Rendez-vous par jour</CardTitle>
+            <CardTitle>Rendez-vous par jour et service</CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={appointmentsByDay}>
+              <BarChart data={appointmentsByDayAndService}>
+                <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="appointments" fill="#6366F1" />
+                <Legend />
+                {uniqueServices.map((service, index) => (
+                  <Bar 
+                    key={service} 
+                    dataKey={service}
+                    stackId="a"
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
