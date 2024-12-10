@@ -6,6 +6,10 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Save } from "lucide-react";
+import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import AppointmentManagement from "./admin/AppointmentManagement";
 import UserManagement from "./admin/UserManagement";
 import NotificationSettings from "./admin/NotificationSettings";
@@ -27,6 +31,34 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
   const isMobile = useIsMobile();
   const location = useLocation();
   const [selectedAvailability, setSelectedAvailability] = useState(null);
+
+  const handleSave = () => {
+    // Créer un élément <a> temporaire
+    const element = document.createElement('a');
+    
+    // Obtenir tout le contenu HTML de la page
+    const htmlContent = document.documentElement.outerHTML;
+    
+    // Créer un Blob avec le contenu HTML
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    
+    // Créer une URL pour le Blob
+    element.href = URL.createObjectURL(blob);
+    
+    // Définir le nom du fichier
+    const date = new Date().toISOString().split('T')[0];
+    element.download = `sauvegarde-site-${date}.html`;
+    
+    // Simuler un clic pour déclencher le téléchargement
+    document.body.appendChild(element);
+    element.click();
+    
+    // Nettoyer
+    document.body.removeChild(element);
+    URL.revokeObjectURL(element.href);
+    
+    toast.success("Site sauvegardé avec succès");
+  };
 
   useEffect(() => {
     const handleTabSwitch = (event: CustomEvent) => {
@@ -61,9 +93,29 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
 
   return (
     <div className="space-y-6 p-4 md:p-6 rounded-lg bg-gradient-to-br from-[#D3E4FD] to-[#E5DEFF]">
-      <h2 className="text-xl md:text-2xl font-semibold text-center mb-4 md:mb-6">
-        Tableau de bord administrateur
-      </h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl md:text-2xl font-semibold">
+          Tableau de bord administrateur
+        </h2>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={handleSave}
+              >
+                <Save className="h-4 w-4" />
+                <span className="sr-only">Sauvegarder le site</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Sauvegarder le site</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
       
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         {!isMobile && (
