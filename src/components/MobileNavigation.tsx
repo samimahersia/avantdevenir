@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Menu } from "lucide-react";
+import { Menu2 } from "lucide-react";
 
 interface MobileNavigationProps {
   userType: "client" | "admin";
@@ -18,15 +18,19 @@ export const MobileNavigation = ({
   activeTab,
   setActiveTab
 }: MobileNavigationProps) => {
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu className="h-6 w-6" />
+          <Menu2 className="h-6 w-6 text-gray-700 dark:text-gray-200" />
           <span className="sr-only">Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+      <SheetContent side="left" className="w-[300px] sm:w-[400px] bg-white dark:bg-gray-900">
         <div className="flex flex-col gap-4 py-4">
           {userRole !== "admin" && (
             <Button
@@ -42,36 +46,36 @@ export const MobileNavigation = ({
               <Button
                 variant={userType === "admin" ? "default" : "outline"}
                 onClick={() => setUserType("admin")}
-                className="w-full"
+                className="w-full bg-black text-white hover:bg-gray-800"
               >
                 Mode Administrateur
               </Button>
               {userType === "admin" && (
                 <div className="pl-4 space-y-2">
-                  <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical" className="w-full">
-                    <TabsList className="flex flex-col h-auto">
-                      <TabsTrigger value="appointments" className="w-full justify-start">
+                  <Tabs value={activeTab} onValueChange={handleTabChange} orientation="vertical" className="w-full">
+                    <TabsList className="flex flex-col h-auto bg-gray-50 dark:bg-gray-800">
+                      <TabsTrigger value="appointments" className="w-full justify-start text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                         Rendez-vous
                       </TabsTrigger>
-                      <TabsTrigger value="calendar" className="w-full justify-start">
+                      <TabsTrigger value="calendar" className="w-full justify-start text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                         Calendrier
                       </TabsTrigger>
-                      <TabsTrigger value="stats" className="w-full justify-start">
+                      <TabsTrigger value="stats" className="w-full justify-start text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                         Statistiques
                       </TabsTrigger>
-                      <TabsTrigger value="users" className="w-full justify-start">
+                      <TabsTrigger value="users" className="w-full justify-start text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                         Utilisateurs
                       </TabsTrigger>
-                      <TabsTrigger value="consulates" className="w-full justify-start">
+                      <TabsTrigger value="consulates" className="w-full justify-start text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                         Organismes
                       </TabsTrigger>
-                      <TabsTrigger value="services" className="w-full justify-start">
+                      <TabsTrigger value="services" className="w-full justify-start text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                         Services
                       </TabsTrigger>
-                      <TabsTrigger value="settings" className="w-full justify-start">
+                      <TabsTrigger value="settings" className="w-full justify-start text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                         Paramètres
                       </TabsTrigger>
-                      <TabsTrigger value="support" className="w-full justify-start">
+                      <TabsTrigger value="support" className="w-full justify-start text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                         Support
                       </TabsTrigger>
                     </TabsList>
