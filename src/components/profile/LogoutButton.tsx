@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function LogoutButton() {
   const navigate = useNavigate();
@@ -26,15 +27,24 @@ export function LogoutButton() {
   };
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="gap-2 bg-blue-500 hover:bg-blue-600 text-white"
-      onClick={handleLogout}
-      disabled={isLoading}
-    >
-      <LogOut className="h-4 w-4" />
-      {isLoading ? "Déconnexion..." : "Déconnexion"}
-    </Button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+            onClick={handleLogout}
+            disabled={isLoading}
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="sr-only">Déconnexion</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Déconnexion</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
