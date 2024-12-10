@@ -25,8 +25,7 @@ const ServiceSelector = ({ selectedService, onServiceSelect, selectedConsulate }
       const { data, error } = await supabase
         .from("consulate_services")
         .select(`
-          service_id,
-          services:service_id (
+          services (
             id,
             name
           )

@@ -38,12 +38,9 @@ export const OrganismeeSelector = ({ value, onValueChange, multiple = false }: O
     );
   }
 
-  // Si multiple est true, on s'assure que value est un tableau
-  const currentValue = multiple ? (Array.isArray(value) ? value : []) : value as string;
-
   return (
     <Select 
-      value={currentValue as string} 
+      value={value as string} 
       onValueChange={onValueChange}
     >
       <SelectTrigger className="bg-[#D3E4FD] border-[#D3E4FD] hover:bg-[#C3D4ED]">
