@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
@@ -17,11 +17,27 @@ const DAYS_OF_WEEK = [
   "Dimanche",
 ];
 
-const RecurringAvailabilityForm = () => {
+interface RecurringAvailabilityFormProps {
+  initialAvailability?: any;
+}
+
+const RecurringAvailabilityForm = ({ initialAvailability }: RecurringAvailabilityFormProps) => {
   const [selectedOrganismee, setSelectedOrganismee] = useState<string>("");
   const [availabilities, setAvailabilities] = useState<{
     [key: number]: { startHour: number; endHour: number };
   }>({});
+
+  useEffect(() => {
+    if (initialAvailability) {
+      setSelectedOrganismee(initialAvailability.consulate_id);
+      setAvailabilities({
+        [initialAvailability.day_of_week]: {
+          startHour: initialAvailability.start_hour,
+          endHour: initialAvailability.end_hour
+        }
+      });
+    }
+  }, [initialAvailability]);
 
   const { data: existingAvailabilities = [], refetch } = useQuery({
     queryKey: ["recurring-availabilities", selectedOrganismee],

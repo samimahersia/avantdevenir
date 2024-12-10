@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Edit2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface RecurringAvailability {
   id: string;
@@ -18,6 +19,7 @@ interface RecurringAvailability {
 }
 
 const RecentAppointments = () => {
+  const navigate = useNavigate();
   const { data: availabilities = [], refetch } = useQuery({
     queryKey: ["recurring-availabilities"],
     queryFn: async () => {
@@ -57,8 +59,20 @@ const RecentAppointments = () => {
   };
 
   const handleEdit = (availability: RecurringAvailability) => {
-    // Pour l'instant, on affiche juste un message
-    toast.info("Fonctionnalité de modification à venir");
+    // Naviguer vers l'onglet "settings" avec les informations de disponibilité
+    navigate("/", { 
+      state: { 
+        activeTab: "settings",
+        availabilityToEdit: availability 
+      }
+    });
+    // Déclencher un événement personnalisé pour informer le composant parent
+    window.dispatchEvent(new CustomEvent('switchTab', { 
+      detail: { 
+        tab: 'settings',
+        availability: availability
+      }
+    }));
   };
 
   // Grouper les disponibilités par organisme
@@ -73,7 +87,7 @@ const RecentAppointments = () => {
 
   // Fonction pour convertir le numéro du jour en nom en français
   const getDayName = (dayNumber: number) => {
-    const date = new Date(2024, 0, dayNumber + 1); // Le 1er janvier 2024 était un lundi
+    const date = new Date(2024, 0, dayNumber); // Le 1er janvier 2024 était un lundi
     return format(date, "EEEE", { locale: fr });
   };
 

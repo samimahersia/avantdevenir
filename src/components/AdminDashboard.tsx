@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLocation } from "react-router-dom";
 import AppointmentManagement from "./admin/AppointmentManagement";
 import UserManagement from "./admin/UserManagement";
 import NotificationSettings from "./admin/NotificationSettings";
@@ -24,6 +25,33 @@ interface AdminDashboardProps {
 const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashboardProps) => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const isMobile = useIsMobile();
+  const location = useLocation();
+  const [selectedAvailability, setSelectedAvailability] = useState(null);
+
+  useEffect(() => {
+    const handleTabSwitch = (event: CustomEvent) => {
+      if (onTabChange) {
+        onTabChange(event.detail.tab);
+        if (event.detail.availability) {
+          setSelectedAvailability(event.detail.availability);
+        }
+      }
+    };
+
+    window.addEventListener('switchTab', handleTabSwitch as EventListener);
+    return () => {
+      window.removeEventListener('switchTab', handleTabSwitch as EventListener);
+    };
+  }, [onTabChange]);
+
+  useEffect(() => {
+    if (location.state?.activeTab && onTabChange) {
+      onTabChange(location.state.activeTab);
+      if (location.state.availabilityToEdit) {
+        setSelectedAvailability(location.state.availabilityToEdit);
+      }
+    }
+  }, [location.state, onTabChange]);
 
   const handleTabChange = (value: string) => {
     if (onTabChange) {
@@ -80,7 +108,7 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
             <Card>
               <CardContent className="pt-4 md:pt-6">
                 <h3 className="text-base md:text-lg font-semibold mb-4">Horaires d'ouverture</h3>
-                <RecurringAvailabilityForm />
+                <RecurringAvailabilityForm initialAvailability={selectedAvailability} />
               </CardContent>
             </Card>
 
