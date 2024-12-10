@@ -51,9 +51,12 @@ const ServiceList = ({ services, onEdit, onDelete }: ServiceListProps) => {
     return serviceColors[index % serviceColors.length];
   };
 
+  // Sort services by name
+  const sortedServices = [...services].sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <div className="space-y-4">
-      {services.map((service, index) => {
+      {sortedServices.map((service, index) => {
         const colors = getServiceColor(index);
         return (
           <div
