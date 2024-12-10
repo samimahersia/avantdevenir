@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format, startOfWeek, endOfWeek } from "date-fns";
+import { format, startOfMonth, endOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";
 import {
   BarChart,
@@ -21,11 +21,11 @@ import {
 } from "recharts";
 
 const COLORS = ["#10B981", "#F59E0B", "#EF4444", "#6366F1", "#EC4899", "#8B5CF6"];
-const DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+const MONTHS = Array.from({ length: 12 }, (_, i) => format(new Date(2024, i, 1), "MMMM", { locale: fr }));
 
 const AppointmentStats = () => {
-  const startDate = startOfWeek(new Date(), { weekStartsOn: 1 });
-  const endDate = endOfWeek(new Date(), { weekStartsOn: 1 });
+  const startDate = startOfMonth(new Date());
+  const endDate = endOfMonth(new Date());
 
   const { data: appointments = [] } = useQuery({
     queryKey: ["appointments-stats"],
@@ -33,8 +33,8 @@ const AppointmentStats = () => {
       const { data, error } = await supabase
         .from("appointments")
         .select("*, services(name)")
-        .gte("date", startDate.toISOString())
-        .lte("date", endDate.toISOString());
+        .gte("date", startOfMonth(new Date(new Date().getFullYear(), 0, 1)).toISOString())
+        .lte("date", endOfMonth(new Date(new Date().getFullYear(), 11, 31)).toISOString());
       
       if (error) throw error;
       return data;
@@ -52,21 +52,21 @@ const AppointmentStats = () => {
     return acc;
   }, []);
 
-  // Prepare data for appointments by day and service
-  const appointmentsByDayAndService = DAYS.map(day => {
-    const dayAppointments = appointments.filter(apt => 
-      format(new Date(apt.date), "EEEE", { locale: fr }) === day
+  // Prepare data for appointments by month and service
+  const appointmentsByMonthAndService = MONTHS.map(month => {
+    const monthAppointments = appointments.filter(apt => 
+      format(new Date(apt.date), "MMMM", { locale: fr }) === month
     );
 
     // Group appointments by service
-    const serviceGroups = dayAppointments.reduce((acc: { [key: string]: number }, apt) => {
+    const serviceGroups = monthAppointments.reduce((acc: { [key: string]: number }, apt) => {
       const serviceName = apt.services?.name || "Sans service";
       acc[serviceName] = (acc[serviceName] || 0) + 1;
       return acc;
     }, {});
 
     return {
-      name: day,
+      name: month,
       ...serviceGroups
     };
   });
@@ -89,14 +89,14 @@ const AppointmentStats = () => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Appointments by Day and Service */}
+        {/* Appointments by Month and Service */}
         <Card>
           <CardHeader>
-            <CardTitle>Rendez-vous par jour et service</CardTitle>
+            <CardTitle>Rendez-vous par mois et service</CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={appointmentsByDayAndService}>
+              <BarChart data={appointmentsByMonthAndService}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
