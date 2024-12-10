@@ -93,7 +93,7 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
 
   return (
     <div className="space-y-6 p-4 md:p-6 rounded-lg bg-gradient-to-br from-[#D3E4FD] to-[#E5DEFF]">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-2">
         <h2 className="text-xl md:text-2xl font-semibold">
           Tableau de bord administrateur
         </h2>
@@ -103,7 +103,7 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
               <Button
                 variant="ghost"
                 size="icon"
-                className="bg-green-600 hover:bg-green-700 text-white"
+                className="bg-green-600 hover:bg-green-700 text-white w-fit"
                 onClick={handleSave}
               >
                 <Save className="h-4 w-4" />
