@@ -108,7 +108,7 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
                 size="lg"
                 variant={userType === "admin" ? "default" : "outline"}
                 onClick={() => setUserType("admin")}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto bg-black text-white hover:bg-gray-800"
               >
                 Mode Administrateur
               </Button>
