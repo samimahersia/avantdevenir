@@ -2,11 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { LogOut, Save } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { ProfileEmail } from "./profile/ProfileEmail";
 import { LogoutButton } from "./profile/LogoutButton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export interface Profile {
   id: string;
@@ -53,6 +54,34 @@ export function UserProfileSection() {
     }
   });
 
+  const handleSave = () => {
+    // Créer un élément <a> temporaire
+    const element = document.createElement('a');
+    
+    // Obtenir tout le contenu HTML de la page
+    const htmlContent = document.documentElement.outerHTML;
+    
+    // Créer un Blob avec le contenu HTML
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    
+    // Créer une URL pour le Blob
+    element.href = URL.createObjectURL(blob);
+    
+    // Définir le nom du fichier
+    const date = new Date().toISOString().split('T')[0];
+    element.download = `sauvegarde-site-${date}.html`;
+    
+    // Simuler un clic pour déclencher le téléchargement
+    document.body.appendChild(element);
+    element.click();
+    
+    // Nettoyer
+    document.body.removeChild(element);
+    URL.revokeObjectURL(element.href);
+    
+    toast.success("Site sauvegardé avec succès");
+  };
+
   if (isError || !profile) {
     return (
       <div className="flex justify-end">
@@ -71,6 +100,24 @@ export function UserProfileSection() {
   return (
     <div className="flex items-center justify-end gap-4">
       <div className="flex items-center gap-4">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={handleSave}
+              >
+                <Save className="h-4 w-4" />
+                <span className="sr-only">Sauvegarder le site</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Sauvegarder le site</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <ProfileEmail profile={profile} />
         <LogoutButton />
       </div>
