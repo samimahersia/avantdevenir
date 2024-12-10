@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Menu2 } from "lucide-react";
+import { Menu } from "lucide-react";
 
 interface MobileNavigationProps {
   userType: "client" | "admin";
@@ -26,7 +26,7 @@ export const MobileNavigation = ({
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu2 className="h-6 w-6 text-gray-700 dark:text-gray-200" />
+          <Menu className="h-6 w-6 text-gray-700 dark:text-gray-200" />
           <span className="sr-only">Menu</span>
         </Button>
       </SheetTrigger>
