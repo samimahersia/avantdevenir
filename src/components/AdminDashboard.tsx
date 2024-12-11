@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Save } from "lucide-react";
+import { Save, Calendar as CalendarIcon, BarChart3, Users, Building2, Wrench, Settings, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import AppointmentManagement from "./admin/AppointmentManagement";
@@ -91,11 +91,54 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
     }
   };
 
+  // Requête pour obtenir les statistiques des rendez-vous
+  const { data: stats } = useQuery({
+    queryKey: ["appointment-stats"],
+    queryFn: async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const { data: totalAppointments } = await supabase
+        .from("appointments")
+        .select("count")
+        .single();
+
+      const { data: completedToday } = await supabase
+        .from("appointments")
+        .select("count")
+        .eq("status", "termine")
+        .gte("date", today.toISOString())
+        .single();
+
+      const { data: upcomingToday } = await supabase
+        .from("appointments")
+        .select("count")
+        .eq("status", "confirme")
+        .gte("date", today.toISOString())
+        .lte("date", new Date(today.setHours(23, 59, 59, 999)).toISOString())
+        .single();
+
+      const { data: canceledToday } = await supabase
+        .from("appointments")
+        .select("count")
+        .eq("status", "annule")
+        .gte("date", today.toISOString())
+        .single();
+
+      return {
+        total: totalAppointments?.count || 0,
+        completed: completedToday?.count || 0,
+        upcoming: upcomingToday?.count || 0,
+        canceled: canceledToday?.count || 0
+      };
+    }
+  });
+
   return (
-    <div className="space-y-6 p-4 md:p-6 rounded-lg bg-gradient-to-br from-[#D3E4FD] to-[#E5DEFF]">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl md:text-2xl font-semibold">
-          Tableau de bord administrateur
+    <div className="space-y-6 p-4 md:p-6">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold">
+          Tableau de Bord
         </h2>
         <TooltipProvider>
           <Tooltip>
@@ -116,69 +159,156 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
           </Tooltip>
         </TooltipProvider>
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <Card className="bg-white">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-full bg-blue-100">
+                <CalendarIcon className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Total des Rendez-vous</p>
+                <p className="text-2xl font-bold">{stats?.total || 0}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-full bg-green-100">
+                <BarChart3 className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Terminés aujourd'hui</p>
+                <p className="text-2xl font-bold">{stats?.completed || 0}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-full bg-yellow-100">
+                <Users className="h-6 w-6 text-yellow-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">À venir aujourd'hui</p>
+                <p className="text-2xl font-bold">{stats?.upcoming || 0}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-full bg-red-100">
+                <Building2 className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Annulés aujourd'hui</p>
+                <p className="text-2xl font-bold">{stats?.canceled || 0}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
       
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        {!isMobile && (
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2">
-            <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
-            <TabsTrigger value="calendar">Calendrier</TabsTrigger>
-            <TabsTrigger value="stats">Statistiques</TabsTrigger>
-            <TabsTrigger value="users">Utilisateurs</TabsTrigger>
-            <TabsTrigger value="consulates">Organismes</TabsTrigger>
-            <TabsTrigger value="services">Services</TabsTrigger>
-            <TabsTrigger value="settings">Paramètres</TabsTrigger>
-            <TabsTrigger value="support">Support</TabsTrigger>
-          </TabsList>
-        )}
-        
-        <TabsContent value="appointments" className="mt-4 md:mt-6">
-          <AppointmentManagement />
-        </TabsContent>
-        
-        <TabsContent value="calendar" className="mt-4 md:mt-6">
-          <AppointmentCalendar />
-        </TabsContent>
-
-        <TabsContent value="stats" className="mt-4 md:mt-6">
-          <AppointmentStats />
-        </TabsContent>
-        
-        <TabsContent value="users" className="mt-4 md:mt-6">
-          <UserManagement />
-        </TabsContent>
-
-        <TabsContent value="consulates" className="mt-4 md:mt-6">
-          <ConsulateManagement />
-        </TabsContent>
-
-        <TabsContent value="services" className="mt-4 md:mt-6">
-          <ServiceManagement />
-        </TabsContent>
-        
-        <TabsContent value="settings" className="mt-4 md:mt-6">
-          <div className="grid gap-4 md:gap-6">
-            <Card>
-              <CardContent className="pt-4 md:pt-6">
-                <h3 className="text-base md:text-lg font-semibold mb-4">Horaires d'ouverture</h3>
-                <RecurringAvailabilityForm initialAvailability={selectedAvailability} />
-              </CardContent>
-            </Card>
-
-            <HolidayManagement />
+      <Card className="bg-white">
+        <CardContent className="p-6">
+          <h3 className="text-xl font-semibold mb-6">Gestion des Rendez-vous</h3>
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+            {!isMobile && (
+              <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2">
+                <TabsTrigger value="appointments" className="flex items-center gap-2">
+                  <CalendarIcon className="h-4 w-4" />
+                  Rendez-vous
+                </TabsTrigger>
+                <TabsTrigger value="calendar" className="flex items-center gap-2">
+                  <CalendarIcon className="h-4 w-4" />
+                  Calendrier
+                </TabsTrigger>
+                <TabsTrigger value="stats" className="flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  Statistiques
+                </TabsTrigger>
+                <TabsTrigger value="users" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Utilisateurs
+                </TabsTrigger>
+                <TabsTrigger value="consulates" className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4" />
+                  Organismes
+                </TabsTrigger>
+                <TabsTrigger value="services" className="flex items-center gap-2">
+                  <Wrench className="h-4 w-4" />
+                  Services
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="flex items-center gap-2">
+                  <Settings className="h-4 w-4" />
+                  Paramètres
+                </TabsTrigger>
+                <TabsTrigger value="support" className="flex items-center gap-2">
+                  <HelpCircle className="h-4 w-4" />
+                  Support
+                </TabsTrigger>
+              </TabsList>
+            )}
             
-            <Card>
-              <CardContent className="pt-4 md:pt-6">
-                <h3 className="text-base md:text-lg font-semibold mb-4">Paramètres des notifications</h3>
-                <NotificationSettings />
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+            <TabsContent value="appointments" className="mt-6">
+              <AppointmentManagement />
+            </TabsContent>
+            
+            <TabsContent value="calendar" className="mt-6">
+              <AppointmentCalendar />
+            </TabsContent>
 
-        <TabsContent value="support" className="mt-4 md:mt-6">
-          <TechnicalSupport />
-        </TabsContent>
-      </Tabs>
+            <TabsContent value="stats" className="mt-6">
+              <AppointmentStats />
+            </TabsContent>
+            
+            <TabsContent value="users" className="mt-6">
+              <UserManagement />
+            </TabsContent>
+
+            <TabsContent value="consulates" className="mt-6">
+              <ConsulateManagement />
+            </TabsContent>
+
+            <TabsContent value="services" className="mt-6">
+              <ServiceManagement />
+            </TabsContent>
+            
+            <TabsContent value="settings" className="mt-6">
+              <div className="grid gap-6">
+                <Card>
+                  <CardContent className="pt-6">
+                    <h3 className="text-lg font-semibold mb-4">Horaires d'ouverture</h3>
+                    <RecurringAvailabilityForm initialAvailability={selectedAvailability} />
+                  </CardContent>
+                </Card>
+
+                <HolidayManagement />
+                
+                <Card>
+                  <CardContent className="pt-6">
+                    <h3 className="text-lg font-semibold mb-4">Paramètres des notifications</h3>
+                    <NotificationSettings />
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="support" className="mt-6">
+              <TechnicalSupport />
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 };
