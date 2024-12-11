@@ -1,16 +1,14 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { UserProfileSection } from "@/components/UserProfileSection";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { PageHeader } from "@/components/PageHeader";
 import { DashboardContent } from "@/components/DashboardContent";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import { useState, useEffect } from "react";
+import { UserProfileSection } from "@/components/UserProfileSection";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -26,7 +24,12 @@ const Index = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
+          throw sessionError;
+        }
         
         if (!session) {
           navigate("/auth");
@@ -37,6 +40,7 @@ const Index = () => {
       } catch (err) {
         console.error("Session check error:", err);
         setError("Erreur lors de la vérification de la session");
+        navigate("/auth");
       }
     };
 
@@ -52,7 +56,9 @@ const Index = () => {
       setSession(session);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   useEffect(() => {
