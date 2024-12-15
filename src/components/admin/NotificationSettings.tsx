@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell, MessageSquare, Info, Pencil, Image } from "lucide-react";
+import { Bell, MessageSquare, Info, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -119,8 +119,12 @@ const NotificationSettings = () => {
                   <div className="flex flex-col md:flex-row gap-6">
                     {/* Logo Section */}
                     <div className="flex-shrink-0 flex justify-center">
-                      <div className="p-4 bg-blue-100 rounded-full">
-                        <Image className="h-16 w-16 text-blue-600" />
+                      <div className="p-4 bg-blue-100 rounded-full overflow-hidden">
+                        <img
+                          src="/images/consulate-service.jpg"
+                          alt="Agenda professionnel"
+                          className="h-16 w-16 object-cover rounded-full"
+                        />
                       </div>
                     </div>
                     
