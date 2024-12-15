@@ -88,20 +88,10 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
         </div>
         
         <div className="px-2 md:px-6">
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center">
             <CardTitle className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-3 md:mb-4">
               AvantDeVenir
             </CardTitle>
-            {userRole === "admin" && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="bg-red-600 hover:bg-red-700 text-white"
-                onClick={() => setIsEditing(true)}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-            )}
           </div>
           
           <div className="hidden md:flex flex-col sm:flex-row justify-center gap-4 mt-4 md:mt-6 mb-6 md:mb-8">
