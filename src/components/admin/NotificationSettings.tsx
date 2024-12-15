@@ -118,7 +118,7 @@ const NotificationSettings = () => {
                 <div className="relative bg-white/80 dark:bg-gray-800/80 p-4 rounded-lg shadow-sm">
                   <div className="flex flex-col md:flex-row gap-6">
                     {/* Logo Section */}
-                    <div className="flex-shrink-0 flex justify-center w-24 h-24">
+                    <div className="flex-shrink-0 flex justify-center w-24 h-24 relative group">
                       <div className="w-24 h-24 bg-blue-100 rounded-full overflow-hidden">
                         <img
                           src="/images/consulate-service.jpg"
@@ -126,6 +126,16 @@ const NotificationSettings = () => {
                           className="w-full h-full object-cover"
                         />
                       </div>
+                      {userRole === 'admin' && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-gray-800 shadow-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                          onClick={() => toast.info("Fonctionnalité de modification du logo à venir")}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                     
                     {/* Text Section */}
