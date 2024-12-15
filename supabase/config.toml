@@ -32,3 +32,7 @@ verify_jwt = true
 [[functions]]
 name = "send-appointment-reminders"
 verify_jwt = true
+
+[[functions]]
+name = "upload-site-asset"
+verify_jwt = true
