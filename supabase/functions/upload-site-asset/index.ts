@@ -7,6 +7,7 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -31,6 +32,8 @@ serve(async (req) => {
     const fileExt = file.name.split('.').pop()
     const filePath = `${key}.${fileExt}`
 
+    console.log('Uploading file:', filePath)
+
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('site-assets')
       .upload(filePath, file, {
@@ -39,6 +42,7 @@ serve(async (req) => {
       })
 
     if (uploadError) {
+      console.error('Upload error:', uploadError)
       return new Response(
         JSON.stringify({ error: 'Failed to upload file', details: uploadError }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
@@ -48,6 +52,8 @@ serve(async (req) => {
     const { data: { publicUrl } } = supabase.storage
       .from('site-assets')
       .getPublicUrl(filePath)
+
+    console.log('File uploaded successfully, public URL:', publicUrl)
 
     const { error: dbError } = await supabase
       .from('site_assets')
@@ -60,6 +66,7 @@ serve(async (req) => {
       })
 
     if (dbError) {
+      console.error('Database error:', dbError)
       return new Response(
         JSON.stringify({ error: 'Failed to save file metadata', details: dbError }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
@@ -71,6 +78,7 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     )
   } catch (error) {
+    console.error('Unexpected error:', error)
     return new Response(
       JSON.stringify({ error: 'An unexpected error occurred', details: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
