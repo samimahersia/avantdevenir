@@ -38,22 +38,6 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
     }
   };
 
-  const renderWelcomeText = (text: string) => {
-    const lines = text.split('\n');
-    if (lines.length === 0) return null;
-
-    return (
-      <>
-        <p className="text-[1.15em] font-semibold bg-gradient-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent">
-          {lines[0]}
-        </p>
-        {lines.slice(1).map((line, index) => (
-          <p key={index}>{line}</p>
-        ))}
-      </>
-    );
-  };
-
   if (isEditing) {
     return (
       <div className="space-y-2">
@@ -78,7 +62,7 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
   return (
     <div className="relative bg-white/80 dark:bg-gray-800/80 p-4 rounded-lg shadow-sm">
       <div className="text-center text-gray-600 dark:text-gray-300 whitespace-pre-line font-sans">
-        {renderWelcomeText(welcomeText)}
+        {welcomeText}
       </div>
       {userRole === 'admin' && (
         <Button
