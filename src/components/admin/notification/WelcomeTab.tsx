@@ -81,7 +81,7 @@ export const WelcomeTab = ({ userRole }: { userRole: string | null }) => {
                   htmlFor="logo-upload"
                 >
                   <div className="bg-white dark:bg-gray-800 p-2 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <Pencil className="h-4 w-4" />
+                    <Pencil className="h-4 w-4 text-red-500" />
                   </div>
                   <input
                     type="file"
@@ -104,7 +104,7 @@ export const WelcomeTab = ({ userRole }: { userRole: string | null }) => {
                   className="absolute -top-2 -right-2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => setIsEditing(true)}
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Pencil className="h-4 w-4 text-red-500" />
                 </Button>
               )}
               <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
