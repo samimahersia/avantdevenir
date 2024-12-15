@@ -67,7 +67,7 @@ export const WelcomeTab = ({ userRole }: { userRole: string | null }) => {
         <div className="relative">
           <div className="flex flex-col md:flex-row gap-6">
             {/* Logo Section */}
-            <div className="flex-shrink-0 flex justify-center w-24 h-24 relative group">
+            <div className="flex-shrink-0 flex justify-center w-24 h-24 relative">
               <div className="w-24 h-24 bg-blue-100 rounded-full overflow-hidden">
                 <img
                   src="/placeholder.svg"
@@ -101,7 +101,7 @@ export const WelcomeTab = ({ userRole }: { userRole: string | null }) => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-2 right-2 bg-white dark:bg-gray-800 shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  className="absolute -top-2 -right-2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => setIsEditing(true)}
                 >
                   <Pencil className="h-4 w-4" />
