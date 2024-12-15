@@ -26,7 +26,9 @@ export const ConsulateSelector = ({ value, onValueChange }: ConsulateSelectorPro
       
       console.log("Consulates fetched:", data);
       return data || [];
-    }
+    },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    retry: 2
   });
 
   if (error) {
@@ -37,8 +39,13 @@ export const ConsulateSelector = ({ value, onValueChange }: ConsulateSelectorPro
     );
   }
 
+  const handleValueChange = (newValue: string) => {
+    console.log("ConsulateSelector value changing to:", newValue);
+    onValueChange(newValue);
+  };
+
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select value={value} onValueChange={handleValueChange}>
       <SelectTrigger className="bg-[#D3E4FD] border-[#D3E4FD] hover:bg-[#C3D4ED]">
         <SelectValue placeholder="Sélectionnez un organisme" />
       </SelectTrigger>

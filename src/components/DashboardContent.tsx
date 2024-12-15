@@ -24,16 +24,22 @@ export const DashboardContent = ({
   activeTab,
   setActiveTab
 }: DashboardContentProps) => {
+  console.log("DashboardContent rendering with:", {
+    userType,
+    selectedConsulate,
+    selectedService
+  });
+
   if (userType === "client") {
     return (
-      <div>
+      <div className="animate-in fade-in duration-500">
         <div className="flex flex-col gap-3 max-w-2xl mx-auto mt-3 px-2">
           <div className="w-full">
             <ConsulateSelector 
               value={selectedConsulate} 
               onValueChange={(value) => {
+                console.log("Consulate selected:", value);
                 setSelectedConsulate(value);
-                // Reset selected service when consulate changes
                 setSelectedService(undefined);
               }}
             />
@@ -41,7 +47,10 @@ export const DashboardContent = ({
           <div className="w-full">
             <ServiceSelector
               selectedService={selectedService}
-              onServiceSelect={setSelectedService}
+              onServiceSelect={(value) => {
+                console.log("Service selected:", value);
+                setSelectedService(value);
+              }}
               selectedConsulate={selectedConsulate}
             />
           </div>
