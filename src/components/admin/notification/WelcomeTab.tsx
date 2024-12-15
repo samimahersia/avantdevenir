@@ -34,7 +34,7 @@ const WelcomeTab = ({ userRole }: WelcomeTabProps) => {
   }, []);
 
   return (
-    <div className="space-y-4 relative">
+    <div className="space-y-4 relative p-4 border rounded-lg bg-white dark:bg-gray-800">
       <WelcomeText
         welcomeText={welcomeText}
         userRole={userRole}
@@ -42,12 +42,13 @@ const WelcomeTab = ({ userRole }: WelcomeTabProps) => {
       />
       {userRole === 'admin' && !isEditing && (
         <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white z-10"
+          variant="default"
+          size="sm"
+          className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white"
           onClick={() => setIsEditing(true)}
         >
-          <Pencil className="h-4 w-4" />
+          <Pencil className="h-4 w-4 mr-2" />
+          Modifier
         </Button>
       )}
     </div>
