@@ -20,8 +20,8 @@ const Auth = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-          console.log("User is already authenticated, redirecting...");
           navigate("/", { replace: true });
+          return;
         }
       } catch (error) {
         console.error("Auth check error:", error);
@@ -33,7 +33,6 @@ const Auth = () => {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session?.user?.id);
       if (event === 'SIGNED_IN' && session) {
         navigate("/", { replace: true });
       }
