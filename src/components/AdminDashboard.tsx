@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Save, Calendar as CalendarIcon, BarChart3, Users, Building2, Wrench, Settings, HelpCircle } from "lucide-react";
+import { Save, Calendar as CalendarIcon, BarChart3, Users, Building2, Wrench, Settings, HelpCircle, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import AppointmentManagement from "./admin/AppointmentManagement";
@@ -31,6 +31,7 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
   const isMobile = useIsMobile();
   const location = useLocation();
   const [selectedAvailability, setSelectedAvailability] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleSave = () => {
     // Créer un élément <a> temporaire
@@ -137,9 +138,19 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
   return (
     <div className="space-y-6 p-4 md:p-6">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold">
-          Tableau de Bord
-        </h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-2xl md:text-3xl font-bold">
+            Tableau de Bord
+          </h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-red-600 hover:bg-red-700 text-white"
+            onClick={() => setIsEditing?.(true)}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        </div>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
