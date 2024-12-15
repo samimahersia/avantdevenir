@@ -30,8 +30,7 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
               alt="Agenda professionnel"
               className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
             />
-          </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent shadow-2xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent shadow-2xl" />
           </div>
 
           <ScrollArea className="w-full md:w-1/2 h-40 md:h-48 lg:h-80 rounded-lg border bg-card p-4 relative">
@@ -73,9 +72,7 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
                     Enregistrer
                   </Button>
                 </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent shadow-2xl"></div>
-          </div>
-    </div>
+              </div>
             ) : (
               <div className="text-sm text-muted-foreground">
                 <h3 className="font-semibold mb-2 text-foreground">{aboutText.title}</h3>
@@ -86,9 +83,7 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
                 </p>
                 <p>{aboutText.support}</p>
               </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent shadow-2xl"></div>
-          </div>
-  )}
+            )}
           </ScrollArea>
         </div>
         
