@@ -110,8 +110,18 @@ export const WelcomeTab = ({ userRole }: { userRole: string | null }) => {
                 </div>
                 
                 {/* Text Section */}
-                <div className="flex-grow">
-                  <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className="flex-grow relative">
+                  {userRole === 'admin' && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => setIsEditing(true)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700 group">
                     <p className="text-[1.15em] font-semibold bg-gradient-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent">
                       Bienvenue sur AvantDeVenir
                     </p>
