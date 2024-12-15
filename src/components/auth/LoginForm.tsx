@@ -27,9 +27,11 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    if (isLoading) return;
+    
     try {
-      console.log("Starting login process");
       setIsLoading(true);
+      console.log("Starting login process");
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
@@ -50,8 +52,13 @@ const LoginForm = () => {
         console.log("Login successful, user:", data.user.id);
         toast.success("Connexion réussie");
         
-        // Add a small delay before navigation to ensure proper state updates
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Add a longer delay and use requestAnimationFrame for smoother transition
+        await new Promise(resolve => {
+          requestAnimationFrame(() => {
+            setTimeout(resolve, 1000);
+          });
+        });
+        
         navigate("/", { replace: true });
       }
     } catch (error) {
