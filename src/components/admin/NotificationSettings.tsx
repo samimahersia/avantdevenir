@@ -4,7 +4,7 @@ import { Bell, MessageSquare, Info } from "lucide-react";
 import NotificationHistory from "../NotificationHistory";
 import NotificationPreferences from "../NotificationPreferences";
 import RecentAppointments from "./holiday/RecentAppointments";
-import { WelcomeTab } from "./notification/WelcomeTab";
+import WelcomeTab from "./notification/WelcomeTab";
 import { useState } from "react";
 
 const NotificationSettings = () => {
