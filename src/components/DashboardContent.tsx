@@ -39,21 +39,27 @@ export const DashboardContent = ({
               value={selectedConsulate} 
               onValueChange={(value) => {
                 console.log("Consulate selected:", value);
-                setSelectedConsulate(value);
-                setSelectedService(undefined);
+                if (value) {
+                  setSelectedConsulate(value);
+                  setSelectedService(undefined);
+                }
               }}
             />
           </div>
-          <div className="w-full">
-            <ServiceSelector
-              selectedService={selectedService}
-              onServiceSelect={(value) => {
-                console.log("Service selected:", value);
-                setSelectedService(value);
-              }}
-              selectedConsulate={selectedConsulate}
-            />
-          </div>
+          {selectedConsulate && (
+            <div className="w-full animate-in fade-in slide-in-from-top-4 duration-500">
+              <ServiceSelector
+                selectedService={selectedService}
+                onServiceSelect={(value) => {
+                  console.log("Service selected:", value);
+                  if (value) {
+                    setSelectedService(value);
+                  }
+                }}
+                selectedConsulate={selectedConsulate}
+              />
+            </div>
+          )}
         </div>
         <div className="mt-4">
           <ClientDashboard 

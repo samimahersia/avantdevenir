@@ -27,11 +27,13 @@ export const ConsulateSelector = ({ value, onValueChange }: ConsulateSelectorPro
       console.log("Consulates fetched:", data);
       return data || [];
     },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    retry: 2
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
+    refetchOnWindowFocus: false
   });
 
   if (error) {
+    console.error("ConsulateSelector error:", error);
     return (
       <div className="text-red-500 text-sm">
         Une erreur est survenue lors du chargement des consulats
@@ -40,32 +42,50 @@ export const ConsulateSelector = ({ value, onValueChange }: ConsulateSelectorPro
   }
 
   const handleValueChange = (newValue: string) => {
-    console.log("ConsulateSelector value changing to:", newValue);
-    onValueChange(newValue);
+    try {
+      console.log("ConsulateSelector value changing to:", newValue);
+      if (newValue && consulates.some(c => c.id === newValue)) {
+        onValueChange(newValue);
+      }
+    } catch (err) {
+      console.error("Error in handleValueChange:", err);
+      toast.error("Erreur lors de la sélection du consulat");
+    }
   };
 
   return (
-    <Select value={value} onValueChange={handleValueChange}>
-      <SelectTrigger className="bg-[#D3E4FD] border-[#D3E4FD] hover:bg-[#C3D4ED]">
-        <SelectValue placeholder="Sélectionnez un organisme" />
-      </SelectTrigger>
-      <SelectContent>
-        {isLoading ? (
-          <SelectItem value="loading" disabled>
-            Chargement...
-          </SelectItem>
-        ) : consulates.length > 0 ? (
-          consulates.map((consulate) => (
-            <SelectItem key={consulate.id} value={consulate.id}>
-              {consulate.name}
+    <div className="relative">
+      <Select 
+        value={value} 
+        onValueChange={handleValueChange}
+        disabled={isLoading}
+      >
+        <SelectTrigger className="bg-[#D3E4FD] border-[#D3E4FD] hover:bg-[#C3D4ED]">
+          <SelectValue placeholder={isLoading ? "Chargement..." : "Sélectionnez un organisme"} />
+        </SelectTrigger>
+        <SelectContent>
+          {isLoading ? (
+            <SelectItem value="loading" disabled>
+              Chargement...
             </SelectItem>
-          ))
-        ) : (
-          <SelectItem value="no-data" disabled>
-            Aucun consulat disponible
-          </SelectItem>
-        )}
-      </SelectContent>
-    </Select>
+          ) : consulates.length > 0 ? (
+            consulates.map((consulate) => (
+              <SelectItem key={consulate.id} value={consulate.id}>
+                {consulate.name}
+              </SelectItem>
+            ))
+          ) : (
+            <SelectItem value="no-data" disabled>
+              Aucun consulat disponible
+            </SelectItem>
+          )}
+        </SelectContent>
+      </Select>
+      {isLoading && (
+        <div className="absolute right-10 top-3">
+          <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
+        </div>
+      )}
+    </div>
   );
 };
