@@ -116,28 +116,35 @@ const NotificationSettings = () => {
                 </div>
               ) : (
                 <div className="relative bg-white/80 dark:bg-gray-800/80 p-4 rounded-lg shadow-sm">
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="p-4 bg-blue-100 rounded-full">
-                      <Image className="h-16 w-16 text-blue-600" />
+                  <div className="flex flex-col md:flex-row gap-6">
+                    {/* Logo Section */}
+                    <div className="flex-shrink-0 flex justify-center">
+                      <div className="p-4 bg-blue-100 rounded-full">
+                        <Image className="h-16 w-16 text-blue-600" />
+                      </div>
                     </div>
-                    <div className="w-full space-y-2">
-                      {welcomeText.split('\n').map((line, index) => (
-                        <div key={index} className="flex items-center justify-between group">
-                          <p className={index === 0 ? "text-[1.15em] font-semibold bg-gradient-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent" : ""}>
-                            {line}
-                          </p>
-                          {userRole === 'admin' && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={handleEdit}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                      ))}
+                    
+                    {/* Text Section */}
+                    <div className="flex-grow">
+                      <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                        {welcomeText.split('\n').map((line, index) => (
+                          <div key={index} className="flex items-center justify-between group">
+                            <p className={index === 0 ? "text-[1.15em] font-semibold bg-gradient-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent" : "text-gray-600 dark:text-gray-300"}>
+                              {line}
+                            </p>
+                            {userRole === 'admin' && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={handleEdit}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
