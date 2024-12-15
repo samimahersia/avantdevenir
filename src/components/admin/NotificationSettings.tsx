@@ -9,12 +9,28 @@ import { supabase } from "@/integrations/supabase/client";
 import NotificationHistory from "../NotificationHistory";
 import NotificationPreferences from "../NotificationPreferences";
 import RecentAppointments from "./holiday/RecentAppointments";
+import { useQuery } from "@tanstack/react-query";
 
 const NotificationSettings = () => {
   const [welcomeText, setWelcomeText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState("");
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const { data: logo, refetch: refetchLogo } = useQuery({
+    queryKey: ["site-logo"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('site_assets')
+        .select('url')
+        .eq('key', 'site-logo')
+        .single();
+
+      if (error) throw error;
+      return data?.url;
+    }
+  });
 
   useEffect(() => {
     fetchWelcomeText();
@@ -75,6 +91,35 @@ const NotificationSettings = () => {
     setIsEditing(true);
   };
 
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('key', 'site-logo');
+
+      const response = await fetch('/functions/v1/upload-site-asset', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload logo');
+      }
+
+      await refetchLogo();
+      toast.success("Logo mis à jour avec succès");
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      toast.error("Erreur lors de la mise à jour du logo");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <Tabs defaultValue="welcome" className="w-full">
       <TabsList className="grid w-full grid-cols-4">
@@ -121,20 +166,28 @@ const NotificationSettings = () => {
                     <div className="flex-shrink-0 flex justify-center w-24 h-24 relative group">
                       <div className="w-24 h-24 bg-blue-100 rounded-full overflow-hidden">
                         <img
-                          src="/images/consulate-service.jpg"
-                          alt="Agenda professionnel"
+                          src={logo || "/images/consulate-service.jpg"}
+                          alt="Logo du site"
                           className="w-full h-full object-cover"
                         />
                       </div>
                       {userRole === 'admin' && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-gray-800 shadow-md hover:bg-gray-100 dark:hover:bg-gray-700"
-                          onClick={() => toast.info("Fonctionnalité de modification du logo à venir")}
+                        <label 
+                          className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                          htmlFor="logo-upload"
                         >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
+                          <div className="bg-white dark:bg-gray-800 p-2 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <Pencil className="h-4 w-4" />
+                          </div>
+                          <input
+                            type="file"
+                            id="logo-upload"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleLogoUpload}
+                            disabled={isUploading}
+                          />
+                        </label>
                       )}
                     </div>
                     
