@@ -30,6 +30,7 @@ const LoginForm = () => {
     try {
       console.log("Starting login process");
       setIsLoading(true);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
@@ -48,6 +49,9 @@ const LoginForm = () => {
       if (data?.user) {
         console.log("Login successful, user:", data.user.id);
         toast.success("Connexion réussie");
+        
+        // Add a small delay before navigation to ensure proper state updates
+        await new Promise(resolve => setTimeout(resolve, 500));
         navigate("/", { replace: true });
       }
     } catch (error) {

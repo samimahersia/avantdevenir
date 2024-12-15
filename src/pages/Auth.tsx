@@ -17,20 +17,43 @@ const Auth = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState("");
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        navigate("/");
+      try {
+        setIsLoading(true);
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Session error:", error);
+          return;
+        }
+        
+        if (session?.user) {
+          console.log("User is already authenticated, redirecting...");
+          navigate("/", { replace: true });
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session?.user?.id);
+      
       if (event === 'SIGNED_IN' && session) {
-        navigate("/");
+        try {
+          await new Promise(resolve => setTimeout(resolve, 500)); // Small delay to ensure proper state update
+          navigate("/", { replace: true });
+        } catch (error) {
+          console.error("Navigation error:", error);
+          toast.error("Erreur lors de la redirection");
+        }
       }
     });
 
@@ -40,8 +63,18 @@ const Auth = () => {
   }, [navigate]);
 
   useEffect(() => {
-    fetchWelcomeText();
-    checkUserRole();
+    const fetchInitialData = async () => {
+      try {
+        await Promise.all([
+          fetchWelcomeText(),
+          checkUserRole()
+        ]);
+      } catch (error) {
+        console.error("Error fetching initial data:", error);
+      }
+    };
+
+    fetchInitialData();
   }, []);
 
   const fetchWelcomeText = async () => {
@@ -113,6 +146,17 @@ const Auth = () => {
       </>
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-gray-100 to-blue-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-gray-100 to-blue-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
