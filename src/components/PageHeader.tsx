@@ -81,16 +81,7 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
                   Nous proposons :
                   {aboutText.features}
                 </p>
-                <p className="mb-4">{aboutText.support}</p>
-                <div className="border-t pt-4 mt-4">
-                  <p className="font-semibold mb-1">AvantDeVenir</p>
-                  <p>123 45 Avenue des Champs-Élysées</p>
-                  <p>94800 Villejuif</p>
-                  <p className="mt-2">+33 (0)6 69 37 00 01</p>
-                  <p className="text-blue-600 hover:text-blue-800">
-                    <a href="mailto:contact@avantdevenir.com">contact@avantdevenir.com</a>
-                  </p>
-                </div>
+                <p>{aboutText.support}</p>
               </div>
             )}
           </ScrollArea>
