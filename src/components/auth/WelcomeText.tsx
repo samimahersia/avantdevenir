@@ -68,7 +68,7 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white"
+          className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white"
           onClick={handleEdit}
         >
           <Pencil className="h-4 w-4" />
