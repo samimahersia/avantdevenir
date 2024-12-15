@@ -116,11 +116,11 @@ const NotificationSettings = () => {
                 </div>
               ) : (
                 <div className="relative bg-white/80 dark:bg-gray-800/80 p-4 rounded-lg shadow-sm">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 p-3 bg-blue-100 rounded-lg">
-                      <Image className="h-12 w-12 text-blue-600" />
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="p-4 bg-blue-100 rounded-full">
+                      <Image className="h-16 w-16 text-blue-600" />
                     </div>
-                    <div className="flex-grow space-y-2">
+                    <div className="w-full space-y-2">
                       {welcomeText.split('\n').map((line, index) => (
                         <div key={index} className="flex items-center justify-between group">
                           <p className={index === 0 ? "text-[1.15em] font-semibold bg-gradient-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent" : ""}>
