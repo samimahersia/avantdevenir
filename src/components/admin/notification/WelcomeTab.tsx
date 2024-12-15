@@ -35,21 +35,21 @@ const WelcomeTab = ({ userRole }: WelcomeTabProps) => {
 
   return (
     <div className="space-y-4 relative">
-      {userRole === 'admin' && !isEditing && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white z-10"
-          onClick={() => setIsEditing(true)}
-        >
-          <Pencil className="h-4 w-4" />
-        </Button>
-      )}
       <WelcomeText
         welcomeText={welcomeText}
         userRole={userRole}
         onWelcomeTextChange={setWelcomeText}
       />
+      {userRole === 'admin' && !isEditing && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute bottom-2 right-2 bg-red-600 hover:bg-red-700 text-white z-10"
+          onClick={() => setIsEditing(true)}
+        >
+          <Pencil className="h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 };
