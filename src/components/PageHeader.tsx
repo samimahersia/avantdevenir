@@ -26,11 +26,10 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
         <div className="relative flex flex-col md:flex-row gap-4">
           <div className="relative w-full md:w-1/2 h-40 md:h-48 lg:h-80 overflow-hidden rounded-t-lg md:rounded-lg shadow-inner">
             <img
-              src="https://images.unsplash.com/photo-1606327054629-64c8b0fd6e4f"
-              alt="Agenda professionnel"
-              className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+              src="/images/consulate-service.jpg"
+              alt="Service consulaire"
+              className="w-full h-full object-contain p-4 bg-white/90"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent shadow-2xl"></div>
           </div>
           
           <ScrollArea className="w-full md:w-1/2 h-40 md:h-48 lg:h-80 rounded-lg border bg-card p-4 relative">
