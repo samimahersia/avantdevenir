@@ -84,7 +84,7 @@ export const WelcomeTab = ({ userRole }: { userRole: string | null }) => {
                 <div className="flex-shrink-0 flex justify-center w-24 h-24 relative group">
                   <div className="w-24 h-24 bg-blue-100 rounded-full overflow-hidden">
                     <img
-                      src="/images/consulate-service.jpg"
+                      src="/placeholder.svg"
                       alt="Logo du site"
                       className="w-full h-full object-cover"
                     />
