@@ -13,6 +13,7 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Processing file upload request')
     const formData = await req.formData()
     const file = formData.get('file')
     const key = formData.get('key')
