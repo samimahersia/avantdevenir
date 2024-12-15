@@ -16,48 +16,30 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-
     const checkAuth = async () => {
       try {
-        setIsLoading(true);
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error("Session error:", error);
-          return;
-        }
-        
-        if (session?.user && mounted) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
           console.log("User is already authenticated, redirecting...");
           navigate("/", { replace: true });
         }
       } catch (error) {
         console.error("Auth check error:", error);
       } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
-    
+
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session?.user?.id);
-      
-      if (event === 'SIGNED_IN' && session && mounted) {
-        try {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          navigate("/", { replace: true });
-        } catch (error) {
-          console.error("Navigation error:", error);
-        }
+      if (event === 'SIGNED_IN' && session) {
+        navigate("/", { replace: true });
       }
     });
 
     return () => {
-      mounted = false;
       subscription.unsubscribe();
     };
   }, [navigate]);

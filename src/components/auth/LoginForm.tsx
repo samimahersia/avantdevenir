@@ -52,14 +52,10 @@ const LoginForm = () => {
         console.log("Login successful, user:", data.user.id);
         toast.success("Connexion réussie");
         
-        // Add a longer delay and use requestAnimationFrame for smoother transition
-        await new Promise(resolve => {
-          requestAnimationFrame(() => {
-            setTimeout(resolve, 1000);
-          });
-        });
-        
-        navigate("/", { replace: true });
+        // Utilisation de setTimeout pour assurer une transition fluide
+        setTimeout(() => {
+          navigate("/", { replace: true });
+        }, 500);
       }
     } catch (error) {
       console.error("Login error:", error);
