@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell, MessageSquare, Info, Pencil } from "lucide-react";
+import { Bell, MessageSquare, Info, Pencil, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -116,19 +116,30 @@ const NotificationSettings = () => {
                 </div>
               ) : (
                 <div className="relative bg-white/80 dark:bg-gray-800/80 p-4 rounded-lg shadow-sm">
-                  <pre className="text-gray-600 dark:text-gray-300 whitespace-pre-line font-sans">
-                    {welcomeText}
-                  </pre>
-                  {userRole === 'admin' && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2"
-                      onClick={handleEdit}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                  )}
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 p-3 bg-blue-100 rounded-lg">
+                      <Image className="h-12 w-12 text-blue-600" />
+                    </div>
+                    <div className="flex-grow space-y-2">
+                      {welcomeText.split('\n').map((line, index) => (
+                        <div key={index} className="flex items-center justify-between group">
+                          <p className={index === 0 ? "text-[1.15em] font-semibold bg-gradient-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent" : ""}>
+                            {line}
+                          </p>
+                          {userRole === 'admin' && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={handleEdit}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
