@@ -77,7 +77,7 @@ export const WelcomeTab = ({ userRole }: { userRole: string | null }) => {
               </div>
               {userRole === 'admin' && (
                 <label 
-                  className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  className="absolute -top-2 -right-2 cursor-pointer"
                   htmlFor="logo-upload"
                 >
                   <div className="bg-white dark:bg-gray-800 p-2 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -101,13 +101,13 @@ export const WelcomeTab = ({ userRole }: { userRole: string | null }) => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-2 right-2 transition-opacity"
+                  className="absolute top-2 right-2 bg-white dark:bg-gray-800 shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => setIsEditing(true)}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
               )}
-              <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700 group">
+              <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
                 <p className="text-[1.15em] font-semibold bg-gradient-to-r from-blue-900 to-blue-600 bg-clip-text text-transparent">
                   Bienvenue sur AvantDeVenir
                 </p>
