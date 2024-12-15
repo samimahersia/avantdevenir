@@ -34,5 +34,9 @@ name = "send-appointment-reminders"
 verify_jwt = true
 
 [[functions]]
+name = "send-notification"
+verify_jwt = true
+
+[[functions]]
 name = "upload-site-asset"
 verify_jwt = true

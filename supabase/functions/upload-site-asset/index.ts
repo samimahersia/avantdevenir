@@ -18,11 +18,14 @@ serve(async (req) => {
     const key = formData.get('key')
 
     if (!file || !key) {
+      console.error('No file uploaded or no key provided')
       return new Response(
         JSON.stringify({ error: 'No file uploaded or no key provided' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       )
     }
+
+    console.log('Processing file upload for key:', key)
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -32,7 +35,7 @@ serve(async (req) => {
     const fileExt = file.name.split('.').pop()
     const filePath = `${key}.${fileExt}`
 
-    console.log('Uploading file:', filePath)
+    console.log('Uploading file to path:', filePath)
 
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('site-assets')
