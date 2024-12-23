@@ -39,7 +39,7 @@ const WelcomeTab = ({ userRole }: WelcomeTabProps) => {
   };
 
   return (
-    <div className="space-y-4 relative p-6 border rounded-lg bg-white dark:bg-gray-800">
+    <div className="space-y-4 relative p-8 border rounded-lg bg-white dark:bg-gray-800">
       <WelcomeText
         welcomeText={welcomeText}
         userRole={userRole}
@@ -52,11 +52,10 @@ const WelcomeTab = ({ userRole }: WelcomeTabProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white w-8 h-8"
+                className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center hover:bg-red-100"
                 onClick={handleEdit}
               >
-                <Pencil className="h-4 w-4" />
-                <span className="sr-only">Modifier le texte de bienvenue</span>
+                <Pencil className="h-5 w-5 text-red-600" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
