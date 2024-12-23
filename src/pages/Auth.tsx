@@ -16,86 +16,62 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-          navigate("/", { replace: true });
+          navigate("/");
           return;
         }
       } catch (error) {
-        console.error("Auth check error:", error);
+        console.error("Session check error:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkAuth();
+    checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        navigate("/", { replace: true });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        navigate("/");
       }
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [welcomeTextResult, userRoleResult] = await Promise.all([
-          fetchWelcomeText(),
-          checkUserRole()
-        ]);
-        setWelcomeText(welcomeTextResult || "");
-        setUserRole(userRoleResult);
+        const { data: content, error: contentError } = await supabase
+          .from('site_content')
+          .select('content')
+          .eq('key', 'login_welcome_text')
+          .single();
+
+        if (contentError) throw contentError;
+        setWelcomeText(content?.content || "");
+
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+            
+          setUserRole(profile?.role || null);
+        }
       } catch (error) {
         console.error("Error fetching initial data:", error);
       }
     };
 
-    fetchInitialData();
-  }, []);
-
-  const fetchWelcomeText = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('site_content')
-        .select('content')
-        .eq('key', 'login_welcome_text')
-        .single();
-
-      if (error) throw error;
-      return data?.content || "";
-    } catch (error) {
-      console.error('Error fetching welcome text:', error);
-      return "";
+    if (!isLoading) {
+      fetchInitialData();
     }
-  };
-
-  const checkUserRole = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single();
-
-        if (!error && data) {
-          return data.role;
-        }
-      }
-      return null;
-    } catch (error) {
-      console.error('Error checking user role:', error);
-      return null;
-    }
-  };
+  }, [isLoading]);
 
   if (isLoading) {
     return <AuthLoader />;
