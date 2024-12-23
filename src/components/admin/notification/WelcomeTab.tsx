@@ -16,19 +16,17 @@ const WelcomeTab = ({ userRole }: WelcomeTabProps) => {
 
   useEffect(() => {
     const fetchWelcomeText = async () => {
-      const { data, error } = await supabase
-        .from('site_content')
-        .select('content')
-        .eq('key', 'login_welcome_text')
-        .single();
+      try {
+        const { data: content, error: contentError } = await supabase
+          .from('site_content')
+          .select('content')
+          .eq('key', 'login_welcome_text')
+          .single();
 
-      if (error) {
-        console.error('Error fetching welcome text:', error);
-        return;
-      }
-
-      if (data) {
-        setWelcomeText(data.content);
+        if (contentError) throw contentError;
+        setWelcomeText(content?.content || "");
+      } catch (error) {
+        console.error("Error fetching welcome text:", error);
       }
     };
 
@@ -41,7 +39,7 @@ const WelcomeTab = ({ userRole }: WelcomeTabProps) => {
   };
 
   return (
-    <div className="space-y-4 relative p-4 border rounded-lg bg-white dark:bg-gray-800">
+    <div className="space-y-4 relative p-6 border rounded-lg bg-white dark:bg-gray-800">
       <WelcomeText
         welcomeText={welcomeText}
         userRole={userRole}
@@ -54,7 +52,7 @@ const WelcomeTab = ({ userRole }: WelcomeTabProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-2"
+                className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white w-8 h-8 flex items-center justify-center"
                 onClick={handleEdit}
               >
                 <Pencil className="h-4 w-4" />
