@@ -52,7 +52,7 @@ const WelcomeTab = ({ userRole }: WelcomeTabProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white w-8 h-8 flex items-center justify-center"
+                className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white w-8 h-8"
                 onClick={handleEdit}
               >
                 <Pencil className="h-4 w-4" />
