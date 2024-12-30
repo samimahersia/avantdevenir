@@ -10,7 +10,6 @@ interface LogoSectionProps {
 }
 
 const LogoSection = ({ userRole }: LogoSectionProps) => {
-  const [isEditing, setIsEditing] = useState(false);
   const [logoUrl, setLogoUrl] = useState("/placeholder.svg");
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,10 +36,9 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
       console.error('Error uploading logo:', error);
       toast.error("Erreur lors de la mise à jour du logo");
     }
-    setIsEditing(false);
   };
 
-  const triggerFileInput = () => {
+  const handleImageClick = () => {
     if (userRole === 'admin') {
       document.getElementById('logo-upload')?.click();
     }
@@ -51,7 +49,7 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
       <div className="flex justify-center items-center h-full">
         <div 
           className="relative group cursor-pointer"
-          onClick={triggerFileInput}
+          onClick={handleImageClick}
         >
           <img 
             src={logoUrl} 
@@ -60,7 +58,9 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
           />
           {userRole === 'admin' && (
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <Pencil className="h-8 w-8 text-blue-600 bg-white/90 p-1.5 rounded-full shadow-lg" />
+              <div className="bg-white rounded-full p-2 shadow-lg">
+                <Pencil className="h-8 w-8 text-blue-600" />
+              </div>
             </div>
           )}
         </div>
@@ -74,8 +74,8 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-2 right-2 bg-white hover:bg-white/90 shadow-lg"
-                  onClick={triggerFileInput}
+                  className="absolute top-2 right-2 bg-white/90 hover:bg-white shadow-lg"
+                  onClick={handleImageClick}
                 >
                   <Pencil className="h-5 w-5 text-blue-600" />
                 </Button>
