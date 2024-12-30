@@ -46,19 +46,19 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
 
   return (
     <div className="relative p-6 border rounded-lg bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500">
-      <div className="flex justify-center items-center h-full">
+      <div className="flex justify-center items-center h-full bg-white/10 rounded-lg p-4">
         <div 
-          className="relative group cursor-pointer"
+          className="relative group cursor-pointer w-32 h-32 flex items-center justify-center"
           onClick={handleImageClick}
         >
           <img 
             src={logoUrl} 
             alt="Logo" 
-            className="h-24 w-auto object-contain bg-white/80 p-2 rounded-lg transition-all duration-300 group-hover:opacity-75"
+            className="max-h-full max-w-full object-contain bg-white/90 p-2 rounded-lg transition-all duration-300 group-hover:opacity-50"
           />
           {userRole === 'admin' && (
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div className="bg-white rounded-full p-2 shadow-lg">
+              <div className="bg-white p-3 rounded-full shadow-lg">
                 <Pencil className="h-8 w-8 text-blue-600" />
               </div>
             </div>
@@ -72,9 +72,9 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   size="icon"
-                  className="absolute top-2 right-2 bg-white/90 hover:bg-white shadow-lg"
+                  className="absolute top-2 right-2 bg-white shadow-lg hover:bg-gray-100"
                   onClick={handleImageClick}
                 >
                   <Pencil className="h-5 w-5 text-blue-600" />
