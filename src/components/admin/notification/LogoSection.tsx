@@ -38,6 +38,24 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
     try {
       setIsUploading(true);
 
+      // First check if user is admin
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Vous devez être connecté pour effectuer cette action");
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profileError || profile?.role !== 'admin') {
+        toast.error("Vous n'avez pas les droits pour effectuer cette action");
+        return;
+      }
+
       // 1. Upload the file to storage
       const fileExt = file.name.split('.').pop();
       const fileName = `logo.${fileExt}`;
