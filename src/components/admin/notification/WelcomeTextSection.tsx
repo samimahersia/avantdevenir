@@ -37,7 +37,7 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-2 right-2 hover:bg-red-100"
+                className="absolute top-2 right-2 bg-white hover:bg-red-100 border border-red-200"
                 onClick={handleEdit}
               >
                 <Pencil className="h-4 w-4 text-red-600" />
