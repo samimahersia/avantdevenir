@@ -45,8 +45,8 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
   };
 
   return (
-    <div className="relative p-6 border rounded-lg bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500">
-      <div className="bg-white/90 p-4 rounded-lg">
+    <div className="relative p-6 rounded-lg">
+      <div className="p-4 rounded-lg">
         {isEditing ? (
           <div className="space-y-4">
             <Textarea
@@ -66,7 +66,7 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
           </div>
         ) : (
           <div className="relative">
-            <div className="text-gray-600 whitespace-pre-line">
+            <div className="text-gray-600 whitespace-pre-line text-center">
               {welcomeText}
             </div>
             {userRole === 'admin' && (
@@ -76,7 +76,7 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="absolute top-2 right-2 bg-white hover:bg-white/90"
+                      className="absolute top-2 right-2 hover:bg-gray-100"
                       onClick={handleEdit}
                     >
                       <Pencil className="h-5 w-5 text-blue-600" />

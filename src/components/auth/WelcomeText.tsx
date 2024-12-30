@@ -60,7 +60,7 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
   }
 
   return (
-    <div className="relative h-full p-8">
+    <div className="relative h-full flex items-center justify-center p-8">
       <div className="text-center text-gray-600 dark:text-gray-300 whitespace-pre-line font-sans">
         {welcomeText}
       </div>
@@ -68,7 +68,7 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-2 right-2 bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
+          className="absolute top-2 right-2 hover:bg-gray-100 dark:hover:bg-gray-600"
           onClick={handleEdit}
         >
           <Pencil className="h-4 w-4 text-blue-600 dark:text-blue-400" />
