@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell, MessageSquare, Info } from "lucide-react";
+import { Bell, MessageSquare, Info, Pencil } from "lucide-react";
 import NotificationHistory from "../NotificationHistory";
 import NotificationPreferences from "../NotificationPreferences";
 import RecentAppointments from "./holiday/RecentAppointments";
@@ -37,7 +37,15 @@ const NotificationSettings = () => {
       </TabsContent>
       
       <TabsContent value="preferences">
-        <NotificationPreferences />
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Paramètres des notifications</h3>
+              <Pencil className="h-5 w-5 text-gray-500 hover:text-gray-700 cursor-pointer" />
+            </div>
+            <NotificationPreferences />
+          </CardContent>
+        </Card>
       </TabsContent>
 
       <TabsContent value="schedules">
