@@ -85,17 +85,19 @@ const Auth = () => {
           AvantDeVenir.com
         </h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-lg p-6">
-            <WelcomeText
-              welcomeText={welcomeText}
-              userRole={userRole}
-              onWelcomeTextChange={setWelcomeText}
-            />
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="w-full md:w-1/3">
+            <LogoSection userRole={userRole} />
           </div>
           
-          <div>
-            <LogoSection userRole={userRole} />
+          <div className="w-full md:w-2/3">
+            <div className="bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-lg p-6">
+              <WelcomeText
+                welcomeText={welcomeText}
+                userRole={userRole}
+                onWelcomeTextChange={setWelcomeText}
+              />
+            </div>
           </div>
         </div>
         
