@@ -40,12 +40,12 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
 
   if (isEditing) {
     return (
-      <div className="space-y-2">
+      <div className="h-full p-8 space-y-4">
         <Textarea
           value={editedText}
           onChange={(e) => setEditedText(e.target.value)}
-          rows={5}
-          className="w-full p-2"
+          rows={8}
+          className="w-full resize-none"
         />
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={() => setIsEditing(false)}>
@@ -60,7 +60,7 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
   }
 
   return (
-    <div className="relative bg-white/80 dark:bg-gray-800/80 p-4 rounded-lg shadow-sm">
+    <div className="relative h-full p-8">
       <div className="text-center text-gray-600 dark:text-gray-300 whitespace-pre-line font-sans">
         {welcomeText}
       </div>
@@ -68,10 +68,10 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white"
+          className="absolute top-2 right-2 bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
           onClick={handleEdit}
         >
-          <Pencil className="h-4 w-4" />
+          <Pencil className="h-4 w-4 text-blue-600 dark:text-blue-400" />
         </Button>
       )}
     </div>

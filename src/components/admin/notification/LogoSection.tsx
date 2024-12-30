@@ -13,7 +13,6 @@ interface LogoSectionProps {
 const LogoSection = ({ userRole }: LogoSectionProps) => {
   const [isUploading, setIsUploading] = useState(false);
 
-  // Récupérer le logo actuel depuis site_assets
   const { data: logoData, refetch: refetchLogo } = useQuery({
     queryKey: ["site-logo"],
     queryFn: async () => {
@@ -98,26 +97,24 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
   };
 
   return (
-    <div className="relative bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-lg p-6">
-      <div className="flex justify-center items-center min-h-[200px] rounded-lg p-4">
-        <div 
-          className="relative group bg-white/50 dark:bg-gray-700/50 rounded-lg p-4 cursor-pointer"
-          onClick={() => userRole === 'admin' && document.getElementById('logo-upload')?.click()}
-        >
-          <img 
-            src={logoData?.url || "/placeholder.svg"} 
-            alt="Logo" 
-            className="w-32 h-32 object-contain transition-opacity duration-300 group-hover:opacity-50"
-          />
-          
-          {userRole === 'admin' && (
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-              <div className="bg-blue-600 p-3 rounded-full shadow-xl">
-                <Pencil className="h-8 w-8 text-white" strokeWidth={2.5} />
-              </div>
+    <div className="relative h-full flex flex-col items-center justify-center p-8">
+      <div 
+        className="relative group rounded-lg p-4 cursor-pointer flex items-center justify-center"
+        onClick={() => userRole === 'admin' && document.getElementById('logo-upload')?.click()}
+      >
+        <img 
+          src={logoData?.url || "/placeholder.svg"} 
+          alt="Logo" 
+          className="w-48 h-48 object-contain transition-all duration-300 group-hover:scale-105"
+        />
+        
+        {userRole === 'admin' && (
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+            <div className="bg-blue-600 p-3 rounded-full shadow-xl">
+              <Pencil className="h-8 w-8 text-white" strokeWidth={2.5} />
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {userRole === 'admin' && (
