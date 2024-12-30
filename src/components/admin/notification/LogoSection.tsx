@@ -98,10 +98,10 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
   };
 
   return (
-    <div className="relative p-6 border rounded-lg bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500">
-      <div className="flex justify-center items-center min-h-[200px] bg-white/90 rounded-lg p-4">
+    <div className="relative bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-lg p-6">
+      <div className="flex justify-center items-center min-h-[200px] rounded-lg p-4">
         <div 
-          className="relative group bg-white rounded-lg p-4 cursor-pointer"
+          className="relative group bg-white/50 dark:bg-gray-700/50 rounded-lg p-4 cursor-pointer"
           onClick={() => userRole === 'admin' && document.getElementById('logo-upload')?.click()}
         >
           <img 
@@ -128,11 +128,11 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
                 <Button
                   variant="secondary"
                   size="icon"
-                  className="absolute top-2 right-2 bg-white hover:bg-gray-100"
+                  className="absolute top-2 right-2 bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
                   onClick={() => document.getElementById('logo-upload')?.click()}
                   disabled={isUploading}
                 >
-                  <Pencil className="h-5 w-5 text-blue-600" />
+                  <Pencil className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
