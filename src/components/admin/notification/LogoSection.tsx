@@ -46,20 +46,20 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
 
   return (
     <div className="relative p-6 border rounded-lg bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500">
-      <div className="flex justify-center items-center h-full bg-white/10 rounded-lg p-4">
+      <div className="flex justify-center items-center h-full bg-white/20 rounded-lg p-4">
         <div 
-          className="relative group cursor-pointer w-32 h-32 flex items-center justify-center"
+          className="relative group cursor-pointer w-40 h-40 flex items-center justify-center bg-white/90 rounded-lg"
           onClick={handleImageClick}
         >
           <img 
             src={logoUrl} 
             alt="Logo" 
-            className="max-h-full max-w-full object-contain bg-white/90 p-2 rounded-lg transition-all duration-300 group-hover:opacity-50"
+            className="max-h-32 max-w-32 object-contain p-2 transition-all duration-300 group-hover:opacity-30"
           />
           {userRole === 'admin' && (
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div className="bg-white p-3 rounded-full shadow-lg">
-                <Pencil className="h-8 w-8 text-blue-600" />
+              <div className="bg-blue-600 p-4 rounded-full shadow-lg">
+                <Pencil className="h-10 w-10 text-white" />
               </div>
             </div>
           )}
