@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { WelcomeText } from "@/components/auth/WelcomeText";
 import { AuthLoader } from "@/components/auth/AuthLoader";
+import LogoSection from "@/components/admin/notification/LogoSection";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -79,20 +80,26 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-gray-100 to-blue-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-      <div className="w-full max-w-md">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent text-center mb-4">
+      <div className="w-full max-w-4xl space-y-8">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent text-center">
           AvantDeVenir.com
         </h1>
         
-        <div className="relative mb-8">
-          <WelcomeText
-            welcomeText={welcomeText}
-            userRole={userRole}
-            onWelcomeTextChange={setWelcomeText}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-lg p-6">
+            <WelcomeText
+              welcomeText={welcomeText}
+              userRole={userRole}
+              onWelcomeTextChange={setWelcomeText}
+            />
+          </div>
+          
+          <div>
+            <LogoSection userRole={userRole} />
+          </div>
         </div>
         
-        <Card>
+        <Card className="mt-8">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center">
               {activeTab === "login" ? "Connexion" : "Inscription"}
