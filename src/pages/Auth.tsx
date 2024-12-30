@@ -86,11 +86,11 @@ const Auth = () => {
         </h1>
         
         <div className="flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-1/3">
+          <div className="w-full md:w-1/2">
             <LogoSection userRole={userRole} />
           </div>
           
-          <div className="w-full md:w-2/3">
+          <div className="w-full md:w-1/2">
             <div className="bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-lg p-6">
               <WelcomeText
                 welcomeText={welcomeText}
