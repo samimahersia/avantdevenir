@@ -37,7 +37,6 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
     try {
       setIsUploading(true);
 
-      // First check if user is admin
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         toast.error("Vous devez être connecté pour effectuer cette action");
@@ -55,11 +54,10 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
         return;
       }
 
-      // 1. Upload the file to storage
       const fileExt = file.name.split('.').pop();
       const fileName = `logo.${fileExt}`;
       
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('site-assets')
         .upload(fileName, file, { 
           upsert: true,
@@ -68,12 +66,10 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
 
       if (uploadError) throw uploadError;
 
-      // 2. Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('site-assets')
         .getPublicUrl(fileName);
 
-      // 3. Update or insert the record in site_assets table
       const { error: dbError } = await supabase
         .from('site_assets')
         .upsert({
@@ -99,13 +95,13 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
   return (
     <div className="relative h-full flex flex-col items-center justify-center p-8">
       <div 
-        className="relative group rounded-lg p-4 cursor-pointer flex items-center justify-center"
+        className="relative group w-full h-full rounded-lg p-4 cursor-pointer flex items-center justify-center"
         onClick={() => userRole === 'admin' && document.getElementById('logo-upload')?.click()}
       >
         <img 
           src={logoData?.url || "/placeholder.svg"} 
           alt="Logo" 
-          className="w-48 h-48 object-contain transition-all duration-300 group-hover:scale-105"
+          className="max-w-[80%] max-h-[80%] w-auto h-auto object-contain transition-all duration-300 group-hover:scale-105"
         />
         
         {userRole === 'admin' && (

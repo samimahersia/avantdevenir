@@ -86,14 +86,14 @@ const Auth = () => {
         </h1>
         
         <div className="flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-1/2 h-full">
-            <div className="h-full bg-white/95 dark:bg-gray-800/95 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
+          <div className="w-full md:w-1/2">
+            <div className="h-[400px] bg-white/95 dark:bg-gray-800/95 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
               <LogoSection userRole={userRole} />
             </div>
           </div>
           
-          <div className="w-full md:w-1/2 h-full">
-            <div className="h-full bg-white/95 dark:bg-gray-800/95 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
+          <div className="w-full md:w-1/2">
+            <div className="h-[400px] bg-white/95 dark:bg-gray-800/95 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
               <WelcomeText
                 welcomeText={welcomeText}
                 userRole={userRole}
