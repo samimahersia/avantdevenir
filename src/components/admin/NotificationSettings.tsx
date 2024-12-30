@@ -1,14 +1,17 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell, MessageSquare, Info, Pencil } from "lucide-react";
+import { Bell, MessageSquare, Info } from "lucide-react";
 import NotificationHistory from "../NotificationHistory";
 import NotificationPreferences from "../NotificationPreferences";
 import RecentAppointments from "./holiday/RecentAppointments";
-import WelcomeTab from "./notification/WelcomeTab";
+import LogoSection from "./notification/LogoSection";
+import WelcomeTextSection from "./notification/WelcomeTextSection";
 import { useState } from "react";
 
 const NotificationSettings = () => {
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [welcomeText, setWelcomeText] = useState(
+    "Bienvenue sur AvantDeVenir, votre plateforme de gestion de rendez-vous consulaires. Notre service simplifie la prise de rendez-vous et la gestion de vos démarches administratives."
+  );
 
   return (
     <Tabs defaultValue="welcome" className="w-full">
@@ -17,43 +20,41 @@ const NotificationSettings = () => {
           <Info className="h-4 w-4" />
           Bienvenue
         </TabsTrigger>
-        <TabsTrigger value="history" className="flex items-center gap-2">
-          <Bell className="h-4 w-4" />
-          Historique
-        </TabsTrigger>
         <TabsTrigger value="preferences" className="flex items-center gap-2">
-          <MessageSquare className="h-4 w-4" />
+          <Bell className="h-4 w-4" />
           Préférences
         </TabsTrigger>
-        <TabsTrigger value="schedules">Horaires</TabsTrigger>
+        <TabsTrigger value="history" className="flex items-center gap-2">
+          <MessageSquare className="h-4 w-4" />
+          Historique
+        </TabsTrigger>
+        <TabsTrigger value="schedules" className="flex items-center gap-2">
+          <Bell className="h-4 w-4" />
+          Planification
+        </TabsTrigger>
       </TabsList>
-      
-      <TabsContent value="welcome">
-        <WelcomeTab userRole={userRole} />
-      </TabsContent>
-      
-      <TabsContent value="history">
-        <NotificationHistory />
+
+      <TabsContent value="welcome" className="space-y-4">
+        <div className="grid grid-cols-2 gap-6">
+          <LogoSection userRole="admin" />
+          <WelcomeTextSection 
+            userRole="admin"
+            welcomeText={welcomeText}
+            onWelcomeTextChange={setWelcomeText}
+          />
+        </div>
       </TabsContent>
       
       <TabsContent value="preferences">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Paramètres des notifications</h3>
-              <Pencil className="h-5 w-5 text-gray-500 hover:text-gray-700 cursor-pointer" />
-            </div>
-            <NotificationPreferences />
-          </CardContent>
-        </Card>
+        <NotificationPreferences />
+      </TabsContent>
+
+      <TabsContent value="history">
+        <NotificationHistory />
       </TabsContent>
 
       <TabsContent value="schedules">
-        <Card>
-          <CardContent className="pt-6">
-            <RecentAppointments />
-          </CardContent>
-        </Card>
+        <RecentAppointments />
       </TabsContent>
     </Tabs>
   );
