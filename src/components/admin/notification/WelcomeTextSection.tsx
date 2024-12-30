@@ -20,7 +20,7 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
   };
 
   return (
-    <div className="relative p-6 border rounded-lg bg-white dark:bg-gray-800">
+    <div className="relative p-6 border rounded-lg bg-white dark:bg-gray-800 h-full">
       <WelcomeText
         welcomeText={welcomeText}
         userRole={userRole}
@@ -37,10 +37,10 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center hover:bg-red-100"
+                className="absolute top-2 right-2 hover:bg-red-100"
                 onClick={handleEdit}
               >
-                <Pencil className="h-5 w-5 text-red-600" />
+                <Pencil className="h-4 w-4 text-red-600" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>

@@ -41,8 +41,8 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
   };
 
   return (
-    <div className="relative p-6 border rounded-lg bg-white dark:bg-gray-800 mb-6">
-      <div className="flex justify-center items-center">
+    <div className="relative p-6 border rounded-lg bg-white dark:bg-gray-800">
+      <div className="flex justify-center items-center h-full">
         <img 
           src={logoUrl} 
           alt="Logo" 
@@ -57,10 +57,10 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center hover:bg-red-100"
+                className="absolute top-2 right-2 hover:bg-red-100"
                 onClick={() => setIsEditing(true)}
               >
-                <Pencil className="h-5 w-5 text-red-600" />
+                <Pencil className="h-4 w-4 text-red-600" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>

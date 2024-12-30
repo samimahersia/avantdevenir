@@ -30,7 +30,7 @@ const WelcomeTab = ({ userRole }: WelcomeTabProps) => {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="grid grid-cols-2 gap-6">
       <LogoSection userRole={userRole} />
       <WelcomeTextSection 
         userRole={userRole}
