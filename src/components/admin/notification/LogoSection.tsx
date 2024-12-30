@@ -21,7 +21,7 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
         .from('site_assets')
         .select('url')
         .eq('key', 'logo')
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching logo:', error);
