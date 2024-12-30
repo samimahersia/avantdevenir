@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Pencil } from "lucide-react";
+import { Image } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -55,12 +55,13 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 hover:bg-red-100"
+                variant="outline"
+                size="sm"
+                className="absolute top-2 right-2 bg-red-50 hover:bg-red-100 border-red-200 text-red-600"
                 onClick={() => setIsEditing(true)}
               >
-                <Pencil className="h-4 w-4 text-red-600" />
+                <Image className="h-4 w-4 mr-2" />
+                Image
               </Button>
             </TooltipTrigger>
             <TooltipContent>
