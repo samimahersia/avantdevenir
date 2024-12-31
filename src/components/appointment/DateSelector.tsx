@@ -35,7 +35,7 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
 
   const modifiersClassNames = {
     holiday: "text-red-500 font-bold bg-red-50 cursor-not-allowed",
-    available: "font-medium text-green-600 hover:bg-green-50"
+    available: "hover:bg-green-50"
   };
 
   const handleSelect = (selectedDate: Date | undefined) => {
