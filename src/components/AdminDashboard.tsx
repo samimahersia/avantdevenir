@@ -4,7 +4,6 @@ import DashboardHeader from "./admin/DashboardHeader";
 import DashboardStats from "./admin/DashboardStats";
 import DashboardTabs from "./admin/DashboardTabs";
 import { TabChangeHandler } from "./admin/TabChangeHandler";
-import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 
 interface AdminDashboardProps {
   activeTab?: string;
@@ -14,7 +13,6 @@ interface AdminDashboardProps {
 const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashboardProps) => {
   const [selectedAvailability, setSelectedAvailability] = useState(null);
   const isMobile = useIsMobile();
-  const { data: stats } = useDashboardStats();
 
   const handleTabChange = (value: string) => {
     if (onTabChange) {
@@ -31,7 +29,7 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
         />
       )}
       <DashboardHeader planType="free" />
-      <DashboardStats stats={stats || { total: 0, completed: 0, upcoming: 0, canceled: 0 }} />
+      <DashboardStats />
       <DashboardTabs 
         activeTab={activeTab} 
         onTabChange={handleTabChange}

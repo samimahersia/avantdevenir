@@ -3,7 +3,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CalendarIcon, BarChart3, Users, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-const StatCard = ({ icon: Icon, bgColor, iconColor, title, queryKey, queryFn }) => {
+interface StatCardProps {
+  icon: React.ElementType;
+  bgColor: string;
+  iconColor: string;
+  title: string;
+  queryKey: string;
+  queryFn: () => Promise<number>;
+}
+
+const StatCard = ({ icon: Icon, bgColor, iconColor, title, queryKey, queryFn }: StatCardProps) => {
   const { data: count = 0 } = useQuery({
     queryKey: [queryKey],
     queryFn
@@ -33,20 +42,31 @@ const DashboardStats = () => {
   endOfDay.setHours(23, 59, 59, 999);
 
   const getTotalAppointments = async () => {
-    const { count } = await supabase
+    const { count, error } = await supabase
       .from("appointments")
-      .select("count", { count: 'exact' });
+      .select("*", { count: 'exact', head: true });
+    
+    if (error) {
+      console.error("Error fetching total appointments:", error);
+      return 0;
+    }
+    
     return count || 0;
   };
 
   const getCompletedToday = async () => {
-    const { count } = await supabase
+    const { count, error } = await supabase
       .from("appointments")
-      .select("count", { count: 'exact' })
+      .select("*", { count: 'exact', head: true })
       .eq("status", "terminé")
       .gte("date", today.toISOString())
       .lte("date", endOfDay.toISOString());
     
+    if (error) {
+      console.error("Error fetching completed appointments:", error);
+      return 0;
+    }
+
     console.log("Completed appointments query:", {
       startDate: today.toISOString(),
       endDate: endOfDay.toISOString(),
@@ -57,22 +77,34 @@ const DashboardStats = () => {
   };
 
   const getUpcomingToday = async () => {
-    const { count } = await supabase
+    const { count, error } = await supabase
       .from("appointments")
-      .select("count", { count: 'exact' })
+      .select("*", { count: 'exact', head: true })
       .eq("status", "confirme")
       .gte("date", today.toISOString())
       .lte("date", endOfDay.toISOString());
+    
+    if (error) {
+      console.error("Error fetching upcoming appointments:", error);
+      return 0;
+    }
+    
     return count || 0;
   };
 
   const getCanceledToday = async () => {
-    const { count } = await supabase
+    const { count, error } = await supabase
       .from("appointments")
-      .select("count", { count: 'exact' })
+      .select("*", { count: 'exact', head: true })
       .eq("status", "annule")
       .gte("date", today.toISOString())
       .lte("date", endOfDay.toISOString());
+    
+    if (error) {
+      console.error("Error fetching canceled appointments:", error);
+      return 0;
+    }
+    
     return count || 0;
   };
 
