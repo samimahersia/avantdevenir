@@ -56,7 +56,7 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile, selectedAvailability 
       </TabsContent>
 
       <TabsContent value="settings" className="mt-6">
-        <RecurringAvailabilityForm />
+        <RecurringAvailabilityForm initialAvailability={selectedAvailability} />
       </TabsContent>
 
       <TabsContent value="notifications" className="mt-6">

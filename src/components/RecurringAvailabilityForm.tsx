@@ -21,7 +21,7 @@ interface RecurringAvailabilityFormProps {
   initialAvailability?: any;
 }
 
-const RecurringAvailabilityForm = ({ initialAvailability }: RecurringAvailabilityFormProps) => {
+export const RecurringAvailabilityForm = ({ initialAvailability }: RecurringAvailabilityFormProps) => {
   const [selectedOrganismee, setSelectedOrganismee] = useState<string>("");
   const [availabilities, setAvailabilities] = useState<{
     [key: number]: { startHour: number; endHour: number };
