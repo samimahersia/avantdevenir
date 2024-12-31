@@ -5,6 +5,7 @@ import { fr } from "date-fns/locale";
 import { disabledDays } from "@/utils/appointment";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { DayPicker } from "react-day-picker";
 
 interface DateSelectorProps {
   date?: Date;
@@ -40,10 +41,10 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
     }
   };
 
-  // Convert disabledDays object to array format expected by the Calendar component
-  const disabledDates = [
+  // Create the disabled dates configuration
+  const disabledConfig: DayPicker.Matcher[] = [
     { before: disabledDays.before },
-    { daysOfWeek: disabledDays.daysOfWeek }
+    { dayOfWeek: disabledDays.daysOfWeek }
   ];
 
   return (
@@ -55,7 +56,7 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
             mode="single"
             selected={date}
             onSelect={handleSelect}
-            disabled={[...disabledDates, ...holidays]}
+            disabled={[...disabledConfig, ...holidays]}
             className="mx-auto"
             locale={fr}
             modifiers={modifiers}
