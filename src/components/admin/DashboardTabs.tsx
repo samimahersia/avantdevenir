@@ -28,8 +28,8 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvail
         <TabsTrigger value="users">Utilisateurs</TabsTrigger>
         <TabsTrigger value="holidays">Jours fériés</TabsTrigger>
         <TabsTrigger value="settings">Planification</TabsTrigger>
-        <TabsTrigger value="subscription">Abonnement</TabsTrigger>
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
+        <TabsTrigger value="subscription">Abonnement</TabsTrigger>
         <TabsTrigger value="support">Support</TabsTrigger>
       </TabsList>
 
@@ -61,12 +61,12 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvail
         <RecurringAvailabilityForm initialAvailability={selectedAvailability} />
       </TabsContent>
 
-      <TabsContent value="subscription" className="mt-6">
-        <SubscriptionManagement />
-      </TabsContent>
-
       <TabsContent value="notifications" className="mt-6">
         <NotificationSettings />
+      </TabsContent>
+
+      <TabsContent value="subscription" className="mt-6">
+        <SubscriptionManagement />
       </TabsContent>
 
       <TabsContent value="support" className="mt-6">

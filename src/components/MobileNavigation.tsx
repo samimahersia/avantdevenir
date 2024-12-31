@@ -120,6 +120,12 @@ export const MobileNavigation = ({
                         Planification
                       </TabsTrigger>
                       <TabsTrigger 
+                        value="notifications" 
+                        className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+                      >
+                        Historique
+                      </TabsTrigger>
+                      <TabsTrigger 
                         value="subscription" 
                         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
                       >
