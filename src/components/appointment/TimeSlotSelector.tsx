@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TimeSlot } from "@/utils/appointment";
+import { format } from "date-fns";
 
 interface TimeSlotSelectorProps {
   selectedTime?: TimeSlot;
@@ -21,10 +22,33 @@ const TimeSlotSelector = ({
   consulateId,
   serviceId
 }: TimeSlotSelectorProps) => {
+  // Vérifier si c'est un jour férié
+  const { data: isHoliday = false, isLoading: isCheckingHoliday } = useQuery({
+    queryKey: ["holiday-check", selectedDate, consulateId],
+    queryFn: async () => {
+      if (!selectedDate || !consulateId) return false;
+
+      const { data, error } = await supabase
+        .from("consulate_holidays")
+        .select("*")
+        .eq("consulate_id", consulateId)
+        .eq("date", format(selectedDate, "yyyy-MM-dd"))
+        .single();
+
+      if (error && error.code !== "PGRST116") { // PGRST116 = not found
+        console.error("Error checking holiday:", error);
+        return false;
+      }
+
+      return !!data;
+    },
+    enabled: !!selectedDate && !!consulateId
+  });
+
   const { data: availableSlots = [], isLoading } = useQuery({
     queryKey: ["available-slots", selectedDate, consulateId, serviceId],
     queryFn: async () => {
-      if (!selectedDate || !consulateId || !serviceId) return [];
+      if (!selectedDate || !consulateId || !serviceId || isHoliday) return [];
 
       console.log("Fetching availabilities for consulate:", consulateId);
       
@@ -82,7 +106,7 @@ const TimeSlotSelector = ({
 
       return results.filter(slot => slot.isAvailable);
     },
-    enabled: !!selectedDate && !!consulateId && !!serviceId
+    enabled: !!selectedDate && !!consulateId && !!serviceId && !isHoliday
   });
 
   if (!selectedDate) {
@@ -107,15 +131,38 @@ const TimeSlotSelector = ({
     );
   }
 
-  return (
-    <div className="space-y-2">
-      <Label>Heure du rendez-vous *</Label>
-      {isLoading ? (
+  if (isCheckingHoliday || isLoading) {
+    return (
+      <div className="space-y-2">
+        <Label>Heure du rendez-vous *</Label>
         <div className="text-center py-4">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
           <p className="text-sm text-muted-foreground mt-2">Vérification des disponibilités...</p>
         </div>
-      ) : availableSlots.length > 0 ? (
+      </div>
+    );
+  }
+
+  if (isHoliday) {
+    return (
+      <div className="space-y-2">
+        <Label>Heure du rendez-vous *</Label>
+        <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200">
+          <p className="text-muted-foreground">
+            L'organisme est fermé ce jour-là (jour férié)
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Veuillez sélectionner une autre date
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      <Label>Heure du rendez-vous *</Label>
+      {availableSlots.length > 0 ? (
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
           {availableSlots.map((slot) => (
             <Button
