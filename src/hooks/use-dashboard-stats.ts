@@ -11,11 +11,6 @@ export const useDashboardStats = () => {
       const endOfDay = new Date(today);
       endOfDay.setHours(23, 59, 59, 999);
 
-      console.log('Fetching stats for date range:', {
-        start: today.toISOString(),
-        end: endOfDay.toISOString()
-      });
-
       const { data: totalAppointments } = await supabase
         .from("appointments")
         .select("count")
@@ -32,8 +27,6 @@ export const useDashboardStats = () => {
       if (completedError) {
         console.error('Error fetching completed appointments:', completedError);
       }
-
-      console.log('Completed appointments today:', completedToday);
 
       const { data: upcomingToday } = await supabase
         .from("appointments")
