@@ -8,6 +8,7 @@ import NotificationSettings from "./NotificationSettings";
 import TechnicalSupport from "./TechnicalSupport";
 import AppointmentStats from "@/components/AppointmentStats";
 import RecurringAvailabilityForm from "@/components/RecurringAvailabilityForm";
+import SubscriptionManagement from "./SubscriptionManagement";
 
 interface DashboardTabsProps {
   activeTab: string;
@@ -26,7 +27,8 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvail
         <TabsTrigger value="services">Services</TabsTrigger>
         <TabsTrigger value="users">Utilisateurs</TabsTrigger>
         <TabsTrigger value="holidays">Jours fériés</TabsTrigger>
-        <TabsTrigger value="settings">Paramètres</TabsTrigger>
+        <TabsTrigger value="settings">Planification</TabsTrigger>
+        <TabsTrigger value="subscription">Abonnement</TabsTrigger>
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
         <TabsTrigger value="support">Support</TabsTrigger>
       </TabsList>
@@ -57,6 +59,10 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvail
 
       <TabsContent value="settings" className="mt-6">
         <RecurringAvailabilityForm initialAvailability={selectedAvailability} />
+      </TabsContent>
+
+      <TabsContent value="subscription" className="mt-6">
+        <SubscriptionManagement />
       </TabsContent>
 
       <TabsContent value="notifications" className="mt-6">

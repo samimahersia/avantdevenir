@@ -25,12 +25,12 @@ export const MobileNavigation = ({
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    setIsOpen(false); // Ferme le menu après la sélection d'un onglet
+    setIsOpen(false);
   };
 
   const handleUserTypeChange = (type: "client" | "admin") => {
     setUserType(type);
-    setIsOpen(false); // Ferme le menu après le changement de type d'utilisateur
+    setIsOpen(false);
   };
 
   return (
@@ -112,6 +112,18 @@ export const MobileNavigation = ({
                         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
                       >
                         Services
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="settings" 
+                        className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+                      >
+                        Planification
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="subscription" 
+                        className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+                      >
+                        Abonnement
                       </TabsTrigger>
                       <TabsTrigger 
                         value="settings" 
