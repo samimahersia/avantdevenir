@@ -4,7 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AppointmentCard } from "./appointment/AppointmentCard";
 
-const AppointmentManagement = () => {
+interface AppointmentManagementProps {
+  isMobile?: boolean;
+}
+
+const AppointmentManagement = ({ isMobile = false }: AppointmentManagementProps) => {
   const { data: appointments = [], refetch } = useQuery({
     queryKey: ["admin-appointments"],
     queryFn: async () => {
@@ -105,7 +109,7 @@ const AppointmentManagement = () => {
   };
 
   return (
-    <Card className="mt-auto">
+    <Card className={`mt-auto ${isMobile ? 'mx-2' : ''}`}>
       <CardContent>
         <div className="space-y-4">
           {appointments.map((appointment) => (
@@ -115,6 +119,7 @@ const AppointmentManagement = () => {
               onStatusChange={handleStatusChange}
               onDelete={handleDelete}
               onEdit={handleEdit}
+              isMobile={isMobile}
             />
           ))}
         </div>
