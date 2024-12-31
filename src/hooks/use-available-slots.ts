@@ -8,8 +8,7 @@ export const useAvailableSlots = (
   serviceId?: string,
   timeSlots: TimeSlot[] = []
 ) => {
-  // Vérifier si c'est un jour férié
-  const { data: holiday, isLoading: isCheckingHoliday } = useQuery({
+  const { data: holiday } = useQuery({
     queryKey: ["holiday-check", selectedDate, consulateId],
     queryFn: async () => {
       if (!selectedDate || !consulateId) return null;
@@ -42,39 +41,20 @@ export const useAvailableSlots = (
 
       console.log("Fetching availabilities for consulate:", consulateId);
       
-      const jsDay = selectedDate.getDay();
-      const dayOfWeek = jsDay === 0 ? 7 : jsDay;
-      
-      console.log("Checking availability for:", {
-        date: selectedDate,
-        consulateId,
-        serviceId,
-        jsDay,
-        convertedDayOfWeek: dayOfWeek
-      });
-
-      const { data: recurringAvailabilities, error: recurringError } = await supabase
-        .from("recurring_availabilities")
-        .select("*")
-        .eq("consulate_id", consulateId)
-        .eq("day_of_week", dayOfWeek);
-
-      console.log("Recurring availabilities found:", recurringAvailabilities);
-
-      if (recurringError) {
-        console.error("Error fetching recurring availabilities:", recurringError);
-        return [];
-      }
-
       const results = await Promise.all(
         timeSlots.map(async (slot) => {
-          const slotDate = new Date(selectedDate);
-          slotDate.setHours(slot.hour, slot.minute, 0, 0);
+          const appointmentDate = new Date(
+            selectedDate.getFullYear(),
+            selectedDate.getMonth(),
+            selectedDate.getDate(),
+            slot.hour,
+            slot.minute
+          );
 
           const { data: isAvailable } = await supabase.rpc(
             'check_appointment_availability',
             {
-              p_appointment_date: slotDate.toISOString(),
+              p_appointment_date: appointmentDate.toISOString(),
               p_service_id: serviceId,
               p_consulate_id: consulateId
             }
@@ -82,7 +62,7 @@ export const useAvailableSlots = (
 
           console.log("Slot availability check:", {
             slot: `${slot.hour}:${slot.minute}`,
-            date: slotDate.toISOString(),
+            date: appointmentDate.toISOString(),
             isAvailable
           });
 
@@ -100,7 +80,7 @@ export const useAvailableSlots = (
 
   return {
     availableSlots,
-    isLoading: isLoading || isCheckingHoliday,
+    isLoading,
     holiday
   };
 };
