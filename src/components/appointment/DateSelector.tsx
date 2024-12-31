@@ -28,10 +28,15 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
     holiday: holidays
   };
 
-  const modifiersStyles = {
-    holiday: {
-      color: "#991B1B", // Rouge foncé (red-800)
-      fontWeight: "bold"
+  const modifiersClassNames = {
+    holiday: "text-red-500 font-bold bg-red-50 cursor-not-allowed"
+  };
+
+  const handleSelect = (selectedDate: Date | undefined) => {
+    if (selectedDate && !holidays.some(holiday => 
+      holiday.toISOString().split('T')[0] === selectedDate.toISOString().split('T')[0]
+    )) {
+      setDate(selectedDate);
     }
   };
 
@@ -43,12 +48,12 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
           <Calendar
             mode="single"
             selected={date}
-            onSelect={setDate}
-            disabled={disabledDays}
+            onSelect={handleSelect}
+            disabled={[...disabledDays, ...holidays]}
             className="mx-auto"
             locale={fr}
             modifiers={modifiers}
-            modifiersStyles={modifiersStyles}
+            modifiersClassNames={modifiersClassNames}
           />
         </CardContent>
       </Card>
