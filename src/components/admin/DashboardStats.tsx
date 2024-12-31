@@ -1,23 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarIcon, BarChart3, Users, Building2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 
 interface StatCardProps {
   icon: React.ElementType;
   bgColor: string;
   iconColor: string;
   title: string;
-  queryKey: string;
-  queryFn: () => Promise<number>;
+  value: number;
 }
 
-const StatCard = ({ icon: Icon, bgColor, iconColor, title, queryKey, queryFn }: StatCardProps) => {
-  const { data: count = 0 } = useQuery({
-    queryKey: [queryKey],
-    queryFn
-  });
-
+const StatCard = ({ icon: Icon, bgColor, iconColor, title, value }: StatCardProps) => {
   return (
     <Card className="bg-white">
       <CardContent className="p-6">
@@ -27,7 +20,7 @@ const StatCard = ({ icon: Icon, bgColor, iconColor, title, queryKey, queryFn }: 
           </div>
           <div>
             <p className="text-sm text-gray-600">{title}</p>
-            <p className="text-2xl font-bold">{count}</p>
+            <p className="text-2xl font-bold">{value}</p>
           </div>
         </div>
       </CardContent>
@@ -36,76 +29,34 @@ const StatCard = ({ icon: Icon, bgColor, iconColor, title, queryKey, queryFn }: 
 };
 
 const DashboardStats = () => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const endOfDay = new Date(today);
-  endOfDay.setHours(23, 59, 59, 999);
+  const { data: stats, isLoading, error } = useDashboardStats();
 
-  const getTotalAppointments = async () => {
-    const { count, error } = await supabase
-      .from("appointments")
-      .select("*", { count: 'exact', head: true });
-    
-    if (error) {
-      console.error("Error fetching total appointments:", error);
-      return 0;
-    }
-    
-    return count || 0;
-  };
+  if (error) {
+    console.error("Error loading dashboard stats:", error);
+    return (
+      <div className="text-red-500 p-4">
+        Erreur lors du chargement des statistiques
+      </div>
+    );
+  }
 
-  const getCompletedToday = async () => {
-    const { count, error } = await supabase
-      .from("appointments")
-      .select("*", { count: 'exact', head: true })
-      .eq("status", "terminé")
-      .gte("date", today.toISOString())
-      .lte("date", endOfDay.toISOString());
-    
-    if (error) {
-      console.error("Error fetching completed appointments:", error);
-      return 0;
-    }
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i} className="bg-white animate-pulse">
+            <CardContent className="p-6 h-24" />
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
-    console.log("Completed appointments query:", {
-      startDate: today.toISOString(),
-      endDate: endOfDay.toISOString(),
-      count
-    });
-    
-    return count || 0;
-  };
-
-  const getUpcomingToday = async () => {
-    const { count, error } = await supabase
-      .from("appointments")
-      .select("*", { count: 'exact', head: true })
-      .eq("status", "confirme")
-      .gte("date", today.toISOString())
-      .lte("date", endOfDay.toISOString());
-    
-    if (error) {
-      console.error("Error fetching upcoming appointments:", error);
-      return 0;
-    }
-    
-    return count || 0;
-  };
-
-  const getCanceledToday = async () => {
-    const { count, error } = await supabase
-      .from("appointments")
-      .select("*", { count: 'exact', head: true })
-      .eq("status", "annule")
-      .gte("date", today.toISOString())
-      .lte("date", endOfDay.toISOString());
-    
-    if (error) {
-      console.error("Error fetching canceled appointments:", error);
-      return 0;
-    }
-    
-    return count || 0;
+  const { total, completed, upcoming, canceled } = stats || {
+    total: 0,
+    completed: 0,
+    upcoming: 0,
+    canceled: 0
   };
 
   return (
@@ -115,32 +66,28 @@ const DashboardStats = () => {
         bgColor="bg-blue-100"
         iconColor="text-blue-600"
         title="Total des Rendez-vous"
-        queryKey="total-appointments"
-        queryFn={getTotalAppointments}
+        value={total}
       />
       <StatCard
         icon={BarChart3}
         bgColor="bg-green-100"
         iconColor="text-green-600"
         title="Terminés aujourd'hui"
-        queryKey="completed-today"
-        queryFn={getCompletedToday}
+        value={completed}
       />
       <StatCard
         icon={Users}
         bgColor="bg-yellow-100"
         iconColor="text-yellow-600"
         title="À venir aujourd'hui"
-        queryKey="upcoming-today"
-        queryFn={getUpcomingToday}
+        value={upcoming}
       />
       <StatCard
         icon={Building2}
         bgColor="bg-red-100"
         iconColor="text-red-600"
         title="Annulés aujourd'hui"
-        queryKey="canceled-today"
-        queryFn={getCanceledToday}
+        value={canceled}
       />
     </div>
   );
