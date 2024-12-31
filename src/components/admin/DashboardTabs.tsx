@@ -7,7 +7,7 @@ import HolidayManagement from "./HolidayManagement";
 import NotificationSettings from "./NotificationSettings";
 import TechnicalSupport from "./TechnicalSupport";
 import AppointmentStats from "@/components/AppointmentStats";
-import { RecurringAvailabilityForm } from "@/components/RecurringAvailabilityForm";
+import RecurringAvailabilityForm from "@/components/RecurringAvailabilityForm";
 
 interface DashboardTabsProps {
   activeTab: string;
