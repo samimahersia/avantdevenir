@@ -54,6 +54,8 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
     queryFn: async () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(today);
+      endOfDay.setHours(23, 59, 59, 999);
 
       const { data: totalAppointments } = await supabase
         .from("appointments")
@@ -65,6 +67,7 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
         .select("count")
         .eq("status", "termine")
         .gte("date", today.toISOString())
+        .lte("date", endOfDay.toISOString())
         .single();
 
       const { data: upcomingToday } = await supabase
@@ -72,7 +75,7 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
         .select("count")
         .eq("status", "confirme")
         .gte("date", today.toISOString())
-        .lte("date", new Date(today.setHours(23, 59, 59, 999)).toISOString())
+        .lte("date", endOfDay.toISOString())
         .single();
 
       const { data: canceledToday } = await supabase
@@ -80,6 +83,7 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
         .select("count")
         .eq("status", "annule")
         .gte("date", today.toISOString())
+        .lte("date", endOfDay.toISOString())
         .single();
 
       return {
