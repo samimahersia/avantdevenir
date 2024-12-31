@@ -54,21 +54,33 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
     queryFn: async () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+
       const endOfDay = new Date(today);
       endOfDay.setHours(23, 59, 59, 999);
+
+      console.log('Fetching stats for date range:', {
+        start: today.toISOString(),
+        end: endOfDay.toISOString()
+      });
 
       const { data: totalAppointments } = await supabase
         .from("appointments")
         .select("count")
         .single();
 
-      const { data: completedToday } = await supabase
+      const { data: completedToday, error: completedError } = await supabase
         .from("appointments")
         .select("count")
         .eq("status", "terminé")
         .gte("date", today.toISOString())
         .lte("date", endOfDay.toISOString())
         .single();
+
+      if (completedError) {
+        console.error('Error fetching completed appointments:', completedError);
+      }
+
+      console.log('Completed appointments today:', completedToday);
 
       const { data: upcomingToday } = await supabase
         .from("appointments")
