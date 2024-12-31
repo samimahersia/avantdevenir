@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Menu } from "lucide-react";
+import { Menu, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -124,6 +124,19 @@ export const MobileNavigation = ({
                         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
                       >
                         Abonnement
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="history" 
+                        className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+                      >
+                        Historique
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="download" 
+                        className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Téléchargement
                       </TabsTrigger>
                       <TabsTrigger 
                         value="settings" 

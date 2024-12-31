@@ -9,6 +9,7 @@ import TechnicalSupport from "./TechnicalSupport";
 import AppointmentStats from "@/components/AppointmentStats";
 import RecurringAvailabilityForm from "@/components/RecurringAvailabilityForm";
 import SubscriptionManagement from "./SubscriptionManagement";
+import { Download } from "lucide-react";
 
 interface DashboardTabsProps {
   activeTab: string;
@@ -30,6 +31,11 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvail
         <TabsTrigger value="settings">Planification</TabsTrigger>
         <TabsTrigger value="subscription">Abonnement</TabsTrigger>
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
+        <TabsTrigger value="history">Historique</TabsTrigger>
+        <TabsTrigger value="download" className="flex items-center gap-2">
+          <Download className="h-4 w-4" />
+          Téléchargement
+        </TabsTrigger>
         <TabsTrigger value="support">Support</TabsTrigger>
       </TabsList>
 
@@ -67,6 +73,14 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvail
 
       <TabsContent value="notifications" className="mt-6">
         <NotificationSettings />
+      </TabsContent>
+
+      <TabsContent value="download" className="mt-6">
+        <div className="text-center py-8">
+          <p className="text-muted-foreground">
+            Section de téléchargement en cours de développement
+          </p>
+        </div>
       </TabsContent>
 
       <TabsContent value="support" className="mt-6">
