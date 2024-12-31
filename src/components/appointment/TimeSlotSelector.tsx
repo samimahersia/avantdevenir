@@ -23,10 +23,10 @@ const TimeSlotSelector = ({
   serviceId
 }: TimeSlotSelectorProps) => {
   // Vérifier si c'est un jour férié
-  const { data: isHoliday = false, isLoading: isCheckingHoliday } = useQuery({
+  const { data: holiday, isLoading: isCheckingHoliday } = useQuery({
     queryKey: ["holiday-check", selectedDate, consulateId],
     queryFn: async () => {
-      if (!selectedDate || !consulateId) return false;
+      if (!selectedDate || !consulateId) return null;
 
       const { data, error } = await supabase
         .from("consulate_holidays")
@@ -37,10 +37,10 @@ const TimeSlotSelector = ({
 
       if (error) {
         console.error("Error checking holiday:", error);
-        return false;
+        return null;
       }
 
-      return !!data;
+      return data;
     },
     enabled: !!selectedDate && !!consulateId
   });
@@ -48,7 +48,7 @@ const TimeSlotSelector = ({
   const { data: availableSlots = [], isLoading } = useQuery({
     queryKey: ["available-slots", selectedDate, consulateId, serviceId],
     queryFn: async () => {
-      if (!selectedDate || !consulateId || !serviceId || isHoliday) return [];
+      if (!selectedDate || !consulateId || !serviceId || holiday) return [];
 
       console.log("Fetching availabilities for consulate:", consulateId);
       
@@ -106,7 +106,7 @@ const TimeSlotSelector = ({
 
       return results.filter(slot => slot.isAvailable);
     },
-    enabled: !!selectedDate && !!consulateId && !!serviceId && !isHoliday
+    enabled: !!selectedDate && !!consulateId && !!serviceId && !holiday
   });
 
   if (!selectedDate) {
@@ -143,13 +143,16 @@ const TimeSlotSelector = ({
     );
   }
 
-  if (isHoliday) {
+  if (holiday) {
     return (
       <div className="space-y-2">
         <Label>Heure du rendez-vous *</Label>
         <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-muted-foreground">
-            L'organisme est fermé ce jour-là (jour férié)
+          <p className="text-muted-foreground font-medium">
+            L'organisme est fermé ce jour-là
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {holiday.description ? `Raison : ${holiday.description}` : "Jour férié"}
           </p>
           <p className="text-sm text-muted-foreground mt-1">
             Veuillez sélectionner une autre date
