@@ -19,17 +19,19 @@ interface DashboardTabsProps {
 const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvailability }: DashboardTabsProps) => {
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-      <TabsList className="w-full justify-start overflow-x-auto">
-        <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
-        <TabsTrigger value="stats">Statistiques</TabsTrigger>
-        <TabsTrigger value="consulates">Organismes</TabsTrigger>
-        <TabsTrigger value="services">Services</TabsTrigger>
-        <TabsTrigger value="users">Utilisateurs</TabsTrigger>
-        <TabsTrigger value="holidays">Jours fériés</TabsTrigger>
-        <TabsTrigger value="settings">Planification</TabsTrigger>
-        <TabsTrigger value="notifications">Notifications</TabsTrigger>
-        <TabsTrigger value="support">Support</TabsTrigger>
-      </TabsList>
+      <div className="w-full overflow-x-auto">
+        <TabsList className="w-full justify-start bg-transparent">
+          <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
+          <TabsTrigger value="stats">Statistiques</TabsTrigger>
+          <TabsTrigger value="consulates">Organismes</TabsTrigger>
+          <TabsTrigger value="services">Services</TabsTrigger>
+          <TabsTrigger value="users">Utilisateurs</TabsTrigger>
+          <TabsTrigger value="holidays">Jours fériés</TabsTrigger>
+          <TabsTrigger value="settings">Planification</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="support">Support</TabsTrigger>
+        </TabsList>
+      </div>
 
       <TabsContent value="appointments" className="mt-6">
         <AppointmentManagement isMobile={isMobile} />

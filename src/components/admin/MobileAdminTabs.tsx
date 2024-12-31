@@ -11,62 +11,65 @@ export const MobileAdminTabs = ({ activeTab, onTabChange }: MobileAdminTabsProps
       <TabsTrigger 
         value="appointments" 
         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+        onClick={() => onTabChange("appointments")}
       >
         Rendez-vous
       </TabsTrigger>
       <TabsTrigger 
-        value="calendar" 
-        className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
-      >
-        Calendrier
-      </TabsTrigger>
-      <TabsTrigger 
         value="stats" 
         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+        onClick={() => onTabChange("stats")}
       >
         Statistiques
       </TabsTrigger>
       <TabsTrigger 
-        value="users" 
-        className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
-      >
-        Utilisateurs
-      </TabsTrigger>
-      <TabsTrigger 
         value="consulates" 
         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+        onClick={() => onTabChange("consulates")}
       >
         Organismes
       </TabsTrigger>
       <TabsTrigger 
         value="services" 
         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+        onClick={() => onTabChange("services")}
       >
         Services
       </TabsTrigger>
       <TabsTrigger 
+        value="users" 
+        className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+        onClick={() => onTabChange("users")}
+      >
+        Utilisateurs
+      </TabsTrigger>
+      <TabsTrigger 
+        value="holidays" 
+        className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+        onClick={() => onTabChange("holidays")}
+      >
+        Jours fériés
+      </TabsTrigger>
+      <TabsTrigger 
         value="settings" 
         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+        onClick={() => onTabChange("settings")}
       >
         Planification
       </TabsTrigger>
       <TabsTrigger 
         value="notifications" 
         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+        onClick={() => onTabChange("notifications")}
       >
-        Historique
+        Notifications
       </TabsTrigger>
       <TabsTrigger 
         value="support" 
         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
+        onClick={() => onTabChange("support")}
       >
         Support
-      </TabsTrigger>
-      <TabsTrigger 
-        value="settings" 
-        className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
-      >
-        Paramètres
       </TabsTrigger>
     </TabsList>
   );
