@@ -50,9 +50,21 @@ const TimeSlotSelector = ({
     );
   }
 
+  const dayOfWeek = selectedDate.getDay();
+  if (dayOfWeek === 0 || dayOfWeek === 1) {
+    return (
+      <div className="space-y-2">
+        <Label>Heure du rendez-vous *</Label>
+        <p className="text-center text-muted-foreground">
+          Les rendez-vous ne sont disponibles que du mardi au samedi
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-2">
-      <Label>Heure du rendez-vous *</Label>
+      <Label>Heure du rendez-vous * (9h00 - 14h00)</Label>
       <SlotStatus 
         isLoading={isLoading} 
         holiday={holiday} 

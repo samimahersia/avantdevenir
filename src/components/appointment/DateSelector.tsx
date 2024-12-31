@@ -26,11 +26,15 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
   });
 
   const modifiers = {
-    holiday: holidays
+    holiday: holidays,
+    available: {
+      daysOfWeek: [2, 3, 4, 5, 6], // Mardi à Samedi
+    }
   };
 
   const modifiersClassNames = {
-    holiday: "text-red-500 font-bold bg-red-50 cursor-not-allowed"
+    holiday: "text-red-500 font-bold bg-red-50 cursor-not-allowed",
+    available: "font-medium text-green-600 hover:bg-green-50"
   };
 
   const handleSelect = (selectedDate: Date | undefined) => {
@@ -49,7 +53,7 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
 
   return (
     <div className="space-y-2">
-      <Label>Date du rendez-vous *</Label>
+      <Label>Date du rendez-vous * (Mardi à Samedi)</Label>
       <Card>
         <CardContent className="p-4">
           <Calendar
