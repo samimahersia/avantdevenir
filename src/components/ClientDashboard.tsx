@@ -164,11 +164,11 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
                   </p>
                 </div>
                 {canModifyAppointment(appointment) && (
-                  <div className="flex justify-end">
+                  <div className="flex flex-col gap-2 w-full sm:w-48 ml-auto">
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-red-600 hover:text-red-700"
+                      className="text-red-600 hover:text-red-700 w-full"
                       onClick={() => handleCancel(appointment.id)}
                     >
                       <X className="h-4 w-4 mr-2" />
