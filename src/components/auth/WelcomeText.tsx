@@ -49,6 +49,25 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
 
   return (
     <div className="relative p-6 rounded-lg">
+      {userRole === 'admin' && !isEditing && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute -top-2 -right-2 hover:bg-gray-100"
+                onClick={handleEdit}
+              >
+                <Pencil className="h-5 w-5 text-blue-600" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Modifier le texte de bienvenue</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
       <div className="p-4 rounded-lg">
         {isEditing && userRole === 'admin' ? (
           <div className="space-y-4">
@@ -68,29 +87,8 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
             </div>
           </div>
         ) : (
-          <div className="relative">
-            <div className="text-gray-600 whitespace-pre-line text-center">
-              {welcomeText}
-            </div>
-            {userRole === 'admin' && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 hover:bg-gray-100"
-                      onClick={handleEdit}
-                    >
-                      <Pencil className="h-5 w-5 text-blue-600" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Modifier le texte de bienvenue</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
+          <div className="text-gray-600 whitespace-pre-line text-center">
+            {welcomeText}
           </div>
         )}
       </div>
