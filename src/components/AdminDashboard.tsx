@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useLocation } from "react-router-dom";
 import DashboardHeader from "./admin/DashboardHeader";
 import DashboardStats from "./admin/DashboardStats";
 import DashboardTabs from "./admin/DashboardTabs";
+import { TabChangeHandler } from "./admin/TabChangeHandler";
+import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 
 interface AdminDashboardProps {
   activeTab?: string;
@@ -15,32 +14,7 @@ interface AdminDashboardProps {
 const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashboardProps) => {
   const [selectedAvailability, setSelectedAvailability] = useState(null);
   const isMobile = useIsMobile();
-  const location = useLocation();
-
-  useEffect(() => {
-    const handleTabSwitch = (event: CustomEvent) => {
-      if (onTabChange) {
-        onTabChange(event.detail.tab);
-        if (event.detail.availability) {
-          setSelectedAvailability(event.detail.availability);
-        }
-      }
-    };
-
-    window.addEventListener('switchTab', handleTabSwitch as EventListener);
-    return () => {
-      window.removeEventListener('switchTab', handleTabSwitch as EventListener);
-    };
-  }, [onTabChange]);
-
-  useEffect(() => {
-    if (location.state?.activeTab && onTabChange) {
-      onTabChange(location.state.activeTab);
-      if (location.state.availabilityToEdit) {
-        setSelectedAvailability(location.state.availabilityToEdit);
-      }
-    }
-  }, [location.state, onTabChange]);
+  const { data: stats } = useDashboardStats();
 
   const handleTabChange = (value: string) => {
     if (onTabChange) {
@@ -48,67 +22,14 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
     }
   };
 
-  // Requête pour obtenir les statistiques des rendez-vous
-  const { data: stats } = useQuery({
-    queryKey: ["appointment-stats"],
-    queryFn: async () => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const endOfDay = new Date(today);
-      endOfDay.setHours(23, 59, 59, 999);
-
-      console.log('Fetching stats for date range:', {
-        start: today.toISOString(),
-        end: endOfDay.toISOString()
-      });
-
-      const { data: totalAppointments } = await supabase
-        .from("appointments")
-        .select("count")
-        .single();
-
-      const { data: completedToday, error: completedError } = await supabase
-        .from("appointments")
-        .select("count")
-        .eq("status", "terminé")
-        .gte("date", today.toISOString())
-        .lte("date", endOfDay.toISOString())
-        .single();
-
-      if (completedError) {
-        console.error('Error fetching completed appointments:', completedError);
-      }
-
-      console.log('Completed appointments today:', completedToday);
-
-      const { data: upcomingToday } = await supabase
-        .from("appointments")
-        .select("count")
-        .eq("status", "confirme")
-        .gte("date", today.toISOString())
-        .lte("date", endOfDay.toISOString())
-        .single();
-
-      const { data: canceledToday } = await supabase
-        .from("appointments")
-        .select("count")
-        .eq("status", "annule")
-        .gte("date", today.toISOString())
-        .lte("date", endOfDay.toISOString())
-        .single();
-
-      return {
-        total: totalAppointments?.count || 0,
-        completed: completedToday?.count || 0,
-        upcoming: upcomingToday?.count || 0,
-        canceled: canceledToday?.count || 0
-      };
-    }
-  });
-
   return (
     <div className="space-y-6 p-4 md:p-6">
+      {onTabChange && (
+        <TabChangeHandler
+          onTabChange={onTabChange}
+          setSelectedAvailability={setSelectedAvailability}
+        />
+      )}
       <DashboardHeader planType="free" />
       <DashboardStats stats={stats || { total: 0, completed: 0, upcoming: 0, canceled: 0 }} />
       <DashboardTabs 
