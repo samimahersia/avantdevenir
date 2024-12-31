@@ -1,4 +1,4 @@
-import { format, startOfQuarter, endOfQuarter } from "date-fns";
+import { format, startOfQuarter, endOfQuarter, startOfWeek, endOfWeek } from "date-fns";
 import { fr } from "date-fns/locale";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";

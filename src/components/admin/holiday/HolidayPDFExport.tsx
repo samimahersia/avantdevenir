@@ -30,15 +30,6 @@ const HolidayPDFExport = () => {
 
   return (
     <div className="mt-6 flex flex-wrap gap-2">
-      <Button
-        onClick={() => generateDailyPDF(appointments)}
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2"
-      >
-        <FileDown className="h-4 w-4 text-red-800" />
-        <span>PDF Journalier</span>
-      </Button>
       <div className="flex gap-2">
         <Button
           onClick={() => generateWeeklyPDF(appointments)}
@@ -48,6 +39,15 @@ const HolidayPDFExport = () => {
         >
           <FileDown className="h-4 w-4 text-blue-800" />
           <span>PDF Hebdomadaire</span>
+        </Button>
+        <Button
+          onClick={() => generateDailyPDF(appointments)}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2"
+        >
+          <FileDown className="h-4 w-4 text-red-800" />
+          <span>PDF Journalier</span>
         </Button>
         <Button
           onClick={() => generateQuarterlyPDF(appointments)}
