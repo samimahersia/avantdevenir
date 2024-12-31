@@ -126,16 +126,27 @@ export const generateSemiAnnualPDF = (appointments: any[]) => {
     const doc = new jsPDF();
     const today = new Date();
     const isFirstHalf = today.getMonth() < 6;
-    const halfYearStart = new Date(today.getFullYear(), isFirstHalf ? 0 : 6, 1);
+    
+    // Définir le début et la fin du semestre avec précision
+    const halfYearStart = new Date(today.getFullYear(), isFirstHalf ? 0 : 6, 1, 0, 0, 0);
     const halfYearEnd = new Date(today.getFullYear(), isFirstHalf ? 5 : 11, 31, 23, 59, 59);
+    
+    console.log("Période du rapport :", {
+      start: halfYearStart.toISOString(),
+      end: halfYearEnd.toISOString()
+    });
     
     const halfYearAppointments = appointments.filter(apt => {
       const aptDate = new Date(apt.date);
-      return aptDate >= halfYearStart && aptDate <= halfYearEnd;
+      const isInRange = aptDate >= halfYearStart && aptDate <= halfYearEnd;
+      return isInRange;
     });
 
+    console.log(`Nombre de rendez-vous trouvés : ${halfYearAppointments.length}`);
+    
     doc.setFontSize(16);
-    doc.text(`Rendez-vous du ${isFirstHalf ? 'premier' : 'second'} semestre ${today.getFullYear()}`, 14, 20);
+    const title = `Rendez-vous du ${isFirstHalf ? 'premier' : 'second'} semestre ${today.getFullYear()}`;
+    doc.text(title, 14, 20);
 
     const tableData = halfYearAppointments.map(apt => [
       format(new Date(apt.date), 'dd/MM/yyyy HH:mm', { locale: fr }),
