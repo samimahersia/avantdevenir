@@ -65,7 +65,7 @@ const AdminDashboard = ({ activeTab = "appointments", onTabChange }: AdminDashbo
       const { data: completedToday } = await supabase
         .from("appointments")
         .select("count")
-        .eq("status", "termine")
+        .eq("status", "terminé")
         .gte("date", today.toISOString())
         .lte("date", endOfDay.toISOString())
         .single();
