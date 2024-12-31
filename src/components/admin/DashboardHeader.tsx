@@ -22,15 +22,11 @@ const DashboardHeader = ({ planType }: DashboardHeaderProps) => {
     toast.success("Site sauvegardé avec succès");
   };
 
-  const planInfo = planType === "free" 
-    ? "(1 organisme et 3 services / Gratuit)"
-    : "(1 organisme et 6 services / 120.00€ par an)";
-
   return (
     <div className="flex justify-between items-center mb-8">
       <div className="flex items-center">
         <h2 className="text-2xl md:text-3xl font-bold">
-          Tableau de Bord {planInfo}
+          Tableau de Bord
         </h2>
       </div>
       <TooltipProvider>
