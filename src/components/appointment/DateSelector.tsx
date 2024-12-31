@@ -5,7 +5,7 @@ import { fr } from "date-fns/locale";
 import { disabledDays } from "@/utils/appointment";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { DayPicker } from "react-day-picker";
+import type { Matcher } from "react-day-picker";
 
 interface DateSelectorProps {
   date?: Date;
@@ -42,7 +42,7 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
   };
 
   // Create the disabled dates configuration
-  const disabledConfig: DayPicker.Matcher[] = [
+  const disabledConfig: Matcher[] = [
     { before: disabledDays.before },
     { dayOfWeek: disabledDays.daysOfWeek }
   ];
