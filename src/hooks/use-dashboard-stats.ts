@@ -34,7 +34,7 @@ const fetchStats = async (): Promise<DashboardStats> => {
   const { count: completed, error: completedError } = await supabase
     .from("appointments")
     .select("*", { count: 'exact', head: true })
-    .eq("status", "terminé")
+    .eq("status", "approuve")
     .gte("date", today.toISOString())
     .lte("date", endOfDay.toISOString());
 
@@ -47,7 +47,7 @@ const fetchStats = async (): Promise<DashboardStats> => {
   const { count: upcoming, error: upcomingError } = await supabase
     .from("appointments")
     .select("*", { count: 'exact', head: true })
-    .eq("status", "confirme")
+    .eq("status", "en_attente")
     .gte("date", today.toISOString())
     .lte("date", endOfDay.toISOString());
 
@@ -60,7 +60,7 @@ const fetchStats = async (): Promise<DashboardStats> => {
   const { count: canceled, error: canceledError } = await supabase
     .from("appointments")
     .select("*", { count: 'exact', head: true })
-    .eq("status", "annule")
+    .eq("status", "refuse")
     .gte("date", today.toISOString())
     .lte("date", endOfDay.toISOString());
 
