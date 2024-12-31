@@ -16,7 +16,6 @@ const Auth = () => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Utiliser useQuery pour le texte de bienvenue
   const { data: welcomeText = "", refetch: refetchWelcomeText } = useQuery({
     queryKey: ['welcome-text'],
     queryFn: async () => {
@@ -91,21 +90,17 @@ const Auth = () => {
           AvantDeVenir.com
         </h1>
         
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-1/2">
-            <div className="h-[200px] bg-white/95 dark:bg-gray-800/95 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
-              <LogoSection userRole={userRole} />
-            </div>
+        <div className="grid grid-cols-2 gap-8">
+          <div className="h-[200px] bg-white/95 dark:bg-gray-800/95 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
+            <LogoSection userRole={userRole} />
           </div>
           
-          <div className="w-full md:w-1/2">
-            <div className="h-[200px] bg-white/95 dark:bg-gray-800/95 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
-              <WelcomeText
-                welcomeText={welcomeText}
-                userRole={userRole}
-                onWelcomeTextChange={refetchWelcomeText}
-              />
-            </div>
+          <div className="h-[200px] bg-white/95 dark:bg-gray-800/95 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
+            <WelcomeText
+              welcomeText={welcomeText}
+              userRole={userRole}
+              onWelcomeTextChange={refetchWelcomeText}
+            />
           </div>
         </div>
         
