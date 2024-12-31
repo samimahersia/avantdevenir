@@ -1,16 +1,24 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X } from "lucide-react";
+import { Check, X, Edit, Trash2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 const AppointmentManagement = () => {
   const isMobile = useIsMobile();
+  const [editingAppointment, setEditingAppointment] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const { data: appointments = [], refetch } = useQuery({
     queryKey: ["admin-appointments"],
     queryFn: async () => {
@@ -72,6 +80,48 @@ const AppointmentManagement = () => {
     }
   };
 
+  const handleDelete = async (appointmentId: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce rendez-vous ?")) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("appointments")
+        .delete()
+        .eq("id", appointmentId);
+
+      if (error) throw error;
+
+      toast.success("Rendez-vous supprimé avec succès");
+      refetch();
+    } catch (error) {
+      toast.error("Erreur lors de la suppression du rendez-vous");
+    }
+  };
+
+  const handleEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const { error } = await supabase
+        .from("appointments")
+        .update({
+          title: editingAppointment.title,
+          description: editingAppointment.description,
+        })
+        .eq("id", editingAppointment.id);
+
+      if (error) throw error;
+
+      toast.success("Rendez-vous modifié avec succès");
+      setIsDialogOpen(false);
+      refetch();
+    } catch (error) {
+      toast.error("Erreur lors de la modification du rendez-vous");
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "en_attente":
@@ -96,6 +146,61 @@ const AppointmentManagement = () => {
             >
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-lg font-medium">{appointment.title}</h3>
+                <div className="flex gap-2">
+                  <Dialog open={isDialogOpen && editingAppointment?.id === appointment.id} onOpenChange={(open) => {
+                    setIsDialogOpen(open);
+                    if (!open) setEditingAppointment(null);
+                  }}>
+                    <DialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        onClick={() => setEditingAppointment(appointment)}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Modifier le rendez-vous</DialogTitle>
+                      </DialogHeader>
+                      <form onSubmit={handleEdit} className="space-y-4">
+                        <div>
+                          <Label htmlFor="title">Titre</Label>
+                          <Input
+                            id="title"
+                            value={editingAppointment?.title || ""}
+                            onChange={(e) => setEditingAppointment({
+                              ...editingAppointment,
+                              title: e.target.value
+                            })}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="description">Description</Label>
+                          <Textarea
+                            id="description"
+                            value={editingAppointment?.description || ""}
+                            onChange={(e) => setEditingAppointment({
+                              ...editingAppointment,
+                              description: e.target.value
+                            })}
+                          />
+                        </div>
+                        <Button type="submit">Enregistrer</Button>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={() => handleDelete(appointment.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
               
               {appointment.description && (
