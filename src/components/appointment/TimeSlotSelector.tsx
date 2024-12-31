@@ -3,7 +3,8 @@ import { Label } from "@/components/ui/label";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { TimeSlot } from "@/utils/appointment";
-import { format } from "date-fns";
+import { format, addHours } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface TimeSlotSelectorProps {
   selectedTime?: TimeSlot;
@@ -56,7 +57,6 @@ const TimeSlotSelector = ({
 
       console.log("Fetching availabilities for consulate:", consulateId);
       
-      // Convertir le jour JavaScript (0-6, Dimanche = 0) en jour de la semaine (1-7, Lundi = 1)
       const jsDay = selectedDate.getDay();
       const dayOfWeek = jsDay === 0 ? 7 : jsDay;
       
@@ -68,7 +68,6 @@ const TimeSlotSelector = ({
         convertedDayOfWeek: dayOfWeek
       });
 
-      // Vérifier les disponibilités récurrentes d'abord
       const { data: recurringAvailabilities, error: recurringError } = await supabase
         .from("recurring_availabilities")
         .select("*")
@@ -84,13 +83,17 @@ const TimeSlotSelector = ({
 
       const results = await Promise.all(
         timeSlots.map(async (slot) => {
+          // Créer une date avec le fuseau horaire local
           const slotDate = new Date(selectedDate);
-          slotDate.setHours(slot.hour, slot.minute);
+          slotDate.setHours(slot.hour, slot.minute, 0, 0);
+
+          // Ajuster pour le décalage UTC
+          const utcSlotDate = addHours(slotDate, -1);
 
           const { data: isAvailable } = await supabase.rpc(
             'check_appointment_availability',
             {
-              p_appointment_date: slotDate.toISOString(),
+              p_appointment_date: utcSlotDate.toISOString(),
               p_service_id: serviceId,
               p_consulate_id: consulateId
             }
@@ -98,6 +101,8 @@ const TimeSlotSelector = ({
 
           console.log("Slot availability check:", {
             slot: `${slot.hour}:${slot.minute}`,
+            localDate: slotDate.toISOString(),
+            utcDate: utcSlotDate.toISOString(),
             isAvailable
           });
 
