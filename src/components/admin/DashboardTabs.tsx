@@ -30,7 +30,6 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvail
         <TabsTrigger value="settings">Planification</TabsTrigger>
         <TabsTrigger value="subscription">Abonnement</TabsTrigger>
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
-        <TabsTrigger value="history">Historique</TabsTrigger>
         <TabsTrigger value="support">Support</TabsTrigger>
       </TabsList>
 

@@ -126,22 +126,16 @@ export const MobileNavigation = ({
                         Abonnement
                       </TabsTrigger>
                       <TabsTrigger 
-                        value="history" 
+                        value="support" 
                         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
                       >
-                        Historique
+                        Support
                       </TabsTrigger>
                       <TabsTrigger 
                         value="settings" 
                         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
                       >
                         Paramètres
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="support" 
-                        className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
-                      >
-                        Support
                       </TabsTrigger>
                     </TabsList>
                   </Tabs>
