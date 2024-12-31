@@ -12,11 +12,11 @@ import RecurringAvailabilityForm from "@/components/RecurringAvailabilityForm";
 interface DashboardTabsProps {
   activeTab: string;
   onTabChange: (value: string) => void;
-  isMobile: boolean;
+  isMobile?: boolean;
   selectedAvailability?: any;
 }
 
-const DashboardTabs = ({ activeTab, onTabChange, isMobile, selectedAvailability }: DashboardTabsProps) => {
+const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvailability }: DashboardTabsProps) => {
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
       <TabsList className="w-full justify-start overflow-x-auto">
