@@ -1,11 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Bell, MessageSquare, Info } from "lucide-react";
+import { Bell, MessageSquare, Info, CreditCard } from "lucide-react";
 import NotificationHistory from "../NotificationHistory";
 import NotificationPreferences from "../NotificationPreferences";
 import RecentAppointments from "./holiday/RecentAppointments";
 import LogoSection from "./notification/LogoSection";
 import WelcomeTextSection from "./notification/WelcomeTextSection";
+import SubscriptionTab from "./notification/SubscriptionTab";
 import { useState } from "react";
 
 const NotificationSettings = () => {
@@ -15,10 +16,14 @@ const NotificationSettings = () => {
 
   return (
     <Tabs defaultValue="welcome" className="w-full">
-      <TabsList className="grid w-full grid-cols-4">
+      <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="welcome" className="flex items-center gap-2">
           <Info className="h-4 w-4" />
           Bienvenue
+        </TabsTrigger>
+        <TabsTrigger value="subscription" className="flex items-center gap-2">
+          <CreditCard className="h-4 w-4" />
+          Abonnement
         </TabsTrigger>
         <TabsTrigger value="preferences" className="flex items-center gap-2">
           <Bell className="h-4 w-4" />
@@ -43,6 +48,10 @@ const NotificationSettings = () => {
             onWelcomeTextChange={setWelcomeText}
           />
         </div>
+      </TabsContent>
+
+      <TabsContent value="subscription">
+        <SubscriptionTab />
       </TabsContent>
       
       <TabsContent value="preferences">
