@@ -33,9 +33,9 @@ const TimeSlotSelector = ({
         .select("*")
         .eq("consulate_id", consulateId)
         .eq("date", format(selectedDate, "yyyy-MM-dd"))
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== "PGRST116") { // PGRST116 = not found
+      if (error) {
         console.error("Error checking holiday:", error);
         return false;
       }
