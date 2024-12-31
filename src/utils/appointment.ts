@@ -21,16 +21,9 @@ export const generateTimeSlots = () => {
 export const TIME_SLOTS = generateTimeSlots();
 
 export const getAppointmentDate = (date: Date, selectedTime: TimeSlot) => {
-  const appointmentDate = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    selectedTime.hour,
-    selectedTime.minute,
-    0,
-    0
-  );
-
+  const appointmentDate = new Date(date);
+  appointmentDate.setHours(selectedTime.hour, selectedTime.minute, 0, 0);
+  
   console.log("Generated appointment date:", {
     originalDate: date,
     selectedTime,

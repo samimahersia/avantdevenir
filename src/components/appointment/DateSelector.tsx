@@ -26,16 +26,11 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
   });
 
   const modifiers = {
-    holiday: holidays,
-    available: (date: Date) => {
-      const day = date.getDay();
-      return day >= 2 && day <= 6; // Mardi (2) à Samedi (6)
-    }
+    holiday: holidays
   };
 
   const modifiersClassNames = {
-    holiday: "text-red-500 font-bold bg-red-50 cursor-not-allowed",
-    available: "hover:bg-green-50"
+    holiday: "text-red-500 font-bold bg-red-50 cursor-not-allowed"
   };
 
   const handleSelect = (selectedDate: Date | undefined) => {
