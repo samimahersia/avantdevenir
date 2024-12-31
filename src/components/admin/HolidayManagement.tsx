@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import HolidayForm from "./holiday/HolidayForm";
 import HolidayList from "./holiday/HolidayList";
 import EditHolidayDialog from "./holiday/EditHolidayDialog";
+import HolidayPDFExport from "./holiday/HolidayPDFExport";
 
 const HolidayManagement = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -112,14 +113,17 @@ const HolidayManagement = () => {
     <Card>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <HolidayForm
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            description={description}
-            setDescription={setDescription}
-            isSubmitting={isSubmitting}
-            onSubmit={handleAddHoliday}
-          />
+          <div className="space-y-6">
+            <HolidayForm
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              description={description}
+              setDescription={setDescription}
+              isSubmitting={isSubmitting}
+              onSubmit={handleAddHoliday}
+            />
+            <HolidayPDFExport />
+          </div>
 
           <div className="space-y-6">
             <HolidayList
