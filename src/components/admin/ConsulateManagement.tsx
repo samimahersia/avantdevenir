@@ -92,27 +92,52 @@ const ConsulateManagement = () => {
   const handleDelete = async (id: string) => {
     if (confirm("Êtes-vous sûr de vouloir supprimer cet organisme ?")) {
       try {
-        // First check if there are any appointments for this consulate
-        const { data: appointments, error: checkError } = await supabase
+        // 1. Vérifier les rendez-vous
+        const { data: appointments, error: checkAppointmentsError } = await supabase
           .from("appointments")
           .select("id")
           .eq("consulate_id", id)
           .limit(1);
 
-        if (checkError) throw checkError;
+        if (checkAppointmentsError) throw checkAppointmentsError;
 
         if (appointments && appointments.length > 0) {
           toast.error("Impossible de supprimer cet organisme car il a des rendez-vous associés");
           return;
         }
 
-        // If no appointments exist, proceed with deletion
-        const { error } = await supabase
+        // 2. Supprimer d'abord les disponibilités récurrentes
+        const { error: deleteAvailabilitiesError } = await supabase
+          .from("recurring_availabilities")
+          .delete()
+          .eq("consulate_id", id);
+
+        if (deleteAvailabilitiesError) throw deleteAvailabilitiesError;
+
+        // 3. Supprimer les jours fériés
+        const { error: deleteHolidaysError } = await supabase
+          .from("consulate_holidays")
+          .delete()
+          .eq("consulate_id", id);
+
+        if (deleteHolidaysError) throw deleteHolidaysError;
+
+        // 4. Supprimer les services associés
+        const { error: deleteServicesError } = await supabase
+          .from("consulate_services")
+          .delete()
+          .eq("consulate_id", id);
+
+        if (deleteServicesError) throw deleteServicesError;
+
+        // 5. Enfin, supprimer l'organisme
+        const { error: deleteConsulateError } = await supabase
           .from("consulates")
           .delete()
           .eq("id", id);
 
-        if (error) throw error;
+        if (deleteConsulateError) throw deleteConsulateError;
+
         toast.success("Organisme supprimé avec succès");
         refetch();
       } catch (error) {
