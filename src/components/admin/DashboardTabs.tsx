@@ -29,8 +29,8 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvail
         <TabsTrigger value="holidays">Jours fériés</TabsTrigger>
         <TabsTrigger value="settings">Planification</TabsTrigger>
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
-        <TabsTrigger value="subscription">Abonnement</TabsTrigger>
         <TabsTrigger value="support">Support</TabsTrigger>
+        <TabsTrigger value="subscription">Abonnement</TabsTrigger>
       </TabsList>
 
       <TabsContent value="appointments" className="mt-6">
@@ -65,12 +65,12 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvail
         <NotificationSettings />
       </TabsContent>
 
-      <TabsContent value="subscription" className="mt-6">
-        <SubscriptionManagement />
-      </TabsContent>
-
       <TabsContent value="support" className="mt-6">
         <TechnicalSupport />
+      </TabsContent>
+
+      <TabsContent value="subscription" className="mt-6">
+        <SubscriptionManagement />
       </TabsContent>
     </Tabs>
   );
