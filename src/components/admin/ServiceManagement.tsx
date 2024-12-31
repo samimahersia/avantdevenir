@@ -112,17 +112,40 @@ const ServiceManagement = () => {
   const handleDelete = async (id: string) => {
     if (confirm("Êtes-vous sûr de vouloir supprimer ce service ?")) {
       try {
+        // First check if there are any appointments using this service
+        const { data: appointments, error: checkError } = await supabase
+          .from("appointments")
+          .select("id")
+          .eq("service_id", id);
+
+        if (checkError) throw checkError;
+
+        if (appointments && appointments.length > 0) {
+          toast.error("Ce service ne peut pas être supprimé car il est utilisé par des rendez-vous existants");
+          return;
+        }
+
+        // Delete consulate_services entries first
+        const { error: linkError } = await supabase
+          .from("consulate_services")
+          .delete()
+          .eq("service_id", id);
+
+        if (linkError) throw linkError;
+
+        // Then delete the service
         const { error } = await supabase
           .from("services")
           .delete()
           .eq("id", id);
 
         if (error) throw error;
+        
         toast.success("Service supprimé avec succès");
         refetch();
       } catch (error) {
         console.error("Error:", error);
-        toast.error("Une erreur est survenue");
+        toast.error("Une erreur est survenue lors de la suppression");
       }
     }
   };
