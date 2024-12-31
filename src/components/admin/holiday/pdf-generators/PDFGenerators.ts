@@ -127,7 +127,7 @@ export const generateSemiAnnualPDF = (appointments: any[]) => {
     const today = new Date();
     const isFirstHalf = today.getMonth() < 6;
     const halfYearStart = new Date(today.getFullYear(), isFirstHalf ? 0 : 6, 1);
-    const halfYearEnd = new Date(today.getFullYear(), isFirstHalf ? 5 : 11, 31);
+    const halfYearEnd = new Date(today.getFullYear(), isFirstHalf ? 5 : 11, 31, 23, 59, 59);
     
     const halfYearAppointments = appointments.filter(apt => {
       const aptDate = new Date(apt.date);
@@ -154,7 +154,8 @@ export const generateSemiAnnualPDF = (appointments: any[]) => {
       headStyles: { fillColor: [41, 128, 185] },
     });
 
-    doc.save(`rendez-vous-semestre-${format(halfYearStart, 'yyyy-[S]S', { locale: fr })}.pdf`);
+    const filename = `rendez-vous-${isFirstHalf ? 'S1' : 'S2'}-${today.getFullYear()}.pdf`;
+    doc.save(filename);
     toast.success("PDF semestriel généré avec succès");
   } catch (error) {
     console.error("Erreur lors de la génération du PDF semestriel:", error);
