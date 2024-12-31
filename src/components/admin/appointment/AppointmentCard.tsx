@@ -38,6 +38,10 @@ export const AppointmentCard = ({
     return format(new Date(date), "PPP 'à' HH'h'mm", { locale: fr });
   };
 
+  const handleEdit = async (data: { title: string; description: string }) => {
+    await onEdit(appointment.id, data);
+  };
+
   return (
     <Card className={`${isMobile ? 'p-2' : 'p-4'} shadow-sm`}>
       <CardContent className={`${isMobile ? 'p-2' : 'p-4'} space-y-4`}>
@@ -104,7 +108,7 @@ export const AppointmentCard = ({
       {isEditing && (
         <EditAppointmentForm
           appointment={appointment}
-          onEdit={onEdit}
+          onEdit={handleEdit}
           onClose={() => setIsEditing(false)}
         />
       )}
