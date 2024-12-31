@@ -8,7 +8,9 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { X } from "lucide-react";
+import { Download, X } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface ClientDashboardProps {
   selectedConsulate?: string;
@@ -68,6 +70,41 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
     }
   };
 
+  const generatePDF = () => {
+    try {
+      const doc = new jsPDF();
+      
+      // Titre
+      doc.setFontSize(20);
+      doc.text("Mes Rendez-vous", 14, 20);
+      
+      // Données pour le tableau
+      const tableData = appointments.map(appointment => [
+        format(new Date(appointment.date), "dd/MM/yyyy HH'h'mm", { locale: fr }),
+        appointment.title,
+        appointment.services?.name || "",
+        appointment.status === "approuve" ? "Approuvé" :
+        appointment.status === "refuse" ? "Refusé" : "En attente"
+      ]);
+
+      // Générer le tableau
+      autoTable(doc, {
+        head: [["Date", "Titre", "Service", "Statut"]],
+        body: tableData,
+        startY: 30,
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [41, 128, 185] },
+      });
+
+      // Sauvegarder le PDF
+      doc.save("mes-rendez-vous.pdf");
+      toast.success("PDF généré avec succès");
+    } catch (error) {
+      console.error("Erreur lors de la génération du PDF:", error);
+      toast.error("Erreur lors de la génération du PDF");
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "en_attente":
@@ -89,7 +126,20 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
     <div className="space-y-6 md:space-y-8">
       <Card className="border-none shadow-none">
         <CardHeader className="px-4 md:px-6">
-          <CardTitle className="text-xl md:text-2xl font-semibold">{t('dashboard.myAppointments')}</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl md:text-2xl font-semibold">
+              {t('dashboard.myAppointments')}
+            </CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={generatePDF}
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Télécharger PDF</span>
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="px-4 md:px-6">
           <div className="space-y-4">
