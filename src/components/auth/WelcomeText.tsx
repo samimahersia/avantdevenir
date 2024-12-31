@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface WelcomeTextProps {
   welcomeText: string;
   userRole: string | null;
-  onWelcomeTextChange: (text: string) => void;
+  onWelcomeTextChange: () => void;
 }
 
 export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: WelcomeTextProps) => {
@@ -24,12 +24,17 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
     try {
       const { error } = await supabase
         .from('site_content')
-        .update({ content: editedText })
-        .eq('key', 'login_welcome_text');
+        .upsert({
+          key: 'login_welcome_text',
+          content: editedText,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'key'
+        });
 
       if (error) throw error;
 
-      onWelcomeTextChange(editedText);
+      onWelcomeTextChange();
       setIsEditing(false);
       toast.success("Texte de bienvenue mis à jour avec succès");
     } catch (error) {

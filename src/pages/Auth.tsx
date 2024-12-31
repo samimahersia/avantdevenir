@@ -8,13 +8,28 @@ import { useNavigate } from "react-router-dom";
 import { WelcomeText } from "@/components/auth/WelcomeText";
 import { AuthLoader } from "@/components/auth/AuthLoader";
 import LogoSection from "@/components/admin/notification/LogoSection";
+import { useQuery } from "@tanstack/react-query";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
-  const [welcomeText, setWelcomeText] = useState("");
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Utiliser useQuery pour le texte de bienvenue
+  const { data: welcomeText = "", refetch: refetchWelcomeText } = useQuery({
+    queryKey: ['welcome-text'],
+    queryFn: async () => {
+      const { data: content, error } = await supabase
+        .from('site_content')
+        .select('content')
+        .eq('key', 'login_welcome_text')
+        .single();
+
+      if (error) throw error;
+      return content?.content || "";
+    }
+  });
 
   useEffect(() => {
     const checkSession = async () => {
@@ -43,17 +58,8 @@ const Auth = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const fetchInitialData = async () => {
+    const fetchUserRole = async () => {
       try {
-        const { data: content, error: contentError } = await supabase
-          .from('site_content')
-          .select('content')
-          .eq('key', 'login_welcome_text')
-          .single();
-
-        if (contentError) throw contentError;
-        setWelcomeText(content?.content || "");
-
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
           const { data: profile } = await supabase
@@ -65,12 +71,12 @@ const Auth = () => {
           setUserRole(profile?.role || null);
         }
       } catch (error) {
-        console.error("Error fetching initial data:", error);
+        console.error("Error fetching user role:", error);
       }
     };
 
     if (!isLoading) {
-      fetchInitialData();
+      fetchUserRole();
     }
   }, [isLoading]);
 
@@ -97,7 +103,7 @@ const Auth = () => {
               <WelcomeText
                 welcomeText={welcomeText}
                 userRole={userRole}
-                onWelcomeTextChange={setWelcomeText}
+                onWelcomeTextChange={refetchWelcomeText}
               />
             </div>
           </div>

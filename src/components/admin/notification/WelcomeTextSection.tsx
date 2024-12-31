@@ -5,6 +5,7 @@ import { Pencil } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface WelcomeTextSectionProps {
   userRole: string | null;
@@ -15,6 +16,7 @@ interface WelcomeTextSectionProps {
 const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: WelcomeTextSectionProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(welcomeText);
+  const queryClient = useQueryClient();
 
   const handleEdit = () => {
     setEditedText(welcomeText);
@@ -26,7 +28,7 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
       const { error } = await supabase
         .from('site_content')
         .upsert({
-          key: 'welcome_text',
+          key: 'login_welcome_text',
           content: editedText,
           updated_at: new Date().toISOString()
         }, {
@@ -37,6 +39,8 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
 
       onWelcomeTextChange(editedText);
       setIsEditing(false);
+      // Invalider le cache pour forcer un rechargement
+      await queryClient.invalidateQueries({ queryKey: ['welcome-text'] });
       toast.success("Texte de bienvenue mis à jour avec succès");
     } catch (error) {
       console.error('Error updating welcome text:', error);
