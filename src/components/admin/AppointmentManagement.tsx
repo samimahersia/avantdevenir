@@ -1,24 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Check, X, Edit, Trash2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { toast } from "sonner";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { AppointmentCard } from "./appointment/AppointmentCard";
 
 const AppointmentManagement = () => {
-  const isMobile = useIsMobile();
-  const [editingAppointment, setEditingAppointment] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
   const { data: appointments = [], refetch } = useQuery({
     queryKey: ["admin-appointments"],
     queryFn: async () => {
@@ -53,13 +39,12 @@ const AppointmentManagement = () => {
 
       if (error) throw error;
 
-      // Send notification
       const { error: notificationError } = await supabase.functions.invoke("send-notification", {
         body: {
           userId: appointment.client_id,
           type: "appointment_status",
           title: `Rendez-vous ${newStatus === "approuve" ? "approuvé" : "refusé"}`,
-          content: `Votre rendez-vous du ${format(new Date(appointment.date), "d MMMM yyyy 'à' HH:mm", { locale: fr })} a été ${newStatus === "approuve" ? "approuvé" : "refusé"}.`,
+          content: `Votre rendez-vous du ${new Date(appointment.date).toLocaleDateString('fr-FR')} a été ${newStatus === "approuve" ? "approuvé" : "refusé"}.`,
           metadata: {
             appointmentId,
             status: newStatus,
@@ -100,38 +85,22 @@ const AppointmentManagement = () => {
     }
   };
 
-  const handleEdit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleEdit = async (appointmentId: string, data: { title: string; description: string }) => {
     try {
       const { error } = await supabase
         .from("appointments")
         .update({
-          title: editingAppointment.title,
-          description: editingAppointment.description,
+          title: data.title,
+          description: data.description,
         })
-        .eq("id", editingAppointment.id);
+        .eq("id", appointmentId);
 
       if (error) throw error;
 
       toast.success("Rendez-vous modifié avec succès");
-      setIsDialogOpen(false);
       refetch();
     } catch (error) {
       toast.error("Erreur lors de la modification du rendez-vous");
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "en_attente":
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100">En attente</Badge>;
-      case "approuve":
-        return <Badge variant="success" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Approuvé</Badge>;
-      case "refuse":
-        return <Badge variant="destructive" className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100">Refusé</Badge>;
-      default:
-        return null;
     }
   };
 
@@ -140,115 +109,13 @@ const AppointmentManagement = () => {
       <CardContent>
         <div className="space-y-4">
           {appointments.map((appointment) => (
-            <div
+            <AppointmentCard
               key={appointment.id}
-              className="flex flex-col p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-medium">{appointment.title}</h3>
-                <div className="flex gap-2">
-                  <Dialog open={isDialogOpen && editingAppointment?.id === appointment.id} onOpenChange={(open) => {
-                    setIsDialogOpen(open);
-                    if (!open) setEditingAppointment(null);
-                  }}>
-                    <DialogTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                        onClick={() => setEditingAppointment(appointment)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Modifier le rendez-vous</DialogTitle>
-                      </DialogHeader>
-                      <form onSubmit={handleEdit} className="space-y-4">
-                        <div>
-                          <Label htmlFor="title">Titre</Label>
-                          <Input
-                            id="title"
-                            value={editingAppointment?.title || ""}
-                            onChange={(e) => setEditingAppointment({
-                              ...editingAppointment,
-                              title: e.target.value
-                            })}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="description">Description</Label>
-                          <Textarea
-                            id="description"
-                            value={editingAppointment?.description || ""}
-                            onChange={(e) => setEditingAppointment({
-                              ...editingAppointment,
-                              description: e.target.value
-                            })}
-                          />
-                        </div>
-                        <Button type="submit">Enregistrer</Button>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    onClick={() => handleDelete(appointment.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-              
-              {appointment.description && (
-                <p className="text-sm text-muted-foreground mb-4">
-                  {appointment.description}
-                </p>
-              )}
-              
-              <div className="space-y-1">
-                <div className="flex justify-between items-center">
-                  <p className="text-sm text-muted-foreground">
-                    <span className="font-medium">Client:</span> 
-                    {appointment.profiles?.first_name} {appointment.profiles?.last_name}
-                  </p>
-                  {getStatusBadge(appointment.status)}
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-medium">Date:</span>{" "}
-                  {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
-                </p>
-                <p className="text-sm text-blue-800 font-medium">
-                  {appointment.consulates?.name}
-                </p>
-              </div>
-
-              {appointment.status === "en_attente" && (
-                <div className={`flex gap-2 ${isMobile ? 'mt-4' : 'mb-4'}`}>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
-                    onClick={() => handleStatusChange(appointment.id, "approuve")}
-                  >
-                    <Check className="w-4 h-4 mr-1" />
-                    Approuver
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                    onClick={() => handleStatusChange(appointment.id, "refuse")}
-                  >
-                    <X className="w-4 h-4 mr-1" />
-                    Refuser
-                  </Button>
-                </div>
-              )}
-            </div>
+              appointment={appointment}
+              onStatusChange={handleStatusChange}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+            />
           ))}
         </div>
       </CardContent>
