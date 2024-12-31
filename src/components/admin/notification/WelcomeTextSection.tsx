@@ -47,9 +47,13 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
     }
   };
 
+  if (userRole !== 'admin') {
+    return null;
+  }
+
   return (
     <div className="relative p-6 rounded-lg">
-      {userRole === 'admin' && !isEditing && (
+      {!isEditing && (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -69,7 +73,7 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
         </TooltipProvider>
       )}
       <div className="p-4 rounded-lg">
-        {isEditing && userRole === 'admin' ? (
+        {isEditing ? (
           <div className="space-y-4">
             <Textarea
               value={editedText}
@@ -87,7 +91,7 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
             </div>
           </div>
         ) : (
-          <div className="text-gray-600 whitespace-pre-line text-center">
+          <div className="text-gray-600 whitespace-pre-line">
             {welcomeText}
           </div>
         )}
