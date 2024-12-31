@@ -103,9 +103,9 @@ const Index = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-2">
-        <div className="text-center w-full max-w-[350px] mx-auto">
-          <p className="text-red-600 mb-4 text-sm">{error}</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
+        <div className="text-center w-full max-w-md mx-auto">
+          <p className="text-red-600 mb-4">{error}</p>
           <Button 
             onClick={() => navigate("/auth")} 
             className="w-full"
@@ -119,10 +119,10 @@ const Index = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-2">
-        <div className="text-center w-full max-w-[350px] mx-auto">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
+        <div className="text-center w-full max-w-md mx-auto">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground text-sm">Chargement...</p>
+          <p className="text-muted-foreground">Chargement...</p>
         </div>
       </div>
     );
@@ -134,9 +134,9 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen p-2 md:p-4 lg:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-[100vw] mx-auto">
-        <div className="flex justify-between items-center mb-4 gap-2">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center mb-6">
           <MobileNavigation 
             userType={userType} 
             setUserType={setUserType} 
@@ -144,15 +144,15 @@ const Index = () => {
             activeTab={activeTab} 
             setActiveTab={setActiveTab} 
           />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <LanguageSelector />
             <UserProfileSection />
           </div>
         </div>
 
-        <Card className="shadow-lg overflow-hidden">
+        <Card className="shadow-lg overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
           <PageHeader userType={userType} setUserType={setUserType} userRole={userRole} />
-          <CardContent className="p-2 md:p-4">
+          <CardContent className="p-4 sm:p-6">
             <DashboardContent 
               userType={userType}
               userRole={userRole}

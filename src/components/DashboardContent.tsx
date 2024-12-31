@@ -32,8 +32,8 @@ export const DashboardContent = ({
 
   if (userType === "client") {
     return (
-      <div className="animate-in fade-in duration-500">
-        <div className="flex flex-col gap-3 max-w-2xl mx-auto mt-3 px-2">
+      <div className="animate-in fade-in duration-500 space-y-6">
+        <div className="max-w-2xl mx-auto space-y-4">
           <div className="w-full">
             <ConsulateSelector 
               value={selectedConsulate} 
@@ -61,7 +61,7 @@ export const DashboardContent = ({
             </div>
           )}
         </div>
-        <div className="mt-4">
+        <div>
           <ClientDashboard 
             selectedConsulate={selectedConsulate} 
             selectedService={selectedService}
@@ -73,7 +73,7 @@ export const DashboardContent = ({
 
   if (userRole === "admin") {
     return (
-      <div className="flex justify-center px-2">
+      <div className="w-full">
         <AdminDashboard 
           activeTab={activeTab}
           onTabChange={setActiveTab}
