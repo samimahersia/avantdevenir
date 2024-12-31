@@ -1,16 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import AppointmentForm from "./AppointmentForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Download, X } from "lucide-react";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import AppointmentList from "./appointment/AppointmentList";
+import PDFExportButton from "./appointment/PDFExportButton";
 
 interface ClientDashboardProps {
   selectedConsulate?: string;
@@ -70,58 +65,6 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
     }
   };
 
-  const generatePDF = () => {
-    try {
-      const doc = new jsPDF();
-      
-      // Titre
-      doc.setFontSize(20);
-      doc.text("Mes Rendez-vous", 14, 20);
-      
-      // Données pour le tableau
-      const tableData = appointments.map(appointment => [
-        format(new Date(appointment.date), "dd/MM/yyyy HH'h'mm", { locale: fr }),
-        appointment.title,
-        appointment.services?.name || "",
-        appointment.status === "approuve" ? "Approuvé" :
-        appointment.status === "refuse" ? "Refusé" : "En attente"
-      ]);
-
-      // Générer le tableau
-      autoTable(doc, {
-        head: [["Date", "Titre", "Service", "Statut"]],
-        body: tableData,
-        startY: 30,
-        styles: { fontSize: 10 },
-        headStyles: { fillColor: [41, 128, 185] },
-      });
-
-      // Sauvegarder le PDF
-      doc.save("mes-rendez-vous.pdf");
-      toast.success("PDF généré avec succès");
-    } catch (error) {
-      console.error("Erreur lors de la génération du PDF:", error);
-      toast.error("Erreur lors de la génération du PDF");
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "en_attente":
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100">{t('status.pending')}</Badge>;
-      case "approuve":
-        return <Badge variant="success" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">{t('status.approved')}</Badge>;
-      case "refuse":
-        return <Badge variant="destructive" className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100">{t('status.rejected')}</Badge>;
-      default:
-        return null;
-    }
-  };
-
-  const canModifyAppointment = (appointment: any) => {
-    return appointment.status === "en_attente" && new Date(appointment.date) > new Date();
-  };
-
   return (
     <div className="space-y-6 md:space-y-8">
       <Card className="border-none shadow-none">
@@ -130,60 +73,14 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
             <CardTitle className="text-xl md:text-2xl font-semibold">
               {t('dashboard.myAppointments')}
             </CardTitle>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={generatePDF}
-              className="flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">Télécharger PDF</span>
-            </Button>
+            <PDFExportButton appointments={appointments} />
           </div>
         </CardHeader>
         <CardContent className="px-4 md:px-6">
-          <div className="space-y-4">
-            {appointments.map((appointment) => (
-              <div
-                key={appointment.id}
-                className="flex flex-col p-4 md:p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="space-y-2 mb-4">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                    <h3 className="text-base md:text-lg font-medium">{appointment.title}</h3>
-                    {getStatusBadge(appointment.status)}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {t('dashboard.service')} : {appointment.services?.name}
-                  </p>
-                  {appointment.description && (
-                    <p className="text-sm text-muted-foreground">{appointment.description}</p>
-                  )}
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
-                  </p>
-                </div>
-                {canModifyAppointment(appointment) && (
-                  <div className="flex justify-end">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-red-600 hover:text-red-700"
-                      onClick={() => handleCancel(appointment.id)}
-                    >
-                      <X className="h-4 w-4 mr-2" />
-                      <span>Annuler</span>
-                    </Button>
-                  </div>
-                )}
-              </div>
-            ))}
-            {appointments.length === 0 && (
-              <p className="text-center text-muted-foreground py-4">
-                {t('dashboard.noAppointments')}
-              </p>
-            )}
-          </div>
+          <AppointmentList 
+            appointments={appointments}
+            onCancel={handleCancel}
+          />
         </CardContent>
       </Card>
 
@@ -198,7 +95,9 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
       ) : (
         <Card className="border-none shadow-none">
           <CardHeader className="px-4 md:px-6">
-            <CardTitle className="text-xl md:text-2xl font-semibold">{t('dashboard.newAppointment')}</CardTitle>
+            <CardTitle className="text-xl md:text-2xl font-semibold">
+              {t('dashboard.newAppointment')}
+            </CardTitle>
           </CardHeader>
           <CardContent className="px-4 md:px-6">
             <AppointmentForm 
