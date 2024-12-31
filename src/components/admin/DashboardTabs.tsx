@@ -6,7 +6,6 @@ import UserManagement from "./UserManagement";
 import HolidayManagement from "./HolidayManagement";
 import NotificationSettings from "./NotificationSettings";
 import TechnicalSupport from "./TechnicalSupport";
-import SubscriptionManagement from "./SubscriptionManagement";
 
 interface DashboardTabsProps {
   activeTab: string;
@@ -25,7 +24,6 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile, selectedAvailability 
         <TabsTrigger value="users">Utilisateurs</TabsTrigger>
         <TabsTrigger value="holidays">Jours fériés</TabsTrigger>
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
-        <TabsTrigger value="subscription">Abonnement</TabsTrigger>
         <TabsTrigger value="support">Support</TabsTrigger>
       </TabsList>
 
@@ -51,10 +49,6 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile, selectedAvailability 
 
       <TabsContent value="notifications" className="mt-6">
         <NotificationSettings />
-      </TabsContent>
-
-      <TabsContent value="subscription" className="mt-6">
-        <SubscriptionManagement />
       </TabsContent>
 
       <TabsContent value="support" className="mt-6">

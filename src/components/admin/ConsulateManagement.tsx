@@ -38,21 +38,7 @@ const ConsulateManagement = () => {
     }
   });
 
-  const { data: subscriptionInfo } = useQuery({
-    queryKey: ["subscription-info"],
-    queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke("check-subscription");
-      if (error) throw error;
-      return data;
-    }
-  });
-
   const handleOpenDialog = (consulate?: any) => {
-    if (!consulate && subscriptionInfo?.currentConsulatesCount >= subscriptionInfo?.subscription?.max_consulates) {
-      toast.error("Vous avez atteint la limite d'organismes de votre plan");
-      return;
-    }
-
     if (consulate) {
       setEditingConsulate(consulate);
       setFormData({
@@ -165,17 +151,10 @@ const ConsulateManagement = () => {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Gestion des Organismes</CardTitle>
-        <div className="space-y-1">
-          {subscriptionInfo && (
-            <p className="text-sm text-muted-foreground text-right">
-              {subscriptionInfo.currentConsulatesCount} / {subscriptionInfo.subscription?.max_consulates} organismes
-            </p>
-          )}
-          <Button onClick={() => handleOpenDialog()}>
-            <Plus className="w-4 h-4 mr-2" />
-            Ajouter un organisme
-          </Button>
-        </div>
+        <Button onClick={() => handleOpenDialog()}>
+          <Plus className="w-4 h-4 mr-2" />
+          Ajouter un organisme
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
