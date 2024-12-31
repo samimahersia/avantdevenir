@@ -8,27 +8,12 @@ import { useNavigate } from "react-router-dom";
 import { WelcomeText } from "@/components/auth/WelcomeText";
 import { AuthLoader } from "@/components/auth/AuthLoader";
 import LogoSection from "@/components/admin/notification/LogoSection";
-import { useQuery } from "@tanstack/react-query";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const { data: welcomeText = "", refetch: refetchWelcomeText } = useQuery({
-    queryKey: ['welcome-text'],
-    queryFn: async () => {
-      const { data: content, error } = await supabase
-        .from('site_content')
-        .select('content')
-        .eq('key', 'login_welcome_text')
-        .single();
-
-      if (error) throw error;
-      return content?.content || "";
-    }
-  });
 
   useEffect(() => {
     const checkSession = async () => {
@@ -96,11 +81,7 @@ const Auth = () => {
           </div>
           
           <div className="h-[200px] bg-white/95 dark:bg-gray-800/95 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
-            <WelcomeText
-              welcomeText={welcomeText}
-              userRole={userRole}
-              onWelcomeTextChange={refetchWelcomeText}
-            />
+            <WelcomeText userRole={userRole} />
           </div>
         </div>
         

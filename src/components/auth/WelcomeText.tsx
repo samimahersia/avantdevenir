@@ -5,18 +5,30 @@ import { Pencil } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 interface WelcomeTextProps {
-  welcomeText: string;
   userRole: string | null;
-  onWelcomeTextChange: () => void;
 }
 
-export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: WelcomeTextProps) => {
+export const WelcomeText = ({ userRole }: WelcomeTextProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedText, setEditedText] = useState(welcomeText);
-  const queryClient = useQueryClient();
+  const [editedText, setEditedText] = useState("");
+
+  const { data: welcomeText = "", refetch: refetchWelcomeText } = useQuery({
+    queryKey: ['welcome-text'],
+    queryFn: async () => {
+      const { data: content, error } = await supabase
+        .from('site_content')
+        .select('content')
+        .eq('key', 'login_welcome_text')
+        .single();
+
+      if (error) throw error;
+      setEditedText(content?.content || "");
+      return content?.content || "";
+    }
+  });
 
   const handleEdit = () => {
     setEditedText(welcomeText);
@@ -37,9 +49,8 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
 
       if (error) throw error;
 
-      onWelcomeTextChange();
+      await refetchWelcomeText();
       setIsEditing(false);
-      await queryClient.invalidateQueries({ queryKey: ['welcome-text'] });
       toast.success("Texte de bienvenue mis à jour avec succès");
     } catch (error) {
       console.error('Error updating welcome text:', error);
@@ -56,10 +67,10 @@ export const WelcomeText = ({ welcomeText, userRole, onWelcomeTextChange }: Welc
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute -top-2 -right-2 hover:bg-gray-100"
+                className="absolute -top-2 -right-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                 onClick={handleEdit}
               >
-                <Pencil className="h-5 w-5 text-blue-600" />
+                <Pencil className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
