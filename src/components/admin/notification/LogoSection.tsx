@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -94,6 +94,27 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
 
   return (
     <div className="relative h-full flex flex-col items-center justify-center p-8">
+      {userRole === 'admin' && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute -top-2 -right-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => document.getElementById('logo-upload')?.click()}
+                disabled={isUploading}
+              >
+                <Pencil className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Modifier le logo</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+
       <div 
         className="relative group w-full h-full rounded-lg p-4 cursor-pointer flex items-center justify-center"
         onClick={() => userRole === 'admin' && document.getElementById('logo-upload')?.click()}
@@ -114,35 +135,14 @@ const LogoSection = ({ userRole }: LogoSectionProps) => {
       </div>
 
       {userRole === 'admin' && (
-        <>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="absolute top-2 right-2 bg-white hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600"
-                  onClick={() => document.getElementById('logo-upload')?.click()}
-                  disabled={isUploading}
-                >
-                  <Pencil className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Modifier le logo</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleLogoUpload}
-            className="hidden"
-            id="logo-upload"
-            disabled={isUploading}
-          />
-        </>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleLogoUpload}
+          className="hidden"
+          id="logo-upload"
+          disabled={isUploading}
+        />
       )}
     </div>
   );
