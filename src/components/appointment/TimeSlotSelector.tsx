@@ -28,11 +28,14 @@ const TimeSlotSelector = ({
     queryFn: async () => {
       if (!selectedDate || !consulateId) return null;
 
+      const formattedDate = format(selectedDate, "yyyy-MM-dd");
+      console.log("Checking holiday for date:", formattedDate);
+
       const { data, error } = await supabase
         .from("consulate_holidays")
         .select("*")
         .eq("consulate_id", consulateId)
-        .eq("date", format(selectedDate, "yyyy-MM-dd"))
+        .eq("date", formattedDate)
         .maybeSingle();
 
       if (error) {
@@ -40,6 +43,7 @@ const TimeSlotSelector = ({
         return null;
       }
 
+      console.log("Holiday check result:", data);
       return data;
     },
     enabled: !!selectedDate && !!consulateId
