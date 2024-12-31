@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";
+import { toast } from "sonner";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   BarChart,
   Bar,
@@ -86,6 +91,50 @@ const AppointmentStats = () => {
     return acc.sort((a, b) => parseInt(a.hour) - parseInt(b.hour));
   }, []);
 
+  const generateDailyStatsPDF = () => {
+    try {
+      const doc = new jsPDF();
+      const today = new Date();
+      
+      // Title
+      doc.setFontSize(16);
+      doc.text(`Statistiques du ${format(today, "dd MMMM yyyy", { locale: fr })}`, 14, 20);
+      
+      // Time slots data
+      const timeSlotTableData = timeSlotData
+        .sort((a, b) => parseInt(a.hour) - parseInt(b.hour))
+        .map(slot => [slot.hour, slot.count.toString()]);
+
+      // Add time slots table
+      autoTable(doc, {
+        startY: 30,
+        head: [["Heure", "Nombre de rendez-vous"]],
+        body: timeSlotTableData,
+        headStyles: { fillColor: [99, 102, 241] },
+      });
+
+      // Add status distribution
+      const statusTableData = statusData.map(status => [
+        status.name === "approuve" ? "Approuvé" :
+        status.name === "refuse" ? "Refusé" : "En attente",
+        status.value.toString()
+      ]);
+
+      autoTable(doc, {
+        startY: doc.lastAutoTable.finalY + 20,
+        head: [["Statut", "Nombre"]],
+        body: statusTableData,
+        headStyles: { fillColor: [99, 102, 241] },
+      });
+
+      doc.save(`statistiques-${format(today, "yyyy-MM-dd")}.pdf`);
+      toast.success("Le PDF des statistiques a été généré avec succès");
+    } catch (error) {
+      console.error("Erreur lors de la génération du PDF:", error);
+      toast.error("Erreur lors de la génération du PDF");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -148,23 +197,36 @@ const AppointmentStats = () => {
           <CardHeader>
             <CardTitle>Créneaux horaires populaires</CardTitle>
           </CardHeader>
-          <CardContent className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={timeSlotData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="hour" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="count" 
-                  name="Nombre de rendez-vous"
-                  stroke="#6366F1" 
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <CardContent className="space-y-4">
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={timeSlotData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="hour" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line 
+                    type="monotone" 
+                    dataKey="count" 
+                    name="Nombre de rendez-vous"
+                    stroke="#6366F1" 
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={generateDailyStatsPDF}
+                className="flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Télécharger les statistiques du jour
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
