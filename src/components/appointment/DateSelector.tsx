@@ -40,6 +40,12 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
     }
   };
 
+  // Convert disabledDays object to array format expected by the Calendar component
+  const disabledDates = [
+    { before: disabledDays.before },
+    { daysOfWeek: disabledDays.daysOfWeek }
+  ];
+
   return (
     <div className="space-y-2">
       <Label>Date du rendez-vous *</Label>
@@ -49,7 +55,7 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
             mode="single"
             selected={date}
             onSelect={handleSelect}
-            disabled={[...disabledDays, ...holidays]}
+            disabled={[...disabledDates, ...holidays]}
             className="mx-auto"
             locale={fr}
             modifiers={modifiers}
