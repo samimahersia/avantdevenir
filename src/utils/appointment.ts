@@ -27,9 +27,7 @@ export const getAppointmentDate = (date: Date, selectedTime: TimeSlot) => {
     date.getMonth(),
     date.getDate(),
     selectedTime.hour,
-    selectedTime.minute,
-    0,
-    0
+    selectedTime.minute
   );
   
   console.log("Generated appointment date:", {
