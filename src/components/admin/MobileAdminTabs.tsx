@@ -7,7 +7,7 @@ interface MobileAdminTabsProps {
 
 export const MobileAdminTabs = ({ activeTab, onTabChange }: MobileAdminTabsProps) => {
   return (
-    <TabsList className="flex flex-col h-auto bg-sidebar-accent dark:bg-gray-800 p-2 gap-1">
+    <TabsList className="flex flex-col h-auto bg-sidebar-accent dark:bg-gray-800 p-1 gap-0.5">
       <TabsTrigger 
         value="appointments" 
         className="w-full justify-start text-sidebar-foreground dark:text-gray-300 hover:bg-sidebar-accent-foreground/10 dark:hover:bg-gray-700 data-[state=active]:bg-sidebar-accent-foreground/20 dark:data-[state=active]:bg-gray-600 transition-colors"
