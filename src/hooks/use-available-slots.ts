@@ -9,7 +9,7 @@ export const useAvailableSlots = (
   timeSlots: TimeSlot[] = []
 ) => {
   const { data: holiday } = useQuery({
-    queryKey: ["holiday-check", selectedDate, consulateId],
+    queryKey: ["holiday-check", selectedDate?.toISOString().split('T')[0], consulateId],
     queryFn: async () => {
       if (!selectedDate || !consulateId) return null;
 
@@ -35,7 +35,7 @@ export const useAvailableSlots = (
   });
 
   const { data: availableSlots = [], isLoading } = useQuery({
-    queryKey: ["available-slots", selectedDate, consulateId, serviceId],
+    queryKey: ["available-slots", selectedDate?.toISOString(), consulateId, serviceId],
     queryFn: async () => {
       if (!selectedDate || !consulateId || !serviceId || holiday) return [];
 
