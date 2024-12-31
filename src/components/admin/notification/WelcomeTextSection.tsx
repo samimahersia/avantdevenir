@@ -39,7 +39,6 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
 
       onWelcomeTextChange(editedText);
       setIsEditing(false);
-      // Invalider le cache pour forcer un rechargement
       await queryClient.invalidateQueries({ queryKey: ['welcome-text'] });
       toast.success("Texte de bienvenue mis à jour avec succès");
     } catch (error) {
@@ -51,7 +50,7 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
   return (
     <div className="relative p-6 rounded-lg">
       <div className="p-4 rounded-lg">
-        {isEditing ? (
+        {isEditing && userRole === 'admin' ? (
           <div className="space-y-4">
             <Textarea
               value={editedText}

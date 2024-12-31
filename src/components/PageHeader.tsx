@@ -45,7 +45,7 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
               </Button>
             )}
             
-            {isEditing ? (
+            {isEditing && userRole === "admin" ? (
               <div className="space-y-4">
                 <Textarea
                   value={aboutText.title}
