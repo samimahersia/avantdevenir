@@ -29,13 +29,13 @@ const HolidayPDFExport = () => {
   });
 
   return (
-    <div className="mt-6 flex flex-wrap gap-2">
-      <div className="flex gap-2">
+    <div className="mt-6">
+      <div className="flex flex-wrap gap-2">
         <Button
           onClick={() => generateWeeklyPDF(appointments)}
           variant="outline"
           size="sm"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 hover:bg-accent"
         >
           <FileDown className="h-4 w-4 text-blue-800" />
           <span>PDF Hebdomadaire</span>
@@ -44,7 +44,7 @@ const HolidayPDFExport = () => {
           onClick={() => generateDailyPDF(appointments)}
           variant="outline"
           size="sm"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 hover:bg-accent"
         >
           <FileDown className="h-4 w-4 text-red-800" />
           <span>PDF Journalier</span>
@@ -53,7 +53,7 @@ const HolidayPDFExport = () => {
           onClick={() => generateQuarterlyPDF(appointments)}
           variant="outline"
           size="sm"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 hover:bg-accent"
         >
           <FileDown className="h-4 w-4 text-green-800" />
           <span>PDF Trimestriel</span>
@@ -62,7 +62,7 @@ const HolidayPDFExport = () => {
           onClick={() => generateSemiAnnualPDF(appointments)}
           variant="outline"
           size="sm"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 hover:bg-accent cursor-pointer"
         >
           <FileDown className="h-4 w-4 text-purple-800" />
           <span>PDF Semestriel</span>
