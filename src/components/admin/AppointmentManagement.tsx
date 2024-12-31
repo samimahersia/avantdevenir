@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X } from "lucide-react";
@@ -16,7 +16,11 @@ const AppointmentManagement = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("appointments")
-        .select("*, profiles(first_name, last_name)")
+        .select(`
+          *,
+          profiles(first_name, last_name),
+          consulates(name)
+        `)
         .order("date", { ascending: true });
       
       if (error) throw error;
@@ -83,9 +87,6 @@ const AppointmentManagement = () => {
 
   return (
     <Card className="mt-auto">
-      <CardHeader>
-        <CardTitle>Gestion des Rendez-vous</CardTitle>
-      </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {appointments.map((appointment) => (
@@ -112,8 +113,11 @@ const AppointmentManagement = () => {
                   {getStatusBadge(appointment.status)}
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  <span className="font-medium">Date:</span>
+                  <span className="font-medium">Date:</span>{" "}
                   {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
+                </p>
+                <p className="text-sm text-blue-800 font-medium">
+                  {appointment.consulates?.name}
                 </p>
               </div>
 
