@@ -32,7 +32,6 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
     }
 
     const appointmentDate = getAppointmentDate(date, selectedTime);
-    const utcAppointmentDate = addHours(appointmentDate, -1); // Ajuster pour le décalage UTC
     
     if (isBefore(appointmentDate, new Date())) {
       toast.error("La date sélectionnée est déjà passée");
@@ -52,7 +51,7 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
       // Vérification de la disponibilité
       const { data: availabilityCheck, error: availabilityError } = await supabase
         .rpc('check_appointment_availability', {
-          p_appointment_date: utcAppointmentDate.toISOString(),
+          p_appointment_date: appointmentDate.toISOString(),
           p_service_id: selectedService,
           p_consulate_id: selectedConsulate
         });
@@ -81,7 +80,7 @@ const AppointmentForm = ({ onSuccess, selectedConsulate, selectedService }: Appo
         .insert({
           title,
           description,
-          date: utcAppointmentDate.toISOString(),
+          date: appointmentDate.toISOString(),
           client_id: userData.user.id,
           consulate_id: selectedConsulate,
           service_id: selectedService,

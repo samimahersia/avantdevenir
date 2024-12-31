@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useAvailableSlots } from "@/hooks/use-available-slots";
 import { TimeSlot } from "@/utils/appointment";
-import { format, addHours } from "date-fns";
-import { fr } from "date-fns/locale";
+import SlotGrid from "./SlotGrid";
+import SlotStatus from "./SlotStatus";
 
 interface TimeSlotSelectorProps {
   selectedTime?: TimeSlot;
@@ -23,100 +22,11 @@ const TimeSlotSelector = ({
   consulateId,
   serviceId
 }: TimeSlotSelectorProps) => {
-  // Vérifier si c'est un jour férié
-  const { data: holiday, isLoading: isCheckingHoliday } = useQuery({
-    queryKey: ["holiday-check", selectedDate, consulateId],
-    queryFn: async () => {
-      if (!selectedDate || !consulateId) return null;
-
-      const formattedDate = format(selectedDate, "yyyy-MM-dd");
-      console.log("Checking holiday for date:", formattedDate);
-
-      const { data, error } = await supabase
-        .from("consulate_holidays")
-        .select("*")
-        .eq("consulate_id", consulateId)
-        .eq("date", formattedDate)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Error checking holiday:", error);
-        return null;
-      }
-
-      console.log("Holiday check result:", data);
-      return data;
-    },
-    enabled: !!selectedDate && !!consulateId
-  });
-
-  const { data: availableSlots = [], isLoading } = useQuery({
-    queryKey: ["available-slots", selectedDate, consulateId, serviceId],
-    queryFn: async () => {
-      if (!selectedDate || !consulateId || !serviceId || holiday) return [];
-
-      console.log("Fetching availabilities for consulate:", consulateId);
-      
-      const jsDay = selectedDate.getDay();
-      const dayOfWeek = jsDay === 0 ? 7 : jsDay;
-      
-      console.log("Checking availability for:", {
-        date: selectedDate,
-        consulateId,
-        serviceId,
-        jsDay,
-        convertedDayOfWeek: dayOfWeek
-      });
-
-      const { data: recurringAvailabilities, error: recurringError } = await supabase
-        .from("recurring_availabilities")
-        .select("*")
-        .eq("consulate_id", consulateId)
-        .eq("day_of_week", dayOfWeek);
-
-      console.log("Recurring availabilities found:", recurringAvailabilities);
-
-      if (recurringError) {
-        console.error("Error fetching recurring availabilities:", recurringError);
-        return [];
-      }
-
-      const results = await Promise.all(
-        timeSlots.map(async (slot) => {
-          // Créer une date avec le fuseau horaire local
-          const slotDate = new Date(selectedDate);
-          slotDate.setHours(slot.hour, slot.minute, 0, 0);
-
-          // Ajuster pour le décalage UTC
-          const utcSlotDate = addHours(slotDate, -1);
-
-          const { data: isAvailable } = await supabase.rpc(
-            'check_appointment_availability',
-            {
-              p_appointment_date: utcSlotDate.toISOString(),
-              p_service_id: serviceId,
-              p_consulate_id: consulateId
-            }
-          );
-
-          console.log("Slot availability check:", {
-            slot: `${slot.hour}:${slot.minute}`,
-            localDate: slotDate.toISOString(),
-            utcDate: utcSlotDate.toISOString(),
-            isAvailable
-          });
-
-          return {
-            ...slot,
-            isAvailable
-          };
-        })
-      );
-
-      return results.filter(slot => slot.isAvailable);
-    },
-    enabled: !!selectedDate && !!consulateId && !!serviceId && !holiday
-  });
+  const { 
+    availableSlots, 
+    isLoading, 
+    holiday 
+  } = useAvailableSlots(selectedDate, consulateId, serviceId, timeSlots);
 
   if (!selectedDate) {
     return (
@@ -140,63 +50,20 @@ const TimeSlotSelector = ({
     );
   }
 
-  if (isCheckingHoliday || isLoading) {
-    return (
-      <div className="space-y-2">
-        <Label>Heure du rendez-vous *</Label>
-        <div className="text-center py-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="text-sm text-muted-foreground mt-2">Vérification des disponibilités...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (holiday) {
-    return (
-      <div className="space-y-2">
-        <Label>Heure du rendez-vous *</Label>
-        <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-muted-foreground font-medium">
-            L'organisme est fermé ce jour-là
-          </p>
-          <p className="text-sm text-muted-foreground mt-1">
-            {holiday.description ? `Raison : ${holiday.description}` : "Jour férié"}
-          </p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Veuillez sélectionner une autre date
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-2">
       <Label>Heure du rendez-vous *</Label>
-      {availableSlots.length > 0 ? (
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-          {availableSlots.map((slot) => (
-            <Button
-              key={`${slot.hour}-${slot.minute}`}
-              type="button"
-              variant={selectedTime?.hour === slot.hour && selectedTime?.minute === slot.minute ? "default" : "outline"}
-              onClick={() => onTimeSelect(slot)}
-              className="w-full"
-            >
-              {slot.hour.toString().padStart(2, '0')}:{slot.minute.toString().padStart(2, '0')}
-            </Button>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-4 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-muted-foreground">
-            Aucun créneau disponible pour cette date
-          </p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Veuillez sélectionner une autre date
-          </p>
-        </div>
+      <SlotStatus 
+        isLoading={isLoading} 
+        holiday={holiday} 
+        availableSlots={availableSlots} 
+      />
+      {!isLoading && !holiday && availableSlots.length > 0 && (
+        <SlotGrid 
+          availableSlots={availableSlots}
+          selectedTime={selectedTime}
+          onTimeSelect={onTimeSelect}
+        />
       )}
     </div>
   );
