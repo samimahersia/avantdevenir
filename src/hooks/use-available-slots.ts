@@ -37,7 +37,7 @@ export const useAvailableSlots = (
   const { data: availableSlots = [], isLoading } = useQuery({
     queryKey: ["available-slots", selectedDate?.toISOString(), consulateId, serviceId],
     queryFn: async () => {
-      if (!selectedDate || !consulateId || !serviceId || holiday) return [];
+      if (!selectedDate || !consulateId || !serviceId) return [];
 
       console.log("Fetching availabilities for consulate:", consulateId);
       
