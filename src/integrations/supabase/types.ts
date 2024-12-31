@@ -352,6 +352,7 @@ export type Database = {
           id: string
           last_name: string | null
           role: string | null
+          subscription_plan_id: string | null
           updated_at: string
         }
         Insert: {
@@ -363,6 +364,7 @@ export type Database = {
           id: string
           last_name?: string | null
           role?: string | null
+          subscription_plan_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -374,9 +376,18 @@ export type Database = {
           id?: string
           last_name?: string | null
           role?: string | null
+          subscription_plan_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_subscription_plan_id_fkey"
+            columns: ["subscription_plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       recurring_availabilities: {
         Row: {
@@ -490,6 +501,36 @@ export type Database = {
           created_at?: string
           id?: string
           key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      subscription_plans: {
+        Row: {
+          created_at: string
+          id: string
+          max_consulates: number
+          max_services_per_consulate: number
+          name: string
+          price_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          max_consulates: number
+          max_services_per_consulate: number
+          name: string
+          price_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          max_consulates?: number
+          max_services_per_consulate?: number
+          name?: string
+          price_id?: string
           updated_at?: string
         }
         Relationships: []
