@@ -27,8 +27,9 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
 
   const modifiers = {
     holiday: holidays,
-    available: {
-      daysOfWeek: [2, 3, 4, 5, 6], // Mardi à Samedi
+    available: (date: Date) => {
+      const day = date.getDay();
+      return day >= 2 && day <= 6; // Mardi (2) à Samedi (6)
     }
   };
 
