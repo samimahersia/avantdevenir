@@ -15,8 +15,17 @@ const MessageForm = () => {
 
     setIsSubmitting(true);
     try {
+      // Get the current user's session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast.error("Vous devez être connecté pour envoyer un message");
+        return;
+      }
+
       const { error } = await supabase.from("messages").insert({
         content: message.trim(),
+        client_id: session.user.id,
       });
 
       if (error) throw error;
