@@ -58,12 +58,33 @@ const MessagesTab = () => {
 
   const handleSendResponse = async (messageId: string) => {
     try {
-      const { error } = await supabase
+      const message = messages.find((m) => m.id === messageId);
+      if (!message) return;
+
+      // Update message with admin response
+      const { error: updateError } = await supabase
         .from("messages")
         .update({ admin_response: responses[messageId] })
         .eq("id", messageId);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
+
+      // Create notification for the client
+      const { error: notificationError } = await supabase
+        .from("notification_history")
+        .insert({
+          user_id: message.profiles.id,
+          type: "message_response",
+          title: "Réponse à votre message",
+          content: `L'administrateur a répondu à votre message : ${responses[messageId]}`,
+          status: "sent",
+          sent_at: new Date().toISOString(),
+        });
+
+      if (notificationError) {
+        console.error("Error creating notification:", notificationError);
+        toast.error("Erreur lors de l'envoi de la notification");
+      }
 
       toast.success("Réponse envoyée avec succès");
       refetch();
