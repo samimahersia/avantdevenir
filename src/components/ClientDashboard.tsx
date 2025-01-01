@@ -9,6 +9,8 @@ import PDFExportButton from "./appointment/PDFExportButton";
 import MessageForm from "./MessageForm";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { Button } from "./ui/button";
+import { Trash2 } from "lucide-react";
 
 interface ClientDashboardProps {
   selectedConsulate?: string;
@@ -47,7 +49,7 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
     enabled: true
   });
 
-  const { data: messages = [] } = useQuery({
+  const { data: messages = [], refetch: refetchMessages } = useQuery({
     queryKey: ["client-messages"],
     queryFn: async () => {
       const { data: session } = await supabase.auth.getSession();
@@ -86,6 +88,27 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
 
       toast.success("Rendez-vous annulé avec succès");
       refetch();
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Une erreur est survenue");
+    }
+  };
+
+  const handleDeleteMessage = async (messageId: string) => {
+    try {
+      const { error } = await supabase
+        .from("messages")
+        .delete()
+        .eq("id", messageId);
+
+      if (error) {
+        console.error("Error deleting message:", error);
+        toast.error("Erreur lors de la suppression du message");
+        return;
+      }
+
+      toast.success("Message supprimé avec succès");
+      refetchMessages();
     } catch (error) {
       console.error("Error:", error);
       toast.error("Une erreur est survenue");
@@ -147,9 +170,19 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
             {messages.map((message) => (
               <div key={message.id} className="p-4 rounded-lg border bg-card">
                 <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    {format(new Date(message.created_at), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
-                  </p>
+                  <div className="flex justify-between items-start">
+                    <p className="text-sm text-muted-foreground">
+                      {format(new Date(message.created_at), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteMessage(message.id)}
+                      className="text-destructive hover:text-destructive/90"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                   <p className="text-sm">{message.content}</p>
                   {message.admin_response && (
                     <div className="mt-4 p-3 bg-muted rounded-md">
