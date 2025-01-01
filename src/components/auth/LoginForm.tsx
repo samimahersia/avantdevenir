@@ -33,7 +33,7 @@ const LoginForm = () => {
       setIsLoading(true);
       console.log("Starting login process");
       
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data: { session }, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
@@ -42,20 +42,26 @@ const LoginForm = () => {
         console.error("Login error:", error);
         if (error.message === "Invalid login credentials") {
           toast.error("Email ou mot de passe incorrect");
+        } else if (error.message.includes("Email not confirmed")) {
+          toast.error("Veuillez confirmer votre email avant de vous connecter");
         } else {
           toast.error("Erreur lors de la connexion");
         }
         return;
       }
 
-      if (data?.user) {
-        console.log("Login successful, user:", data.user.id);
+      if (session) {
+        console.log("Login successful, session established");
+        
+        // Persistance explicite de la session
+        await supabase.auth.setSession(session);
+        
         toast.success("Connexion réussie");
         navigate("/", { replace: true });
       }
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error("Erreur lors de la connexion");
+      console.error("Unexpected login error:", error);
+      toast.error("Erreur inattendue lors de la connexion");
     } finally {
       setIsLoading(false);
     }
