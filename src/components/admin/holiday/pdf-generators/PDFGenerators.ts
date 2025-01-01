@@ -1,175 +1,135 @@
-import { format, startOfQuarter, endOfQuarter, startOfWeek, endOfWeek } from "date-fns";
-import { fr } from "date-fns/locale";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import { toast } from "sonner";
+import "jspdf-autotable";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+
+const formatAppointmentData = (appointment: any) => ({
+  date: format(new Date(appointment.date), "dd/MM/yyyy HH:mm", { locale: fr }),
+  client: `${appointment.profiles?.first_name || ''} ${appointment.profiles?.last_name || ''}`,
+  service: appointment.services?.name || '',
+  consulate: appointment.consulates?.name || '',
+  status: appointment.status || ''
+});
 
 export const generateDailyPDF = (appointments: any[]) => {
-  try {
-    const doc = new jsPDF();
-    const today = new Date();
-    
-    const todayAppointments = appointments.filter(apt => 
-      format(new Date(apt.date), 'yyyy-MM-dd') === format(today, 'yyyy-MM-dd')
-    );
+  console.log("Generating daily PDF...");
+  const doc = new jsPDF();
+  const today = new Date();
+  
+  const filteredAppointments = appointments.filter(appointment => {
+    const appointmentDate = new Date(appointment.date);
+    return appointmentDate.toDateString() === today.toDateString();
+  });
 
-    doc.setFontSize(16);
-    doc.text(`Rendez-vous du ${format(today, 'dd MMMM yyyy', { locale: fr })}`, 14, 20);
+  doc.text("Rendez-vous du jour", 14, 15);
+  doc.text(format(today, "dd MMMM yyyy", { locale: fr }), 14, 25);
 
-    const tableData = todayAppointments.map(apt => [
-      format(new Date(apt.date), 'HH:mm', { locale: fr }),
-      apt.services?.name || '',
-      `${apt.profiles?.first_name || ''} ${apt.profiles?.last_name || ''}`,
-      apt.consulates?.name || '',
-      apt.status === 'approuve' ? 'Approuvé' :
-      apt.status === 'refuse' ? 'Refusé' : 'En attente'
-    ]);
+  const tableData = filteredAppointments.map(formatAppointmentData);
 
-    autoTable(doc, {
-      head: [['Heure', 'Service', 'Client', 'Consulat', 'Statut']],
-      body: tableData,
-      startY: 30,
-      styles: { fontSize: 10 },
-      headStyles: { fillColor: [41, 128, 185] },
-    });
+  (doc as any).autoTable({
+    startY: 35,
+    head: [["Date", "Client", "Service", "Organisme", "Statut"]],
+    body: tableData.map(row => [row.date, row.client, row.service, row.consulate, row.status])
+  });
 
-    doc.save(`rendez-vous-${format(today, 'yyyy-MM-dd')}.pdf`);
-    toast.success("PDF journalier généré avec succès");
-  } catch (error) {
-    console.error("Erreur lors de la génération du PDF journalier:", error);
-    toast.error("Erreur lors de la génération du PDF");
-  }
+  doc.save(`rendez-vous-${format(today, "dd-MM-yyyy")}.pdf`);
 };
 
 export const generateWeeklyPDF = (appointments: any[]) => {
-  try {
-    const doc = new jsPDF();
-    const today = new Date();
-    const weekStart = startOfWeek(today, { locale: fr });
-    const weekEnd = endOfWeek(today, { locale: fr });
-    
-    const weekAppointments = appointments.filter(apt => {
-      const aptDate = new Date(apt.date);
-      return aptDate >= weekStart && aptDate <= weekEnd;
-    });
+  console.log("Generating weekly PDF...");
+  const doc = new jsPDF();
+  const today = new Date();
+  const startOfWeek = new Date(today);
+  startOfWeek.setDate(today.getDate() - today.getDay() + 1);
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-    doc.setFontSize(16);
-    doc.text(`Rendez-vous de la semaine du ${format(weekStart, 'dd MMMM', { locale: fr })} au ${format(weekEnd, 'dd MMMM yyyy', { locale: fr })}`, 14, 20);
+  const filteredAppointments = appointments.filter(appointment => {
+    const appointmentDate = new Date(appointment.date);
+    return appointmentDate >= startOfWeek && appointmentDate <= endOfWeek;
+  });
 
-    const tableData = weekAppointments.map(apt => [
-      format(new Date(apt.date), 'dd/MM/yyyy HH:mm', { locale: fr }),
-      apt.services?.name || '',
-      `${apt.profiles?.first_name || ''} ${apt.profiles?.last_name || ''}`,
-      apt.consulates?.name || '',
-      apt.status === 'approuve' ? 'Approuvé' :
-      apt.status === 'refuse' ? 'Refusé' : 'En attente'
-    ]);
+  doc.text("Rendez-vous de la semaine", 14, 15);
+  doc.text(
+    `Du ${format(startOfWeek, "dd MMMM", { locale: fr })} au ${format(endOfWeek, "dd MMMM yyyy", { locale: fr })}`,
+    14,
+    25
+  );
 
-    autoTable(doc, {
-      head: [['Date et heure', 'Service', 'Client', 'Consulat', 'Statut']],
-      body: tableData,
-      startY: 30,
-      styles: { fontSize: 10 },
-      headStyles: { fillColor: [41, 128, 185] },
-    });
+  const tableData = filteredAppointments.map(formatAppointmentData);
 
-    doc.save(`rendez-vous-semaine-${format(weekStart, 'yyyy-MM-dd')}.pdf`);
-    toast.success("PDF hebdomadaire généré avec succès");
-  } catch (error) {
-    console.error("Erreur lors de la génération du PDF hebdomadaire:", error);
-    toast.error("Erreur lors de la génération du PDF");
-  }
+  (doc as any).autoTable({
+    startY: 35,
+    head: [["Date", "Client", "Service", "Organisme", "Statut"]],
+    body: tableData.map(row => [row.date, row.client, row.service, row.consulate, row.status])
+  });
+
+  doc.save(`rendez-vous-semaine-${format(today, "dd-MM-yyyy")}.pdf`);
 };
 
 export const generateQuarterlyPDF = (appointments: any[]) => {
-  try {
-    const doc = new jsPDF();
-    const today = new Date();
-    const quarterStart = startOfQuarter(today);
-    const quarterEnd = endOfQuarter(today);
-    
-    const quarterAppointments = appointments.filter(apt => {
-      const aptDate = new Date(apt.date);
-      return aptDate >= quarterStart && aptDate <= quarterEnd;
-    });
+  console.log("Generating quarterly PDF...");
+  const doc = new jsPDF();
+  const today = new Date();
+  const startOfQuarter = new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1);
+  const endOfQuarter = new Date(startOfQuarter.getFullYear(), startOfQuarter.getMonth() + 3, 0);
 
-    doc.setFontSize(16);
-    doc.text(`Rendez-vous du trimestre (${format(quarterStart, 'dd/MM/yyyy', { locale: fr })} - ${format(quarterEnd, 'dd/MM/yyyy', { locale: fr })})`, 14, 20);
+  const filteredAppointments = appointments.filter(appointment => {
+    const appointmentDate = new Date(appointment.date);
+    return appointmentDate >= startOfQuarter && appointmentDate <= endOfQuarter;
+  });
 
-    const tableData = quarterAppointments.map(apt => [
-      format(new Date(apt.date), 'dd/MM/yyyy HH:mm', { locale: fr }),
-      apt.services?.name || '',
-      `${apt.profiles?.first_name || ''} ${apt.profiles?.last_name || ''}`,
-      apt.consulates?.name || '',
-      apt.status === 'approuve' ? 'Approuvé' :
-      apt.status === 'refuse' ? 'Refusé' : 'En attente'
-    ]);
+  doc.text("Rendez-vous du trimestre", 14, 15);
+  doc.text(
+    `Du ${format(startOfQuarter, "dd MMMM", { locale: fr })} au ${format(endOfQuarter, "dd MMMM yyyy", { locale: fr })}`,
+    14,
+    25
+  );
 
-    autoTable(doc, {
-      head: [['Date et heure', 'Service', 'Client', 'Consulat', 'Statut']],
-      body: tableData,
-      startY: 30,
-      styles: { fontSize: 10 },
-      headStyles: { fillColor: [41, 128, 185] },
-    });
+  const tableData = filteredAppointments.map(formatAppointmentData);
 
-    doc.save(`rendez-vous-trimestre-${format(quarterStart, 'yyyy-[Q]Q', { locale: fr })}.pdf`);
-    toast.success("PDF trimestriel généré avec succès");
-  } catch (error) {
-    console.error("Erreur lors de la génération du PDF trimestriel:", error);
-    toast.error("Erreur lors de la génération du PDF");
-  }
+  (doc as any).autoTable({
+    startY: 35,
+    head: [["Date", "Client", "Service", "Organisme", "Statut"]],
+    body: tableData.map(row => [row.date, row.client, row.service, row.consulate, row.status])
+  });
+
+  doc.save(`rendez-vous-trimestre-${format(today, "dd-MM-yyyy")}.pdf`);
 };
 
 export const generateSemiAnnualPDF = (appointments: any[]) => {
-  try {
-    const doc = new jsPDF();
-    const today = new Date();
-    const isFirstHalf = today.getMonth() < 6;
-    
-    // Définir le début et la fin du semestre avec précision
-    const halfYearStart = new Date(today.getFullYear(), isFirstHalf ? 0 : 6, 1, 0, 0, 0);
-    const halfYearEnd = new Date(today.getFullYear(), isFirstHalf ? 5 : 11, 31, 23, 59, 59);
-    
-    console.log("Période du rapport :", {
-      start: halfYearStart.toISOString(),
-      end: halfYearEnd.toISOString()
-    });
-    
-    const halfYearAppointments = appointments.filter(apt => {
-      const aptDate = new Date(apt.date);
-      const isInRange = aptDate >= halfYearStart && aptDate <= halfYearEnd;
-      return isInRange;
-    });
+  console.log("Generating semi-annual PDF...");
+  const doc = new jsPDF();
+  const today = new Date();
+  const startOfSemiAnnual = new Date(today.getFullYear(), Math.floor(today.getMonth() / 6) * 6, 1);
+  const endOfSemiAnnual = new Date(startOfSemiAnnual.getFullYear(), startOfSemiAnnual.getMonth() + 6, 0);
 
-    console.log(`Nombre de rendez-vous trouvés : ${halfYearAppointments.length}`);
-    
-    doc.setFontSize(16);
-    const title = `Rendez-vous du ${isFirstHalf ? 'premier' : 'second'} semestre ${today.getFullYear()}`;
-    doc.text(title, 14, 20);
+  console.log("Date range:", {
+    start: startOfSemiAnnual,
+    end: endOfSemiAnnual
+  });
 
-    const tableData = halfYearAppointments.map(apt => [
-      format(new Date(apt.date), 'dd/MM/yyyy HH:mm', { locale: fr }),
-      apt.services?.name || '',
-      `${apt.profiles?.first_name || ''} ${apt.profiles?.last_name || ''}`,
-      apt.consulates?.name || '',
-      apt.status === 'approuve' ? 'Approuvé' :
-      apt.status === 'refuse' ? 'Refusé' : 'En attente'
-    ]);
+  const filteredAppointments = appointments.filter(appointment => {
+    const appointmentDate = new Date(appointment.date);
+    return appointmentDate >= startOfSemiAnnual && appointmentDate <= endOfSemiAnnual;
+  });
 
-    autoTable(doc, {
-      head: [['Date et heure', 'Service', 'Client', 'Consulat', 'Statut']],
-      body: tableData,
-      startY: 30,
-      styles: { fontSize: 10 },
-      headStyles: { fillColor: [41, 128, 185] },
-    });
+  console.log("Filtered appointments:", filteredAppointments.length);
 
-    const filename = `rendez-vous-${isFirstHalf ? 'S1' : 'S2'}-${today.getFullYear()}.pdf`;
-    doc.save(filename);
-    toast.success("PDF semestriel généré avec succès");
-  } catch (error) {
-    console.error("Erreur lors de la génération du PDF semestriel:", error);
-    toast.error("Erreur lors de la génération du PDF");
-  }
+  doc.text("Rendez-vous du semestre", 14, 15);
+  doc.text(
+    `Du ${format(startOfSemiAnnual, "dd MMMM", { locale: fr })} au ${format(endOfSemiAnnual, "dd MMMM yyyy", { locale: fr })}`,
+    14,
+    25
+  );
+
+  const tableData = filteredAppointments.map(formatAppointmentData);
+
+  (doc as any).autoTable({
+    startY: 35,
+    head: [["Date", "Client", "Service", "Organisme", "Statut"]],
+    body: tableData.map(row => [row.date, row.client, row.service, row.consulate, row.status])
+  });
+
+  doc.save(`rendez-vous-semestre-${format(today, "dd-MM-yyyy")}.pdf`);
 };

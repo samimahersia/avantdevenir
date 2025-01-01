@@ -9,22 +9,28 @@ import {
   generateSemiAnnualPDF 
 } from "./pdf-generators/PDFGenerators";
 
-const HolidayPDFExport = () => {
+export const HolidayPDFExport = () => {
   const { data: appointments = [] } = useQuery({
     queryKey: ["appointments-export"],
     queryFn: async () => {
+      console.log("Fetching appointments for PDF export...");
       const { data, error } = await supabase
         .from("appointments")
         .select(`
           *,
-          profiles(first_name, last_name),
-          services(name),
-          consulates(name)
+          profiles (first_name, last_name),
+          consulates (name),
+          services (name)
         `)
-        .order('date', { ascending: true });
+        .order("date", { ascending: true });
       
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error("Error fetching appointments:", error);
+        throw error;
+      }
+      
+      console.log("Appointments fetched:", data);
+      return data || [];
     }
   });
 
