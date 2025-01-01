@@ -25,8 +25,18 @@ const TimeSlotSelector = ({
   const { 
     availableSlots, 
     isLoading, 
-    holiday 
+    holiday,
+    error 
   } = useAvailableSlots(selectedDate, consulateId, serviceId, timeSlots);
+
+  console.log("TimeSlotSelector params:", {
+    selectedDate,
+    consulateId,
+    serviceId,
+    availableSlots,
+    holiday,
+    error
+  });
 
   if (!selectedDate) {
     return (
@@ -57,6 +67,17 @@ const TimeSlotSelector = ({
         <Label>Heure du rendez-vous *</Label>
         <p className="text-center text-muted-foreground">
           Les rendez-vous ne sont disponibles que du mardi au samedi
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-2">
+        <Label>Heure du rendez-vous *</Label>
+        <p className="text-center text-red-500">
+          Une erreur est survenue lors de la vérification des disponibilités
         </p>
       </div>
     );

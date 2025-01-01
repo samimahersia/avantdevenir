@@ -25,7 +25,7 @@ export const useAvailableSlots = (
 
       if (error) {
         console.error("Error checking holiday:", error);
-        return null;
+        throw error;
       }
 
       console.log("Holiday check result:", data);
@@ -34,7 +34,7 @@ export const useAvailableSlots = (
     enabled: !!selectedDate && !!consulateId
   });
 
-  const { data: availableSlots = [], isLoading } = useQuery({
+  const { data: availableSlots = [], isLoading, error } = useQuery({
     queryKey: ["available-slots", selectedDate?.toISOString(), consulateId, serviceId],
     queryFn: async () => {
       if (!selectedDate || !consulateId || !serviceId) return [];
@@ -51,7 +51,7 @@ export const useAvailableSlots = (
             slot.minute
           );
 
-          const { data: isAvailable } = await supabase.rpc(
+          const { data: isAvailable, error } = await supabase.rpc(
             'check_appointment_availability',
             {
               p_appointment_date: appointmentDate.toISOString(),
@@ -59,6 +59,11 @@ export const useAvailableSlots = (
               p_consulate_id: consulateId
             }
           );
+
+          if (error) {
+            console.error("Error checking availability:", error);
+            throw error;
+          }
 
           console.log("Slot availability check:", {
             slot: `${slot.hour}:${slot.minute}`,
@@ -75,12 +80,14 @@ export const useAvailableSlots = (
 
       return results.filter(slot => slot.isAvailable);
     },
-    enabled: !!selectedDate && !!consulateId && !!serviceId && !holiday
+    enabled: !!selectedDate && !!consulateId && !!serviceId && !holiday,
+    retry: 1
   });
 
   return {
     availableSlots,
     isLoading,
-    holiday
+    holiday,
+    error
   };
 };
