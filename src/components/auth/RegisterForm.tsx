@@ -31,7 +31,9 @@ const RegisterForm = () => {
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.auth.signUp({
+      console.log("Starting registration process...");
+
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
@@ -42,18 +44,24 @@ const RegisterForm = () => {
         },
       });
 
-      if (error) {
-        if (error.message.includes("User already registered")) {
+      if (signUpError) {
+        console.error("Registration error:", signUpError);
+        if (signUpError.message.includes("User already registered")) {
           toast.error("Un compte existe déjà avec cet email");
         } else {
-          console.error("Registration error:", error);
-          toast.error("Erreur lors de l'inscription");
+          toast.error(`Erreur lors de l'inscription: ${signUpError.message}`);
         }
         return;
       }
 
-      toast.success("Inscription réussie ! Vérifiez votre email pour confirmer votre compte.");
-      form.reset();
+      if (signUpData?.user) {
+        console.log("User registered successfully:", signUpData.user.id);
+        toast.success("Inscription réussie ! Vérifiez votre email pour confirmer votre compte.");
+        form.reset();
+      }
+    } catch (error) {
+      console.error("Unexpected error during registration:", error);
+      toast.error("Une erreur inattendue s'est produite lors de l'inscription");
     } finally {
       setIsLoading(false);
     }
