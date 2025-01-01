@@ -13,13 +13,26 @@ export function LogoutButton() {
   const handleLogout = async () => {
     try {
       setIsLoading(true);
-      await supabase.auth.signOut();
+      
+      // First check if we have a session
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+      }
+      
+      // Clear local storage and session storage regardless of session state
       localStorage.clear();
       sessionStorage.clear();
+      
+      // Navigate to auth page
       navigate("/auth", { replace: true });
       toast.success("Déconnexion réussie");
+      
     } catch (error) {
       console.error("Logout error:", error);
+      // Still navigate to auth page even if there's an error
       navigate("/auth", { replace: true });
     } finally {
       setIsLoading(false);
