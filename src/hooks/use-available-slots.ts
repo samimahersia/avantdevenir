@@ -42,8 +42,7 @@ export const useAvailableSlots = (
       console.log("Checking availability for slots:", {
         date: selectedDate,
         consulateId,
-        serviceId,
-        holiday
+        serviceId
       });
       
       const results = await Promise.all(
@@ -62,35 +61,40 @@ export const useAvailableSlots = (
             date: appointmentDate
           });
 
-          const { data: isAvailable, error } = await supabase.rpc(
-            'check_appointment_availability',
-            {
-              p_appointment_date: appointmentDate.toISOString(),
-              p_service_id: serviceId,
-              p_consulate_id: consulateId
+          try {
+            const { data: isAvailable, error } = await supabase.rpc(
+              'check_appointment_availability',
+              {
+                p_appointment_date: appointmentDate.toISOString(),
+                p_service_id: serviceId,
+                p_consulate_id: consulateId
+              }
+            );
+
+            if (error) {
+              console.error("Error checking availability:", error);
+              return { ...slot, isAvailable: false };
             }
-          );
 
-          if (error) {
-            console.error("Error checking availability:", error);
-            throw error;
+            console.log("Slot availability result:", {
+              slot: `${slot.hour}:${slot.minute}`,
+              isAvailable
+            });
+
+            return {
+              ...slot,
+              isAvailable: !!isAvailable
+            };
+          } catch (error) {
+            console.error("Unexpected error checking availability:", error);
+            return { ...slot, isAvailable: false };
           }
-
-          console.log("Slot availability result:", {
-            slot: `${slot.hour}:${slot.minute}`,
-            isAvailable
-          });
-
-          return {
-            ...slot,
-            isAvailable
-          };
         })
       );
 
-      const filteredResults = results.filter(slot => slot.isAvailable);
-      console.log("Available slots:", filteredResults);
-      return filteredResults;
+      const availableSlots = results.filter(slot => slot.isAvailable);
+      console.log("Available slots:", availableSlots);
+      return availableSlots;
     },
     enabled: !!selectedDate && !!consulateId && !!serviceId
   });
