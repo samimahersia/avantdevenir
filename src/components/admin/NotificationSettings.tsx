@@ -7,6 +7,7 @@ import RecentAppointments from "./holiday/RecentAppointments";
 import LogoSection from "./notification/LogoSection";
 import WelcomeTextSection from "./notification/WelcomeTextSection";
 import SubscriptionTab from "./notification/SubscriptionTab";
+import MessagesTab from "./notification/MessagesTab";
 import { useState } from "react";
 
 const NotificationSettings = () => {
@@ -16,10 +17,14 @@ const NotificationSettings = () => {
 
   return (
     <Tabs defaultValue="welcome" className="w-full">
-      <TabsList className="grid w-full grid-cols-5">
+      <TabsList className="grid w-full grid-cols-6">
         <TabsTrigger value="welcome" className="flex items-center gap-2">
           <Info className="h-4 w-4" />
           Bienvenue
+        </TabsTrigger>
+        <TabsTrigger value="messages" className="flex items-center gap-2">
+          <MessageSquare className="h-4 w-4" />
+          Messages
         </TabsTrigger>
         <TabsTrigger value="subscription" className="flex items-center gap-2">
           <CreditCard className="h-4 w-4" />
@@ -48,6 +53,10 @@ const NotificationSettings = () => {
             onWelcomeTextChange={setWelcomeText}
           />
         </div>
+      </TabsContent>
+
+      <TabsContent value="messages">
+        <MessagesTab />
       </TabsContent>
 
       <TabsContent value="subscription">
