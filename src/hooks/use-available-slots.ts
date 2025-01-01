@@ -80,7 +80,7 @@ export const useAvailableSlots = (
 
       return results.filter(slot => slot.isAvailable);
     },
-    enabled: !!selectedDate && !!consulateId && !!serviceId, // Removed !holiday condition
+    enabled: !!selectedDate && !!consulateId && !!serviceId && !holiday,
     retry: 1
   });
 
