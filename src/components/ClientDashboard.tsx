@@ -1,16 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import AppointmentForm from "./AppointmentForm";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import AppointmentList from "./appointment/AppointmentList";
-import PDFExportButton from "./appointment/PDFExportButton";
-import MessageForm from "./MessageForm";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { Button } from "./ui/button";
-import { Trash2 } from "lucide-react";
+import AppointmentSection from "./appointment/AppointmentSection";
+import MessageSection from "./message/MessageSection";
+import AppointmentForm from "./AppointmentForm";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 interface ClientDashboardProps {
   selectedConsulate?: string;
@@ -117,22 +112,10 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
 
   return (
     <div className="space-y-6 md:space-y-8">
-      <Card className="border-none shadow-none">
-        <CardHeader className="px-4 md:px-6">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl md:text-2xl font-semibold">
-              {t('dashboard.myAppointments')}
-            </CardTitle>
-            <PDFExportButton appointments={appointments} />
-          </div>
-        </CardHeader>
-        <CardContent className="px-4 md:px-6">
-          <AppointmentList 
-            appointments={appointments}
-            onCancel={handleCancel}
-          />
-        </CardContent>
-      </Card>
+      <AppointmentSection 
+        appointments={appointments}
+        onCancel={handleCancel}
+      />
 
       {!selectedConsulate || !selectedService ? (
         <Card className="border-none shadow-none">
@@ -159,49 +142,10 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
         </Card>
       )}
 
-      <Card className="border-none shadow-none">
-        <CardHeader className="px-4 md:px-6">
-          <CardTitle className="text-xl md:text-2xl font-semibold">
-            Messages
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 md:px-6 space-y-4">
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div key={message.id} className="p-4 rounded-lg border bg-card">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-start">
-                    <p className="text-sm text-muted-foreground">
-                      {format(new Date(message.created_at), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
-                    </p>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteMessage(message.id)}
-                      className="text-destructive hover:text-destructive/90"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-sm">{message.content}</p>
-                  {message.admin_response && (
-                    <div className="mt-4 p-3 bg-muted rounded-md">
-                      <p className="text-sm font-medium">Réponse de l'administrateur:</p>
-                      <p className="text-sm mt-1">{message.admin_response}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-            {messages.length === 0 && (
-              <p className="text-center text-muted-foreground">
-                Aucun message
-              </p>
-            )}
-          </div>
-          <MessageForm />
-        </CardContent>
-      </Card>
+      <MessageSection 
+        messages={messages}
+        onDelete={handleDeleteMessage}
+      />
     </div>
   );
 };
