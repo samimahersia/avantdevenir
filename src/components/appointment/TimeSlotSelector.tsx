@@ -29,15 +29,6 @@ const TimeSlotSelector = ({
     error 
   } = useAvailableSlots(selectedDate, consulateId, serviceId, timeSlots);
 
-  console.log("TimeSlotSelector params:", {
-    selectedDate,
-    consulateId,
-    serviceId,
-    availableSlots,
-    holiday,
-    error
-  });
-
   if (!selectedDate) {
     return (
       <div className="space-y-2">
