@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import AppointmentList from "./appointment/AppointmentList";
 import PDFExportButton from "./appointment/PDFExportButton";
 import MessageForm from "./MessageForm";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface ClientDashboardProps {
   selectedConsulate?: string;
@@ -38,6 +40,30 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
       
       if (error) {
         console.error("Error fetching appointments:", error);
+        throw error;
+      }
+      return data;
+    },
+    enabled: true
+  });
+
+  const { data: messages = [] } = useQuery({
+    queryKey: ["client-messages"],
+    queryFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session?.user.id) {
+        throw new Error("User not authenticated");
+      }
+
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("client_id", session.session.user.id)
+        .eq("is_deleted", false)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching messages:", error);
         throw error;
       }
       return data;
@@ -111,7 +137,35 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
       )}
 
       <Card className="border-none shadow-none">
-        <CardContent className="px-4 md:px-6">
+        <CardHeader className="px-4 md:px-6">
+          <CardTitle className="text-xl md:text-2xl font-semibold">
+            Messages
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-4 md:px-6 space-y-4">
+          <div className="space-y-4">
+            {messages.map((message) => (
+              <div key={message.id} className="p-4 rounded-lg border bg-card">
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    {format(new Date(message.created_at), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
+                  </p>
+                  <p className="text-sm">{message.content}</p>
+                  {message.admin_response && (
+                    <div className="mt-4 p-3 bg-muted rounded-md">
+                      <p className="text-sm font-medium">Réponse de l'administrateur:</p>
+                      <p className="text-sm mt-1">{message.admin_response}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+            {messages.length === 0 && (
+              <p className="text-center text-muted-foreground">
+                Aucun message
+              </p>
+            )}
+          </div>
           <MessageForm />
         </CardContent>
       </Card>
