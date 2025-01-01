@@ -39,7 +39,7 @@ export const useAvailableSlots = (
     queryFn: async () => {
       if (!selectedDate || !consulateId || !serviceId) return [];
 
-      console.log("Fetching availabilities for consulate:", consulateId);
+      console.log("Checking availability for date:", selectedDate);
       
       const results = await Promise.all(
         timeSlots.map(async (slot) => {
@@ -65,12 +65,6 @@ export const useAvailableSlots = (
             throw error;
           }
 
-          console.log("Slot availability check:", {
-            slot: `${slot.hour}:${slot.minute}`,
-            date: appointmentDate.toISOString(),
-            isAvailable
-          });
-
           return {
             ...slot,
             isAvailable
@@ -80,8 +74,7 @@ export const useAvailableSlots = (
 
       return results.filter(slot => slot.isAvailable);
     },
-    enabled: !!selectedDate && !!consulateId && !!serviceId && !holiday,
-    retry: 1
+    enabled: !!selectedDate && !!consulateId && !!serviceId
   });
 
   return {
