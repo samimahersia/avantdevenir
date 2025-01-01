@@ -183,6 +183,44 @@ export type Database = {
         }
         Relationships: []
       }
+      messages: {
+        Row: {
+          admin_response: string | null
+          client_id: string
+          content: string
+          created_at: string
+          id: string
+          is_deleted: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          admin_response?: string | null
+          client_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_deleted?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          admin_response?: string | null
+          client_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_deleted?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_history: {
         Row: {
           content: string | null

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import AppointmentList from "./appointment/AppointmentList";
 import PDFExportButton from "./appointment/PDFExportButton";
+import MessageForm from "./MessageForm";
 
 interface ClientDashboardProps {
   selectedConsulate?: string;
@@ -108,6 +109,12 @@ const ClientDashboard = ({ selectedConsulate, selectedService }: ClientDashboard
           </CardContent>
         </Card>
       )}
+
+      <Card className="border-none shadow-none">
+        <CardContent className="px-4 md:px-6">
+          <MessageForm />
+        </CardContent>
+      </Card>
     </div>
   );
 };
