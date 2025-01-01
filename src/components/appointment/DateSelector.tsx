@@ -10,19 +10,31 @@ import type { Matcher } from "react-day-picker";
 interface DateSelectorProps {
   date?: Date;
   setDate: (date?: Date) => void;
+  selectedConsulate?: string;
 }
 
-const DateSelector = ({ date, setDate }: DateSelectorProps) => {
-  const { data: holidays = [] } = useQuery({
-    queryKey: ["holidays"],
+const DateSelector = ({ date, setDate, selectedConsulate }: DateSelectorProps) => {
+  const { data: holidays = [], isLoading } = useQuery({
+    queryKey: ["holidays", selectedConsulate],
     queryFn: async () => {
+      if (!selectedConsulate) return [];
+      
+      console.log("Fetching holidays for consulate:", selectedConsulate);
       const { data, error } = await supabase
         .from("consulate_holidays")
-        .select("date");
+        .select("date")
+        .eq("consulate_id", selectedConsulate);
       
-      if (error) throw error;
-      return data.map(holiday => new Date(holiday.date));
-    }
+      if (error) {
+        console.error("Error fetching holidays:", error);
+        throw error;
+      }
+      
+      const holidayDates = data.map(holiday => new Date(holiday.date));
+      console.log("Fetched holidays:", holidayDates);
+      return holidayDates;
+    },
+    enabled: !!selectedConsulate
   });
 
   const modifiers = {
@@ -30,14 +42,25 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
   };
 
   const modifiersClassNames = {
-    holiday: "text-red-500 font-bold bg-red-50 cursor-not-allowed"
+    holiday: "text-red-500 font-bold bg-red-50"
   };
 
   const handleSelect = (selectedDate: Date | undefined) => {
-    if (selectedDate && !holidays.some(holiday => 
+    if (!selectedDate) {
+      setDate(undefined);
+      return;
+    }
+
+    // Check if the selected date is a holiday
+    const isHoliday = holidays.some(holiday => 
       holiday.toISOString().split('T')[0] === selectedDate.toISOString().split('T')[0]
-    )) {
+    );
+
+    if (!isHoliday) {
+      console.log("Selected date:", selectedDate);
       setDate(selectedDate);
+    } else {
+      console.log("Selected date is a holiday:", selectedDate);
     }
   };
 
@@ -46,6 +69,19 @@ const DateSelector = ({ date, setDate }: DateSelectorProps) => {
     { before: disabledDays.before },
     { dayOfWeek: disabledDays.daysOfWeek }
   ];
+
+  if (isLoading) {
+    return (
+      <div className="space-y-2">
+        <Label>Date du rendez-vous * (Mardi à Samedi)</Label>
+        <Card>
+          <CardContent className="p-4 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2">

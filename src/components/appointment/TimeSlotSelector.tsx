@@ -64,6 +64,7 @@ const TimeSlotSelector = ({
   }
 
   if (error) {
+    console.error("Error in TimeSlotSelector:", error);
     return (
       <div className="space-y-2">
         <Label>Heure du rendez-vous *</Label>
