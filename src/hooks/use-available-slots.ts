@@ -39,7 +39,12 @@ export const useAvailableSlots = (
     queryFn: async () => {
       if (!selectedDate || !consulateId || !serviceId) return [];
 
-      console.log("Checking availability for date:", selectedDate);
+      console.log("Checking availability for slots:", {
+        date: selectedDate,
+        consulateId,
+        serviceId,
+        holiday
+      });
       
       const results = await Promise.all(
         timeSlots.map(async (slot) => {
@@ -50,6 +55,12 @@ export const useAvailableSlots = (
             slot.hour,
             slot.minute
           );
+
+          console.log("Checking slot:", {
+            hour: slot.hour,
+            minute: slot.minute,
+            date: appointmentDate
+          });
 
           const { data: isAvailable, error } = await supabase.rpc(
             'check_appointment_availability',
@@ -65,6 +76,11 @@ export const useAvailableSlots = (
             throw error;
           }
 
+          console.log("Slot availability result:", {
+            slot: `${slot.hour}:${slot.minute}`,
+            isAvailable
+          });
+
           return {
             ...slot,
             isAvailable
@@ -72,7 +88,9 @@ export const useAvailableSlots = (
         })
       );
 
-      return results.filter(slot => slot.isAvailable);
+      const filteredResults = results.filter(slot => slot.isAvailable);
+      console.log("Available slots:", filteredResults);
+      return filteredResults;
     },
     enabled: !!selectedDate && !!consulateId && !!serviceId
   });
