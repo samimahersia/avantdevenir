@@ -64,8 +64,10 @@ export const useAuthLogin = () => {
       
       toast.success("Connexion réussie !");
       
-      // Redirect to the dashboard after successful login
-      navigate("/dashboard");
+      // Force la redirection vers le dashboard après une connexion réussie
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 100);
 
     } catch (error) {
       console.error("Erreur inattendue lors de la connexion:", error);
