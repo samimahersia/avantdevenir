@@ -29,7 +29,6 @@ export const useAuthLogin = () => {
       if (error) {
         console.error("Login error:", error);
         
-        // Gestion spécifique de l'erreur "email non confirmé"
         if (error.message.includes("Email not confirmed")) {
           const { error: resendError } = await supabase.auth.resend({
             type: 'signup',
@@ -49,13 +48,12 @@ export const useAuthLogin = () => {
           return;
         }
 
-        // Autres types d'erreurs
         if (error.message.includes("Invalid login credentials")) {
           toast.error("Email ou mot de passe incorrect");
         } else {
           toast.error("Erreur de connexion");
         }
-        return;
+        throw error;
       }
 
       if (data.session) {
@@ -63,9 +61,6 @@ export const useAuthLogin = () => {
         toast.success("Connexion réussie");
         navigate("/");
       }
-    } catch (error) {
-      console.error("Unexpected error during login:", error);
-      toast.error("Une erreur inattendue est survenue");
     } finally {
       setIsLoading(false);
     }
