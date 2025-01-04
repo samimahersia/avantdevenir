@@ -23,7 +23,7 @@ export const LoginFormFields = ({ form }: LoginFormFieldsProps) => {
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input 
                   placeholder="email@exemple.com" 
-                  className="pl-9 bg-white focus:bg-white" 
+                  className="pl-9 bg-white focus:bg-white text-black" 
                   {...field} 
                 />
               </div>
@@ -43,7 +43,7 @@ export const LoginFormFields = ({ form }: LoginFormFieldsProps) => {
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input 
                   type="password" 
-                  className="pl-9 bg-white focus:bg-white" 
+                  className="pl-9 bg-white focus:bg-white text-black" 
                   {...field} 
                 />
               </div>
