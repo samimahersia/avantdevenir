@@ -21,20 +21,26 @@ export const useAuthLogin = () => {
       setIsLoading(true);
       console.log("Tentative de connexion avec:", values.email);
 
+      const { data: existingSession } = await supabase.auth.getSession();
+      if (existingSession?.session) {
+        await supabase.auth.signOut();
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
 
       if (error) {
-        console.error("Erreur de connexion détaillée:", {
+        console.error("Erreur de connexion:", {
           message: error.message,
           status: error.status,
-          name: error.name
+          name: error.name,
+          details: error
         });
         
         if (error.message.includes("Invalid login credentials")) {
-          toast.error("Email ou mot de passe incorrect");
+          toast.error("Email ou mot de passe incorrect. Veuillez réessayer.");
           return;
         }
 
@@ -43,15 +49,16 @@ export const useAuthLogin = () => {
           return;
         }
 
-        toast.error(`Erreur de connexion: ${error.message}`);
+        toast.error("Erreur lors de la connexion. Veuillez réessayer plus tard.");
         return;
       }
 
       if (data?.session) {
-        console.log("Session créée avec succès:", {
-          user: data.session.user.id,
+        console.log("Connexion réussie:", {
+          userId: data.session.user.id,
           email: data.session.user.email
         });
+        
         toast.success("Connexion réussie !");
         navigate("/");
       } else {
