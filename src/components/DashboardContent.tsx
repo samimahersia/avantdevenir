@@ -2,7 +2,6 @@ import { ConsulateSelector } from "./ConsulateSelector";
 import ServiceSelector from "./appointment/ServiceSelector";
 import ClientDashboard from "./ClientDashboard";
 import AdminDashboard from "./AdminDashboard";
-import { useTranslation } from "react-i18next";
 
 interface DashboardContentProps {
   userType: "client" | "admin";
@@ -25,8 +24,6 @@ export const DashboardContent = ({
   activeTab,
   setActiveTab
 }: DashboardContentProps) => {
-  const { t } = useTranslation();
-
   console.log("DashboardContent rendering with:", {
     userType,
     selectedConsulate,
@@ -37,9 +34,6 @@ export const DashboardContent = ({
     return (
       <div className="animate-in fade-in duration-500 space-y-6">
         <div className="max-w-2xl mx-auto space-y-4">
-          <p className="text-center text-muted-foreground mb-4">
-            {t('dashboard.selectPrompt')}
-          </p>
           <div className="w-full">
             <ConsulateSelector 
               value={selectedConsulate} 
