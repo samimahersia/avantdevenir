@@ -21,19 +21,6 @@ export const useAuthLogin = () => {
       setIsLoading(true);
       console.log("Starting login process with email:", values.email);
       
-      // Vérifier d'abord si l'utilisateur existe
-      const { data: userExists } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', values.email)
-        .single();
-
-      if (!userExists) {
-        console.log("User not found in profiles table");
-        toast.error("Aucun compte trouvé avec cet email. Veuillez vous inscrire.");
-        return;
-      }
-
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
@@ -62,7 +49,7 @@ export const useAuthLogin = () => {
         }
 
         if (error.message.includes("Invalid login credentials")) {
-          toast.error("Mot de passe incorrect. Veuillez réessayer.");
+          toast.error("Email ou mot de passe incorrect. Veuillez réessayer.");
           return;
         }
 
