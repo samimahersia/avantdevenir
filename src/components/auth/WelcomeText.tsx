@@ -23,7 +23,7 @@ export const WelcomeText = ({ userRole }: WelcomeTextProps) => {
   return (
     <div className="p-6 rounded-lg">
       <div className="p-4 rounded-lg">
-        <div className="text-gray-600 dark:text-white whitespace-pre-line text-center">
+        <div className="text-black whitespace-pre-line text-center">
           {welcomeText}
         </div>
       </div>
