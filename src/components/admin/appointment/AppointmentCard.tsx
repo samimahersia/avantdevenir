@@ -45,18 +45,20 @@ export const AppointmentCard = ({
   return (
     <Card className={`${isMobile ? 'p-2' : 'p-4'} shadow-sm`}>
       <CardContent className={`${isMobile ? 'p-2' : 'p-4'} space-y-4`}>
-        <div className={`flex ${isMobile ? 'flex-col gap-2' : 'justify-between items-center'}`}>
-          <div>
-            <h3 className="font-semibold">{appointment.title}</h3>
-            <p className="text-sm text-gray-500">
+        <div className={`flex ${isMobile ? 'flex-col gap-2' : 'justify-between items-start'}`}>
+          <div className="space-y-2 w-full">
+            <p className="font-bold text-gray-900">{appointment.consulates?.name}</p>
+            <p className="text-sm text-gray-600">Service : {appointment.services?.name}</p>
+            <p className="text-sm text-gray-600">{formatDate(appointment.date)}</p>
+            <p className="text-sm text-gray-600">
               {appointment.profiles?.first_name} {appointment.profiles?.last_name}
             </p>
-            <p className="text-sm text-gray-500">{formatDate(appointment.date)}</p>
-            {appointment.consulates?.name && (
-              <p className="text-sm text-gray-500">{appointment.consulates.name}</p>
+            <p className="text-sm text-gray-600">Titre : {appointment.title}</p>
+            {appointment.description && (
+              <p className="text-sm text-gray-500 mt-2">{appointment.description}</p>
             )}
           </div>
-          <div className={`flex ${isMobile ? 'flex-col' : 'gap-2'} items-start`}>
+          <div className={`flex ${isMobile ? 'flex-col w-full' : 'flex-col items-end'} gap-2`}>
             <Badge className={getStatusColor(appointment.status)}>
               {appointment.status === "approuve"
                 ? "Approuvé"
@@ -64,7 +66,7 @@ export const AppointmentCard = ({
                 ? "Refusé"
                 : "En attente"}
             </Badge>
-            <div className={`flex gap-2 ${isMobile ? 'mt-2 w-full' : ''}`}>
+            <div className={`flex gap-2 ${isMobile ? 'w-full' : ''}`}>
               {appointment.status === "en_attente" && (
                 <>
                   <Button
@@ -101,9 +103,6 @@ export const AppointmentCard = ({
             </div>
           </div>
         </div>
-        {appointment.description && (
-          <p className="text-sm text-gray-600">{appointment.description}</p>
-        )}
       </CardContent>
       {isEditing && (
         <EditAppointmentForm
