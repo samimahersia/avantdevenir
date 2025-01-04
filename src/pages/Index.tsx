@@ -24,6 +24,7 @@ const Index = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
+        console.log("Checking session...");
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -32,10 +33,12 @@ const Index = () => {
         }
         
         if (!session) {
+          console.log("No session found, redirecting to auth...");
           navigate("/auth");
           return;
         }
         
+        console.log("Session found:", session);
         setSession(session);
       } catch (err) {
         console.error("Session check error:", err);
@@ -49,7 +52,9 @@ const Index = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log("Auth state changed:", _event, session);
       if (!session) {
+        console.log("No session in auth state change, redirecting to auth...");
         navigate("/auth");
         return;
       }
@@ -70,6 +75,7 @@ const Index = () => {
           return;
         }
 
+        console.log("Checking user profile...");
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
@@ -82,6 +88,7 @@ const Index = () => {
           return;
         }
 
+        console.log("Profile loaded:", profile);
         setUserRole(profile?.role || null);
         
         if (userType === "admin" && profile?.role !== "admin") {
@@ -129,6 +136,7 @@ const Index = () => {
   }
 
   if (!session) {
+    console.log("No session in render, redirecting to auth...");
     navigate("/auth");
     return null;
   }
