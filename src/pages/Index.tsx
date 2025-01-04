@@ -150,9 +150,9 @@ const Index = () => {
           </div>
         </div>
 
-        <Card className="shadow-lg overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+        <Card className="shadow-lg bg-white dark:bg-gray-800">
           <PageHeader userType={userType} setUserType={setUserType} userRole={userRole} />
-          <CardContent className="p-4 sm:p-6">
+          <CardContent className="p-4 sm:p-6 bg-white dark:bg-gray-800">
             <DashboardContent 
               userType={userType}
               userRole={userRole}
