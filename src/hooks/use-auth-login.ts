@@ -19,16 +19,21 @@ export const useAuthLogin = () => {
   const handleLogin = async (values: LoginFormValues) => {
     try {
       setIsLoading(true);
-      console.log("Starting login process with email:", values.email);
-      
+      console.log("Tentative de connexion avec:", values.email);
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
 
       if (error) {
-        console.error("Login error:", error);
+        console.error("Erreur de connexion:", error);
         
+        if (error.message.includes("Invalid login credentials")) {
+          toast.error("Email ou mot de passe incorrect");
+          return;
+        }
+
         if (error.message.includes("Email not confirmed")) {
           const { error: resendError } = await supabase.auth.resend({
             type: 'signup',
@@ -36,37 +41,32 @@ export const useAuthLogin = () => {
           });
 
           if (resendError) {
-            console.error("Error resending confirmation email:", resendError);
+            console.error("Erreur lors du renvoi de l'email:", resendError);
             toast.error("Erreur lors du renvoi de l'email de confirmation");
             return;
           }
 
           toast.warning(
-            "Votre email n'est pas confirmé. Un nouvel email de confirmation vient d'être envoyé.",
+            "Email non confirmé. Un nouvel email de confirmation a été envoyé.",
             { duration: 6000 }
           );
           return;
         }
 
-        if (error.message.includes("Invalid login credentials")) {
-          toast.error("Email ou mot de passe incorrect. Veuillez réessayer.");
-          return;
-        }
-
-        toast.error("Erreur de connexion. Veuillez réessayer plus tard.");
-        console.error("Detailed error:", error);
+        toast.error("Erreur lors de la connexion. Veuillez réessayer.");
         return;
       }
 
       if (data?.session) {
-        console.log("Login successful, redirecting to home");
+        console.log("Connexion réussie, redirection...");
         toast.success("Connexion réussie !");
         navigate("/");
       } else {
+        console.error("Session non créée après connexion");
         toast.error("Erreur inattendue lors de la connexion");
       }
     } catch (error) {
-      console.error("Unexpected error during login:", error);
+      console.error("Erreur inattendue:", error);
       toast.error("Une erreur inattendue est survenue");
     } finally {
       setIsLoading(false);
