@@ -32,13 +32,13 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#9b87f5] via-[#7E69AB] to-[#1A1F2C] dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-8 flex flex-col min-h-screen">
+      <div className="container mx-auto px-4 py-4 flex flex-col min-h-[calc(100vh-4rem)]">
         <AuthHeader />
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch mt-8">
-          <div className="h-full">
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch mt-4">
+          <div className="h-[600px]">
             <AuthInfoSection userRole={null} />
           </div>
-          <div>
+          <div className="h-[600px]">
             <AuthForm activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
         </div>
