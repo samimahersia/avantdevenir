@@ -25,7 +25,9 @@ export const useAuthLogin = () => {
         email: values.email,
         password: values.password,
         options: {
-          persistSession: values.rememberMe
+          data: {
+            remember_me: values.rememberMe
+          }
         }
       });
 
