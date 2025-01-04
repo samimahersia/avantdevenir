@@ -28,7 +28,7 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
   };
 
   return (
-    <div className="flex flex-col p-4 md:p-6 border rounded-xl bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow">
+    <div className="flex flex-col p-4 md:p-6 border rounded-xl bg-white dark:bg-gray-700 shadow-sm hover:shadow-md transition-shadow">
       <div className="space-y-2 mb-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <h3 className="text-base md:text-lg font-medium">{appointment.title}</h3>
