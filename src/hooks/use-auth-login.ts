@@ -27,13 +27,18 @@ export const useAuthLogin = () => {
 
       if (error) {
         console.error("Supabase login error:", error);
+        
+        if (error.message.includes("Email not confirmed")) {
+          toast.error("Veuillez confirmer votre email avant de vous connecter. Vérifiez votre boîte de réception.");
+          return;
+        }
+        
         if (error.message.includes("Invalid login credentials")) {
           toast.error("Email ou mot de passe incorrect");
-        } else if (error.message.includes("Email not confirmed")) {
-          toast.error("Veuillez confirmer votre email avant de vous connecter");
-        } else {
-          toast.error("Erreur lors de la connexion: " + error.message);
+          return;
         }
+        
+        toast.error("Erreur lors de la connexion: " + error.message);
         return;
       }
 
