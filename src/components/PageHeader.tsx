@@ -13,18 +13,17 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
   return (
     <div className="relative flex flex-col gap-6">
       <div className="flex items-center justify-center">
-        <CardTitle className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-[#B794F4] to-[#D6BCFA] bg-clip-text text-transparent mb-3 md:mb-4 bg-white">
+        <CardTitle className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-[#D3E4FD] to-[#33C3F0] bg-clip-text text-transparent mb-3 md:mb-4">
           AvantDeVenir
         </CardTitle>
       </div>
       
-      <div className="flex flex-col md:flex-row gap-6 items-start justify-between">
-        <HeaderImage 
-          src="/images/consulate-service.jpg"
-          alt="Service consulaire"
-        />
-        <AboutSection userRole={userRole} />
-      </div>
+      <HeaderImage 
+        src="/images/consulate-service.jpg"
+        alt="Service consulaire"
+      />
+      
+      <AboutSection userRole={userRole} />
       
       <UserTypeButtons 
         userType={userType}
