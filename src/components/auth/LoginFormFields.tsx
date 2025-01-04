@@ -17,7 +17,7 @@ export const LoginFormFields = ({ form }: LoginFormFieldsProps) => {
         name="email"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-center w-full">Email</FormLabel>
+            <FormLabel className="text-left w-full">Email</FormLabel>
             <FormControl>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -33,7 +33,7 @@ export const LoginFormFields = ({ form }: LoginFormFieldsProps) => {
         name="password"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-center w-full">Mot de passe</FormLabel>
+            <FormLabel className="text-left w-full">Mot de passe</FormLabel>
             <FormControl>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
