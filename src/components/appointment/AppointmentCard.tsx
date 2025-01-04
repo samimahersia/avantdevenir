@@ -31,7 +31,7 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
     <div className="flex flex-col p-4 md:p-6 border rounded-xl bg-white dark:bg-white shadow-sm hover:shadow-md transition-shadow">
       <div className="space-y-2 text-left">
         <p className="font-bold text-gray-900">{appointment.consulates?.name}</p>
-        <p className="font-semibold text-gray-800">Service : {appointment.services?.name}</p>
+        <p className="font-bold text-gray-900">Service : {appointment.services?.name}</p>
         <p className="text-sm text-gray-600">
           {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
         </p>
