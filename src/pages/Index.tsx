@@ -7,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { PageHeader } from "@/components/PageHeader";
 import { DashboardContent } from "@/components/DashboardContent";
-import { LanguageSelector } from "@/components/LanguageSelector";
 import { UserProfileSection } from "@/components/UserProfileSection";
 
 const Index = () => {
@@ -153,7 +152,6 @@ const Index = () => {
             setActiveTab={setActiveTab} 
           />
           <div className="flex items-center gap-4">
-            <LanguageSelector />
             <UserProfileSection />
           </div>
         </div>
