@@ -18,7 +18,7 @@ export const AboutSection = ({ userRole }: AboutSectionProps) => {
   });
 
   return (
-    <ScrollArea className="w-full h-[350px] rounded-lg border bg-card p-8 relative">
+    <ScrollArea className="w-full h-[300px] rounded-lg border bg-card p-6 relative">
       {userRole === "admin" && !isEditing && (
         <Button
           variant="ghost"
@@ -59,10 +59,10 @@ export const AboutSection = ({ userRole }: AboutSectionProps) => {
           </div>
         </div>
       ) : (
-        <div className="text-base text-muted-foreground">
-          <h3 className="text-lg font-semibold mb-4 text-foreground">{aboutText.title}</h3>
-          <p className="mb-6">{aboutText.welcome}</p>
-          <p className="mb-6 whitespace-pre-line">
+        <div className="text-sm text-muted-foreground">
+          <h3 className="font-semibold mb-2 text-foreground">{aboutText.title}</h3>
+          <p className="mb-4">{aboutText.welcome}</p>
+          <p className="mb-4 whitespace-pre-line">
             Nous proposons :
             {aboutText.features}
           </p>
