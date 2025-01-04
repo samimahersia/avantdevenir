@@ -2,6 +2,7 @@ import { CardTitle } from "@/components/ui/card";
 import { UserTypeButtons } from "./header/UserTypeButtons";
 import { HeaderImage } from "./header/HeaderImage";
 import { AboutSection } from "./header/AboutSection";
+import { ThemeSwitcher } from "./theme/ThemeSwitcher";
 
 interface PageHeaderProps {
   userType: "client" | "admin";
@@ -11,7 +12,9 @@ interface PageHeaderProps {
 
 export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps) => {
   return (
-    <div className="flex flex-col items-center gap-8 bg-white dark:bg-gray-800 p-6 rounded-lg">
+    <div className="flex flex-col items-center gap-8 bg-white dark:bg-gray-800 p-6 rounded-lg relative">
+      <ThemeSwitcher />
+      
       <div className="w-full text-center">
         <CardTitle className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">
           AvantDeVenir.com
