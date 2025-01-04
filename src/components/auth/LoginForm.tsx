@@ -5,7 +5,6 @@ import { LogIn } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginFormFields } from "./LoginFormFields";
 import { useAuthLogin, loginSchema, type LoginFormValues } from "@/hooks/use-auth-login";
-import { toast } from "sonner";
 
 const LoginForm = () => {
   const { isLoading, handleLogin } = useAuthLogin();
@@ -19,13 +18,8 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    try {
-      console.log("Form submitted with values:", values);
-      await handleLogin(values);
-    } catch (error) {
-      console.error("Erreur lors de la connexion:", error);
-      toast.error("Erreur lors de la connexion. Veuillez réessayer.");
-    }
+    console.log("Form submitted with values:", values);
+    await handleLogin(values);
   };
 
   return (
