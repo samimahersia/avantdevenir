@@ -21,50 +21,50 @@ export const useAuthLogin = () => {
       setIsLoading(true);
       console.log("Tentative de connexion avec:", values.email);
 
-      const { data: existingSession } = await supabase.auth.getSession();
-      if (existingSession?.session) {
-        await supabase.auth.signOut();
-      }
+      // First, sign out any existing session
+      await supabase.auth.signOut();
 
+      // Attempt to sign in
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
 
       if (error) {
-        console.error("Erreur de connexion:", {
+        console.error("Erreur d'authentification:", {
           message: error.message,
           status: error.status,
-          name: error.name,
-          details: error
+          name: error.name
         });
-        
+
         if (error.message.includes("Invalid login credentials")) {
-          toast.error("Email ou mot de passe incorrect. Veuillez réessayer.");
+          toast.error("Identifiants invalides. Vérifiez votre email et mot de passe.");
           return;
         }
 
         if (error.message.includes("Email not confirmed")) {
-          toast.error("Veuillez confirmer votre email avant de vous connecter");
+          toast.error("Veuillez confirmer votre email avant de vous connecter.");
           return;
         }
 
-        toast.error("Erreur lors de la connexion. Veuillez réessayer plus tard.");
+        toast.error("Erreur lors de la connexion. Veuillez réessayer.");
         return;
       }
 
-      if (data?.session) {
-        console.log("Connexion réussie:", {
-          userId: data.session.user.id,
-          email: data.session.user.email
-        });
-        
-        toast.success("Connexion réussie !");
-        navigate("/");
-      } else {
-        console.error("Session non créée après connexion réussie");
-        toast.error("Erreur inattendue lors de la connexion");
+      if (!data?.session) {
+        console.error("Aucune session créée après connexion");
+        toast.error("Erreur lors de la création de la session");
+        return;
       }
+
+      console.log("Connexion réussie:", {
+        userId: data.session.user.id,
+        email: data.session.user.email
+      });
+      
+      toast.success("Connexion réussie !");
+      navigate("/");
+
     } catch (error) {
       console.error("Erreur inattendue lors de la connexion:", error);
       toast.error("Une erreur inattendue est survenue");
