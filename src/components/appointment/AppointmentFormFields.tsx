@@ -18,7 +18,7 @@ const AppointmentFormFields = ({
   return (
     <>
       <div className="space-y-2">
-        <Label htmlFor="title">Titre du rendez-vous *</Label>
+        <Label htmlFor="title" className="text-left">Titre du rendez-vous *</Label>
         <Input
           id="title"
           value={title}
