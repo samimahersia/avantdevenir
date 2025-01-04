@@ -27,7 +27,11 @@ export const useAuthLogin = () => {
 
       if (error) {
         console.error("Login error:", error.message);
-        toast.error("Email ou mot de passe incorrect");
+        if (error.message.includes("Invalid login credentials")) {
+          toast.error("Email ou mot de passe incorrect");
+        } else {
+          toast.error("Une erreur est survenue lors de la connexion");
+        }
         return;
       }
 
