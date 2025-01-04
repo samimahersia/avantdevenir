@@ -17,17 +17,23 @@ export const useAuthLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (values: LoginFormValues) => {
-    if (isLoading) return;
+    if (isLoading) {
+      console.log("Une tentative de connexion est déjà en cours");
+      return;
+    }
     
     try {
       setIsLoading(true);
       console.log("Tentative de connexion avec:", values.email);
 
+      // Vérifier et nettoyer toute session existante
       const { data: existingSession } = await supabase.auth.getSession();
       if (existingSession?.session) {
+        console.log("Session existante trouvée, déconnexion...");
         await supabase.auth.signOut();
       }
 
+      // Tentative de connexion
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
@@ -63,7 +69,10 @@ export const useAuthLogin = () => {
       
       toast.success("Connexion réussie !");
       
-      // Navigation immédiate après connexion réussie
+      // Attendre un court instant pour s'assurer que la session est bien établie
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Navigation vers le dashboard
       navigate("/dashboard");
 
     } catch (error) {

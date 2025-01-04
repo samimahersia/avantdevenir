@@ -1,13 +1,14 @@
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
-import { LogIn } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginFormFields } from "./LoginFormFields";
-import { useAuthLogin, loginSchema, type LoginFormValues } from "@/hooks/use-auth-login";
+import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useAuthLogin, LoginFormValues, loginSchema } from "@/hooks/use-auth-login";
+import { Loader2 } from "lucide-react";
 
-const LoginForm = () => {
+export function LoginForm() {
   const { isLoading, handleLogin } = useAuthLogin();
+  
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -18,33 +19,64 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
+    console.log("Soumission du formulaire avec les valeurs:", values);
     await handleLogin(values);
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <LoginFormFields form={form} />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input 
+                  type="email" 
+                  placeholder="votre@email.com" 
+                  {...field} 
+                  disabled={isLoading}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Mot de passe</FormLabel>
+              <FormControl>
+                <Input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  {...field} 
+                  disabled={isLoading}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <Button 
           type="submit" 
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-sm transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed h-11" 
+          className="w-full" 
           disabled={isLoading}
         >
           {isLoading ? (
-            <div className="flex items-center justify-center gap-2">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               <span className="text-white">Connexion en cours...</span>
-            </div>
+            </>
           ) : (
-            <div className="flex items-center justify-center gap-2">
-              <LogIn className="h-5 w-5" />
-              <span>Se connecter</span>
-            </div>
+            "Se connecter"
           )}
         </Button>
       </form>
     </Form>
   );
-};
-
-export default LoginForm;
+}
