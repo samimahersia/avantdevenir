@@ -17,23 +17,12 @@ export const useAuthLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (values: LoginFormValues) => {
-    if (isLoading) {
-      console.log("Une tentative de connexion est déjà en cours");
-      return;
-    }
+    if (isLoading) return;
     
     try {
       setIsLoading(true);
       console.log("Tentative de connexion avec:", values.email);
 
-      // Vérifier et nettoyer toute session existante
-      const { data: existingSession } = await supabase.auth.getSession();
-      if (existingSession?.session) {
-        console.log("Session existante trouvée, déconnexion...");
-        await supabase.auth.signOut();
-      }
-
-      // Tentative de connexion
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
@@ -43,21 +32,20 @@ export const useAuthLogin = () => {
         console.error("Erreur d'authentification:", error);
         
         if (error.message.includes("Invalid login credentials")) {
-          toast.error("Identifiants invalides. Vérifiez votre email et mot de passe.");
+          toast.error("Identifiants invalides");
           return;
         }
 
         if (error.message.includes("Email not confirmed")) {
-          toast.error("Veuillez confirmer votre email avant de vous connecter.");
+          toast.error("Veuillez confirmer votre email avant de vous connecter");
           return;
         }
 
-        toast.error("Erreur lors de la connexion. Veuillez réessayer.");
+        toast.error("Erreur lors de la connexion");
         return;
       }
 
       if (!data?.session) {
-        console.error("Aucune session créée après connexion");
         toast.error("Erreur lors de la création de la session");
         return;
       }
@@ -68,17 +56,11 @@ export const useAuthLogin = () => {
       });
       
       toast.success("Connexion réussie !");
-      
-      // Attendre un court instant pour s'assurer que la session est bien établie
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Navigation vers le dashboard
       navigate("/dashboard");
 
     } catch (error) {
       console.error("Erreur inattendue lors de la connexion:", error);
       toast.error("Une erreur inattendue est survenue");
-      throw error;
     } finally {
       setIsLoading(false);
     }
