@@ -16,11 +16,14 @@ export const useAuthLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (values: LoginFormValues) => {
-    if (isLoading) return;
+    if (isLoading) {
+      console.log("Login already in progress, skipping");
+      return;
+    }
     
     try {
       setIsLoading(true);
-      console.log("Starting login process");
+      console.log("Starting login process with email:", values.email);
       
       const { data: { session }, error } = await supabase.auth.signInWithPassword({
         email: values.email,
@@ -28,14 +31,18 @@ export const useAuthLogin = () => {
       });
 
       if (error) {
+        console.error("Supabase login error:", error);
         handleAuthError(error);
         return;
       }
 
       if (session) {
-        console.log("Login successful, session established");
+        console.log("Login successful, redirecting to home");
         toast.success("Connexion réussie");
         navigate("/");
+      } else {
+        console.error("No session after successful login");
+        toast.error("Erreur lors de la connexion");
       }
     } catch (error) {
       console.error("Unexpected login error:", error);
@@ -52,12 +59,16 @@ export const useAuthLogin = () => {
 };
 
 const handleAuthError = (error: any) => {
-  console.error("Login error:", error);
-  if (error.message === "Invalid login credentials") {
-    toast.error("Email ou mot de passe incorrect");
-  } else if (error.message.includes("Email not confirmed")) {
-    toast.error("Veuillez confirmer votre email avant de vous connecter");
-  } else {
-    toast.error("Erreur lors de la connexion");
+  console.error("Auth error details:", error);
+  
+  switch (error.message) {
+    case "Invalid login credentials":
+      toast.error("Email ou mot de passe incorrect");
+      break;
+    case "Email not confirmed":
+      toast.error("Veuillez confirmer votre email avant de vous connecter");
+      break;
+    default:
+      toast.error("Erreur lors de la connexion: " + error.message);
   }
 };

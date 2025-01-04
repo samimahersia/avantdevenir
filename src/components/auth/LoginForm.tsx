@@ -17,10 +17,11 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
+    console.log("Form submitted with values:", values);
     try {
       await handleLogin(values);
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Login error in form:", error);
     }
   };
 
@@ -30,16 +31,18 @@ const LoginForm = () => {
         <LoginFormFields form={form} />
         <Button 
           type="submit" 
-          className="w-full" 
+          className="w-full bg-primary hover:bg-primary/90" 
           disabled={isLoading}
-          variant="default"
         >
           {isLoading ? (
-            "Connexion en cours..."
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              Connexion en cours...
+            </div>
           ) : (
-            <>
+            <div className="flex items-center justify-center">
               <LogIn className="mr-2 h-4 w-4" /> Se connecter
-            </>
+            </div>
           )}
         </Button>
       </form>
