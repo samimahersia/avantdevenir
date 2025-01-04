@@ -19,6 +19,7 @@ export const useAuthLogin = () => {
   const handleLogin = async (values: LoginFormValues) => {
     try {
       setIsLoading(true);
+      console.log("Form submitted with values:", values);
       console.log("Tentative de connexion avec:", values.email);
 
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -28,32 +29,7 @@ export const useAuthLogin = () => {
 
       if (error) {
         console.error("Erreur de connexion:", error);
-        
-        if (error.message.includes("Invalid login credentials")) {
-          toast.error("Email ou mot de passe incorrect");
-          return;
-        }
-
-        if (error.message.includes("Email not confirmed")) {
-          const { error: resendError } = await supabase.auth.resend({
-            type: 'signup',
-            email: values.email,
-          });
-
-          if (resendError) {
-            console.error("Erreur lors du renvoi de l'email:", resendError);
-            toast.error("Erreur lors du renvoi de l'email de confirmation");
-            return;
-          }
-
-          toast.warning(
-            "Email non confirmé. Un nouvel email de confirmation a été envoyé.",
-            { duration: 6000 }
-          );
-          return;
-        }
-
-        toast.error("Erreur lors de la connexion. Veuillez réessayer.");
+        toast.error("Email ou mot de passe incorrect");
         return;
       }
 
