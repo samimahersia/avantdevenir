@@ -12,7 +12,7 @@ export const AuthForm = ({ activeTab, setActiveTab }: AuthFormProps) => {
   return (
     <Card className="mt-8 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100/20">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 bg-clip-text text-transparent">
+        <CardTitle className="text-2xl text-center bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 bg-clip-text text-transparent">
           {activeTab === "login" ? "Connexion" : "Inscription"}
         </CardTitle>
         <CardDescription className="text-center font-bold italic text-gray-600">
