@@ -38,7 +38,7 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
           Service : {appointment.services?.name}
         </p>
         {appointment.description && (
-          <p className="text-sm text-muted-foreground">{appointment.description}</p>
+          <p className="text-sm text-black text-left">{appointment.description}</p>
         )}
         <p className="text-sm text-black text-left">
           {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
