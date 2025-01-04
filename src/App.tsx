@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import Index from "./pages/Index";
 import { supabase } from "./integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const queryClient = new QueryClient();
 
@@ -17,20 +18,48 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Vérifier la session initiale
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
+    // Initial session check
+    const checkSession = async () => {
+      try {
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Session check error:', error);
+          toast.error("Erreur lors de la vérification de la session");
+          return;
+        }
+        setSession(currentSession);
+      } catch (error) {
+        console.error('Unexpected error during session check:', error);
+        toast.error("Une erreur inattendue est survenue");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Écouter les changements d'authentification
+    checkSession();
+
+    // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log('Auth state changed:', _event);
+      
+      if (_event === 'TOKEN_REFRESHED') {
+        console.log('Token refreshed successfully');
+      }
+      
+      if (_event === 'SIGNED_OUT') {
+        // Clear any stored tokens
+        localStorage.removeItem('supabase.auth.token');
+        queryClient.clear();
+      }
+
       setSession(session);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   if (loading) {
