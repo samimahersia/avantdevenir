@@ -17,26 +17,25 @@ export const useAuthLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (values: LoginFormValues) => {
+    if (isLoading) return;
+    
     try {
       setIsLoading(true);
       console.log("Tentative de connexion avec:", values.email);
 
-      // First, sign out any existing session
-      await supabase.auth.signOut();
+      const { data: existingSession } = await supabase.auth.getSession();
+      if (existingSession?.session) {
+        await supabase.auth.signOut();
+      }
 
-      // Attempt to sign in
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
 
       if (error) {
-        console.error("Erreur d'authentification:", {
-          message: error.message,
-          status: error.status,
-          name: error.name
-        });
-
+        console.error("Erreur d'authentification:", error);
+        
         if (error.message.includes("Invalid login credentials")) {
           toast.error("Identifiants invalides. Vérifiez votre email et mot de passe.");
           return;
@@ -64,10 +63,8 @@ export const useAuthLogin = () => {
       
       toast.success("Connexion réussie !");
       
-      // Force la redirection vers le dashboard après une connexion réussie
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 100);
+      // Navigation immédiate après connexion réussie
+      navigate("/dashboard");
 
     } catch (error) {
       console.error("Erreur inattendue lors de la connexion:", error);

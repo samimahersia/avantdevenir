@@ -18,8 +18,6 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    if (isLoading) return; // Prevent multiple submissions
-    console.log("Form submitted with values:", values);
     await handleLogin(values);
   };
 
