@@ -18,11 +18,7 @@ const LoginForm = () => {
 
   const onSubmit = async (values: LoginFormValues) => {
     console.log("Form submitted with values:", values);
-    try {
-      await handleLogin(values);
-    } catch (error) {
-      console.error("Login error in form:", error);
-    }
+    await handleLogin(values);
   };
 
   return (
@@ -31,7 +27,7 @@ const LoginForm = () => {
         <LoginFormFields form={form} />
         <Button 
           type="submit" 
-          className="w-full" 
+          className="w-full bg-primary hover:bg-primary/90 text-white" 
           disabled={isLoading}
         >
           {isLoading ? (
