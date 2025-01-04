@@ -34,11 +34,11 @@ const MessageList = ({ messages, onDelete }: MessageListProps) => {
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
-            <p className="text-sm">{message.content}</p>
+            <p className="text-sm text-left">{message.content}</p>
             {message.admin_response && (
               <div className="mt-4 p-3 bg-muted rounded-md">
                 <p className="text-sm font-medium">Réponse de l'administrateur:</p>
-                <p className="text-sm mt-1">{message.admin_response}</p>
+                <p className="text-sm mt-1 text-left">{message.admin_response}</p>
               </div>
             )}
           </div>
