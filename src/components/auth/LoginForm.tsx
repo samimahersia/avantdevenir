@@ -33,6 +33,11 @@ const LoginForm = () => {
       setIsLoading(true);
       console.log("Starting login process");
       
+      // Nettoyage de la session existante avant la connexion
+      await supabase.auth.signOut();
+      localStorage.clear();
+      sessionStorage.clear();
+
       const { data: { session }, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
@@ -53,8 +58,11 @@ const LoginForm = () => {
       if (session) {
         console.log("Login successful, session established");
         
-        // Persistance explicite de la session
-        await supabase.auth.setSession(session);
+        // Stockage explicite de la session
+        await supabase.auth.setSession({
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
+        });
         
         toast.success("Connexion réussie");
         navigate("/", { replace: true });
