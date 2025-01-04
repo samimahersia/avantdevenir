@@ -34,13 +34,13 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
           <h3 className="text-base md:text-lg font-medium">{appointment.title}</h3>
           {getStatusBadge(appointment.status)}
         </div>
-        <p className="text-sm text-black text-right">
+        <p className="text-sm text-black text-left">
           Service : {appointment.services?.name}
         </p>
         {appointment.description && (
           <p className="text-sm text-muted-foreground">{appointment.description}</p>
         )}
-        <p className="text-sm text-black text-right">
+        <p className="text-sm text-black text-left">
           {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
         </p>
       </div>
