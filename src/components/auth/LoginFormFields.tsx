@@ -21,7 +21,7 @@ export const LoginFormFields = ({ form }: LoginFormFieldsProps) => {
             <FormControl>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="email@exemple.com" className="pl-9" {...field} />
+                <Input placeholder="email@exemple.com" className="pl-9 bg-white" {...field} />
               </div>
             </FormControl>
             <FormMessage />
@@ -37,7 +37,7 @@ export const LoginFormFields = ({ form }: LoginFormFieldsProps) => {
             <FormControl>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input type="password" className="pl-9" {...field} />
+                <Input type="password" className="pl-9 bg-white" {...field} />
               </div>
             </FormControl>
             <FormMessage />
