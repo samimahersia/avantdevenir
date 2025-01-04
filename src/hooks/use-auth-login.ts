@@ -28,7 +28,9 @@ export const useAuthLogin = () => {
 
       if (error) {
         console.error("Login error:", error.message);
-        if (error.message.includes("Invalid login credentials")) {
+        if (error.message.includes("Email not confirmed")) {
+          toast.error("Veuillez confirmer votre email avant de vous connecter");
+        } else if (error.message.includes("Invalid login credentials")) {
           toast.error("Email ou mot de passe incorrect");
         } else {
           toast.error(`Erreur de connexion: ${error.message}`);
@@ -37,7 +39,6 @@ export const useAuthLogin = () => {
       }
 
       if (session) {
-        // Récupérer le profil de l'utilisateur pour vérifier son rôle
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
@@ -54,8 +55,8 @@ export const useAuthLogin = () => {
         console.log("Login successful, redirecting to home");
         toast.success("Connexion réussie");
         
-        // Redirection vers la page d'accueil
-        navigate("/");
+        // Force la redirection vers la page d'accueil
+        window.location.href = "/";
       }
     } catch (error) {
       console.error("Unexpected error during login:", error);
