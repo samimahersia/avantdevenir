@@ -21,7 +21,7 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvail
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
       <TabsList className="w-full justify-start bg-transparent space-x-1">
         <TabsTrigger value="appointments">Rendez-vous</TabsTrigger>
-        <TabsTrigger value="stats" className="text-left">Statistiques</TabsTrigger>
+        <TabsTrigger value="stats">Statistiques</TabsTrigger>
         <TabsTrigger value="consulates">Organismes</TabsTrigger>
         <TabsTrigger value="services">Services</TabsTrigger>
         <TabsTrigger value="users">Utilisateurs</TabsTrigger>
