@@ -32,11 +32,15 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#9b87f5] via-[#7E69AB] to-[#1A1F2C] dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 flex flex-col min-h-screen">
         <AuthHeader />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          <AuthInfoSection userRole={null} />
-          <AuthForm activeTab={activeTab} setActiveTab={setActiveTab} />
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mt-8">
+          <div className="space-y-8">
+            <AuthInfoSection userRole={null} />
+          </div>
+          <div className="lg:sticky lg:top-8">
+            <AuthForm activeTab={activeTab} setActiveTab={setActiveTab} />
+          </div>
         </div>
       </div>
     </div>
