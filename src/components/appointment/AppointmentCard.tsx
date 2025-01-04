@@ -29,23 +29,23 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
 
   return (
     <div className="flex flex-col p-4 md:p-6 border rounded-xl bg-white dark:bg-white shadow-sm hover:shadow-md transition-shadow">
-      <div className="space-y-2 mb-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-          <h3 className="text-base md:text-lg font-medium">{appointment.title}</h3>
-          {getStatusBadge(appointment.status)}
-        </div>
-        <p className="text-sm text-black text-left">
-          Service : {appointment.services?.name}
-        </p>
-        {appointment.description && (
-          <p className="text-sm text-black text-left">{appointment.description}</p>
-        )}
-        <p className="text-sm text-black text-left">
+      <div className="space-y-2 text-left">
+        <p className="font-bold text-gray-900">{appointment.consulates?.name}</p>
+        <p className="font-semibold text-gray-800">Service : {appointment.services?.name}</p>
+        <p className="text-sm text-gray-600">
           {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
         </p>
+        <p className="text-sm text-gray-600">
+          {appointment.profiles?.first_name} {appointment.profiles?.last_name}
+        </p>
+        <p className="text-sm text-gray-600">Titre : {appointment.title} *</p>
+        {appointment.description && (
+          <p className="text-sm text-gray-500">{appointment.description}</p>
+        )}
       </div>
-      {canModifyAppointment(appointment) && (
-        <div className="flex justify-end">
+      <div className="flex justify-between items-center mt-4">
+        {getStatusBadge(appointment.status)}
+        {canModifyAppointment(appointment) && (
           <Button
             variant="outline"
             size="sm"
@@ -55,8 +55,8 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
             <X className="h-4 w-4 mr-2" />
             <span>Annuler</span>
           </Button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
