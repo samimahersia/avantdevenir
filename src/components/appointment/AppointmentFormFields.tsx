@@ -29,7 +29,7 @@ const AppointmentFormFields = ({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Description détaillée</Label>
+        <Label htmlFor="description" className="text-left">Description détaillée</Label>
         <Textarea
           id="description"
           value={description}
