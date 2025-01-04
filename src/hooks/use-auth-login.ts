@@ -21,9 +21,9 @@ export const useAuthLogin = () => {
       setIsLoading(true);
       console.log("Starting login process with email:", values.email);
       
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data: { session }, error } = await supabase.auth.signInWithPassword({
         email: values.email,
-        password: values.password
+        password: values.password,
       });
 
       if (error) {
@@ -31,19 +31,35 @@ export const useAuthLogin = () => {
         if (error.message.includes("Invalid login credentials")) {
           toast.error("Email ou mot de passe incorrect");
         } else {
-          toast.error("Une erreur est survenue lors de la connexion");
+          toast.error(`Erreur de connexion: ${error.message}`);
         }
         return;
       }
 
-      if (data?.session) {
+      if (session) {
+        // Récupérer le profil de l'utilisateur pour vérifier son rôle
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
+          toast.error("Erreur lors de la récupération du profil");
+          return;
+        }
+
+        console.log("User profile:", profile);
         console.log("Login successful, redirecting to home");
         toast.success("Connexion réussie");
+        
+        // Redirection vers la page d'accueil
         navigate("/");
       }
     } catch (error) {
       console.error("Unexpected error during login:", error);
-      toast.error("Une erreur est survenue lors de la connexion");
+      toast.error("Une erreur inattendue est survenue lors de la connexion");
     } finally {
       setIsLoading(false);
     }
