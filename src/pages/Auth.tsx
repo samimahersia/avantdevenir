@@ -8,12 +8,16 @@ import { useNavigate } from "react-router-dom";
 import { WelcomeText } from "@/components/auth/WelcomeText";
 import { AuthLoader } from "@/components/auth/AuthLoader";
 import LogoSection from "@/components/admin/notification/LogoSection";
+import { Button } from "@/components/ui/button";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const checkSession = async () => {
@@ -70,7 +74,22 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen p-2 md:p-4 lg:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-[100vw] mx-auto">
+      <div className="max-w-[100vw] mx-auto relative">
+        {/* Bouton de basculement du thème */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-4 top-4"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        >
+          {theme === "dark" ? (
+            <Sun className="h-5 w-5" />
+          ) : (
+            <Moon className="h-5 w-5" />
+          )}
+          <span className="sr-only">Basculer le thème</span>
+        </Button>
+
         <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent text-center mb-8">
           AvantDeVenir.com
         </h1>
