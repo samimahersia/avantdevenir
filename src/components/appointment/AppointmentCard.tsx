@@ -39,9 +39,6 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
           {appointment.profiles?.first_name} {appointment.profiles?.last_name}
         </p>
         <p className="text-sm text-gray-600">Titre : {appointment.title} *</p>
-        {appointment.description && (
-          <p className="text-sm text-gray-500">{appointment.description}</p>
-        )}
       </div>
       <div className="flex justify-between items-center mt-4">
         {getStatusBadge(appointment.status)}
