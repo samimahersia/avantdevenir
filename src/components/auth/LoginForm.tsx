@@ -1,24 +1,14 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Lock, LogIn, Mail } from "lucide-react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import * as z from "zod";
+import { Form } from "@/components/ui/form";
+import { LogIn } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
-
-const loginSchema = z.object({
-  email: z.string().email("Email invalide").min(1, "L'email est requis"),
-  password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
-});
+import { LoginFormFields } from "./LoginFormFields";
+import { useAuthLogin, loginSchema, type LoginFormValues } from "@/hooks/use-auth-login";
 
 const LoginForm = () => {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const form = useForm<z.infer<typeof loginSchema>>({
+  const { isLoading, handleLogin } = useAuthLogin();
+  const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -26,90 +16,10 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    if (isLoading) return;
-    
-    try {
-      setIsLoading(true);
-      console.log("Starting login process");
-      
-      // Nettoyage de la session existante avant la connexion
-      await supabase.auth.signOut();
-      localStorage.clear();
-      sessionStorage.clear();
-
-      const { data: { session }, error } = await supabase.auth.signInWithPassword({
-        email: values.email,
-        password: values.password,
-      });
-
-      if (error) {
-        console.error("Login error:", error);
-        if (error.message === "Invalid login credentials") {
-          toast.error("Email ou mot de passe incorrect");
-        } else if (error.message.includes("Email not confirmed")) {
-          toast.error("Veuillez confirmer votre email avant de vous connecter");
-        } else {
-          toast.error("Erreur lors de la connexion");
-        }
-        return;
-      }
-
-      if (session) {
-        console.log("Login successful, session established");
-        
-        // Stockage explicite de la session
-        await supabase.auth.setSession({
-          access_token: session.access_token,
-          refresh_token: session.refresh_token,
-        });
-        
-        toast.success("Connexion réussie");
-        navigate("/", { replace: true });
-      }
-    } catch (error) {
-      console.error("Unexpected login error:", error);
-      toast.error("Erreur inattendue lors de la connexion");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="email@exemple.com" className="pl-9" {...field} />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Mot de passe</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input type="password" className="pl-9" {...field} />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-4">
+        <LoginFormFields form={form} />
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? (
             "Connexion en cours..."
