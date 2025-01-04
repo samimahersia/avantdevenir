@@ -16,16 +16,11 @@ export const useAuthLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (values: LoginFormValues) => {
-    if (isLoading) {
-      console.log("Login already in progress, skipping");
-      return;
-    }
-    
     try {
       setIsLoading(true);
       console.log("Starting login process with email:", values.email);
       
-      const { data: { session }, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
@@ -36,7 +31,7 @@ export const useAuthLogin = () => {
         return;
       }
 
-      if (session) {
+      if (data.session) {
         console.log("Login successful, redirecting to home");
         toast.success("Connexion réussie");
         navigate("/");
