@@ -27,10 +27,30 @@ export const useAuthLogin = () => {
       });
 
       if (error) {
-        console.error("Login error:", error.message);
+        console.error("Login error:", error);
+        
+        // Gestion spécifique de l'erreur "email non confirmé"
         if (error.message.includes("Email not confirmed")) {
-          toast.error("Veuillez confirmer votre email avant de vous connecter");
-        } else if (error.message.includes("Invalid login credentials")) {
+          const { error: resendError } = await supabase.auth.resend({
+            type: 'signup',
+            email: values.email,
+          });
+
+          if (resendError) {
+            console.error("Error resending confirmation email:", resendError);
+            toast.error("Erreur lors du renvoi de l'email de confirmation");
+            return;
+          }
+
+          toast.warning(
+            "Votre email n'est pas confirmé. Un nouvel email de confirmation vient d'être envoyé.",
+            { duration: 6000 }
+          );
+          return;
+        }
+
+        // Autres types d'erreurs
+        if (error.message.includes("Invalid login credentials")) {
           toast.error("Email ou mot de passe incorrect");
         } else {
           toast.error("Erreur de connexion");
