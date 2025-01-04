@@ -22,12 +22,20 @@ export const useAuthLogin = () => {
       setIsLoading(true);
       console.log("Starting login process");
       
-      await cleanupExistingSession();
-      const session = await authenticateUser(values);
-      
+      const { data: { session }, error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) {
+        handleAuthError(error);
+        return;
+      }
+
       if (session) {
-        await persistSession(session);
-        onLoginSuccess();
+        console.log("Login successful, session established");
+        toast.success("Connexion réussie");
+        navigate("/");
       }
     } catch (error) {
       console.error("Unexpected login error:", error);
@@ -43,27 +51,6 @@ export const useAuthLogin = () => {
   };
 };
 
-// Fonctions utilitaires privées
-const cleanupExistingSession = async () => {
-  await supabase.auth.signOut();
-  localStorage.clear();
-  sessionStorage.clear();
-};
-
-const authenticateUser = async (values: LoginFormValues) => {
-  const { data: { session }, error } = await supabase.auth.signInWithPassword({
-    email: values.email,
-    password: values.password,
-  });
-
-  if (error) {
-    handleAuthError(error);
-    return null;
-  }
-
-  return session;
-};
-
 const handleAuthError = (error: any) => {
   console.error("Login error:", error);
   if (error.message === "Invalid login credentials") {
@@ -73,18 +60,4 @@ const handleAuthError = (error: any) => {
   } else {
     toast.error("Erreur lors de la connexion");
   }
-  throw error;
-};
-
-const persistSession = async (session: any) => {
-  console.log("Login successful, session established");
-  await supabase.auth.setSession({
-    access_token: session.access_token,
-    refresh_token: session.refresh_token,
-  });
-};
-
-const onLoginSuccess = () => {
-  toast.success("Connexion réussie");
-  window.location.href = "/";
 };
