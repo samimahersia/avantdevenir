@@ -1,5 +1,6 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Mail, Lock } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { LoginFormValues } from "@/hooks/use-auth-login";
@@ -40,6 +41,21 @@ export const LoginFormFields = ({ form }: LoginFormFieldsProps) => {
               </div>
             </FormControl>
             <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="rememberMe"
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+            <FormControl>
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <FormLabel className="text-sm font-normal">Se souvenir de moi</FormLabel>
           </FormItem>
         )}
       />

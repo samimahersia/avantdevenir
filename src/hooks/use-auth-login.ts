@@ -7,6 +7,7 @@ import * as z from "zod";
 export const loginSchema = z.object({
   email: z.string().email("Email invalide").min(1, "L'email est requis"),
   password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
+  rememberMe: z.boolean().default(false),
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
@@ -23,6 +24,9 @@ export const useAuthLogin = () => {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
+        options: {
+          persistSession: values.rememberMe
+        }
       });
 
       if (error) {
