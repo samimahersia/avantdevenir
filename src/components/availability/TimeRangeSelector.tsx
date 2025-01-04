@@ -21,7 +21,7 @@ export const TimeRangeSelector = ({
       <div className="space-y-2">
         <Label>Heure de début</Label>
         <select
-          className="w-full border rounded-md p-2"
+          className="w-full border rounded-md p-2 bg-white text-black"
           value={startHour ?? ""}
           onChange={(e) => onStartHourChange(parseInt(e.target.value))}
         >
@@ -36,7 +36,7 @@ export const TimeRangeSelector = ({
       <div className="space-y-2">
         <Label>Heure de fin</Label>
         <select
-          className="w-full border rounded-md p-2"
+          className="w-full border rounded-md p-2 bg-white text-black"
           value={endHour ?? ""}
           onChange={(e) => onEndHourChange(parseInt(e.target.value))}
         >
