@@ -17,12 +17,8 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    try {
-      console.log("Form submitted with values:", values);
-      await handleLogin(values);
-    } catch (error) {
-      console.error("Login error in form:", error);
-    }
+    console.log("Form submitted with values:", values);
+    await handleLogin(values);
   };
 
   return (
