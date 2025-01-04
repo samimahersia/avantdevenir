@@ -89,7 +89,7 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
         
         <div className="px-2 md:px-6">
           <div className="flex items-center justify-center">
-            <CardTitle className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-3 md:mb-4">
+            <CardTitle className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-[#D6BCFA] to-[#E5DEFF] bg-clip-text text-transparent mb-3 md:mb-4">
               AvantDeVenir
             </CardTitle>
           </div>
