@@ -28,7 +28,7 @@ const LoginForm = () => {
         <LoginFormFields form={form} />
         <Button 
           type="submit" 
-          className="w-full bg-primary hover:bg-primary/90 text-white" 
+          className="w-full bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] hover:from-[#8b77e5] hover:to-[#6E599B] text-white transition-all duration-300" 
           disabled={isLoading}
         >
           {isLoading ? (
