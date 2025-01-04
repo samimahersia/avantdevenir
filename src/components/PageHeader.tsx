@@ -18,7 +18,7 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
         </CardTitle>
       </div>
       
-      <div className="w-full max-w-6xl flex flex-col md:flex-row gap-8 items-center">
+      <div className="w-full max-w-6xl flex flex-col md:flex-row gap-8 items-start justify-center">
         <HeaderImage 
           src="/images/consulate-service.jpg"
           alt="Service consulaire"

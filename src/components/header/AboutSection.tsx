@@ -18,7 +18,7 @@ export const AboutSection = ({ userRole }: AboutSectionProps) => {
   });
 
   return (
-    <ScrollArea className="w-full md:w-1/2 h-40 md:h-48 lg:h-80 rounded-lg border bg-card p-4 relative">
+    <ScrollArea className="w-full h-[300px] rounded-lg border bg-card p-6 relative">
       {userRole === "admin" && !isEditing && (
         <Button
           variant="ghost"
