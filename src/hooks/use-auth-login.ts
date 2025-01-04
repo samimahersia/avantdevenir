@@ -23,12 +23,7 @@ export const useAuthLogin = () => {
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
-        password: values.password,
-        options: {
-          data: {
-            remember_me: values.rememberMe
-          }
-        }
+        password: values.password
       });
 
       if (error) {
