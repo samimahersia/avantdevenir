@@ -1,23 +1,16 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import LoginForm from "@/components/auth/LoginForm";
-import RegisterForm from "@/components/auth/RegisterForm";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { WelcomeText } from "@/components/auth/WelcomeText";
+import { supabase } from "@/integrations/supabase/client";
 import { AuthLoader } from "@/components/auth/AuthLoader";
-import LogoSection from "@/components/admin/notification/LogoSection";
-import { Button } from "@/components/ui/button";
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
+import { AuthHeader } from "@/components/auth/AuthHeader";
+import { AuthInfoSection } from "@/components/auth/AuthInfoSection";
+import { AuthForm } from "@/components/auth/AuthForm";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("login");
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const checkSession = async () => {
@@ -75,61 +68,9 @@ const Auth = () => {
   return (
     <div className="min-h-screen p-2 md:p-4 lg:p-8 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-[100vw] mx-auto relative">
-        {/* Bouton de basculement du thème */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-4 top-4"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        >
-          {theme === "dark" ? (
-            <Sun className="h-5 w-5" />
-          ) : (
-            <Moon className="h-5 w-5" />
-          )}
-          <span className="sr-only">Basculer le thème</span>
-        </Button>
-
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent text-center mb-8">
-          AvantDeVenir.com
-        </h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-8">
-          <div className="h-[200px] bg-white/95 dark:bg-gray-800/95 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
-            <LogoSection userRole={userRole} />
-          </div>
-          
-          <div className="h-[200px] bg-white/95 dark:bg-gray-800/95 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
-            <WelcomeText userRole={userRole} />
-          </div>
-        </div>
-        
-        <Card className="mt-8">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">
-              {activeTab === "login" ? "Connexion" : "Inscription"}
-            </CardTitle>
-            <CardDescription className="text-center font-bold italic">
-              {activeTab === "login"
-                ? "Connectez-vous à votre compte"
-                : "Créez votre compte"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Connexion</TabsTrigger>
-                <TabsTrigger value="register">Inscription</TabsTrigger>
-              </TabsList>
-              <TabsContent value="login">
-                <LoginForm />
-              </TabsContent>
-              <TabsContent value="register">
-                <RegisterForm />
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+        <AuthHeader />
+        <AuthInfoSection userRole={userRole} />
+        <AuthForm activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
     </div>
   );
