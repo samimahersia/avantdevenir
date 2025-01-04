@@ -23,9 +23,6 @@ export const useAuthLogin = () => {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth`
-        }
       });
 
       if (error) {
