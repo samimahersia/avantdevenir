@@ -55,8 +55,10 @@ export const useAuthLogin = () => {
         console.log("Login successful, redirecting to home");
         toast.success("Connexion réussie");
         
-        // Force la redirection vers la page d'accueil
-        window.location.href = "/";
+        // Utiliser setTimeout pour permettre au toast de s'afficher avant la redirection
+        setTimeout(() => {
+          navigate("/", { replace: true });
+        }, 500);
       }
     } catch (error) {
       console.error("Unexpected error during login:", error);
