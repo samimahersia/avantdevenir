@@ -40,6 +40,7 @@ export const AppointmentCard = ({
 
   const handleEdit = async (data: { title: string; description: string }) => {
     await onEdit(appointment.id, data);
+    setIsEditing(false);
   };
 
   return (
@@ -77,13 +78,6 @@ export const AppointmentCard = ({
                   >
                     Approuver
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => onStatusChange(appointment.id, "refuse")}
-                  >
-                    Refuser
-                  </Button>
                 </>
               )}
               <Button
@@ -93,6 +87,15 @@ export const AppointmentCard = ({
               >
                 Modifier
               </Button>
+              {appointment.status === "en_attente" && (
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => onStatusChange(appointment.id, "refuse")}
+                >
+                  Refuser
+                </Button>
+              )}
               <Button
                 size="sm"
                 variant="destructive"
