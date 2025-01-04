@@ -21,6 +21,19 @@ export const useAuthLogin = () => {
       setIsLoading(true);
       console.log("Starting login process with email:", values.email);
       
+      // Vérifier d'abord si l'utilisateur existe
+      const { data: userExists } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', values.email)
+        .single();
+
+      if (!userExists) {
+        console.log("User not found in profiles table");
+        toast.error("Aucun compte trouvé avec cet email. Veuillez vous inscrire.");
+        return;
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
@@ -28,9 +41,8 @@ export const useAuthLogin = () => {
 
       if (error) {
         console.error("Login error:", error);
-        const errorBody = error.message ? JSON.parse(error.message) : null;
         
-        if (errorBody?.message === "Email not confirmed") {
+        if (error.message.includes("Email not confirmed")) {
           const { error: resendError } = await supabase.auth.resend({
             type: 'signup',
             email: values.email,
@@ -50,11 +62,10 @@ export const useAuthLogin = () => {
         }
 
         if (error.message.includes("Invalid login credentials")) {
-          toast.error("Email ou mot de passe incorrect. Veuillez vérifier vos identifiants.");
+          toast.error("Mot de passe incorrect. Veuillez réessayer.");
           return;
         }
 
-        // Gestion des autres types d'erreurs
         toast.error("Erreur de connexion. Veuillez réessayer plus tard.");
         console.error("Detailed error:", error);
         return;
@@ -62,7 +73,7 @@ export const useAuthLogin = () => {
 
       if (data?.session) {
         console.log("Login successful, redirecting to home");
-        toast.success("Connexion réussie");
+        toast.success("Connexion réussie !");
         navigate("/");
       } else {
         toast.error("Erreur inattendue lors de la connexion");
