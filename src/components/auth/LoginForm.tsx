@@ -17,14 +17,23 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    await handleLogin(values);
+    try {
+      await handleLogin(values);
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <LoginFormFields form={form} />
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button 
+          type="submit" 
+          className="w-full" 
+          disabled={isLoading}
+          variant="default"
+        >
           {isLoading ? (
             "Connexion en cours..."
           ) : (
