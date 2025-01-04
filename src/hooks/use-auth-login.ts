@@ -21,13 +21,30 @@ export const useAuthLogin = () => {
       setIsLoading(true);
       console.log("Tentative de connexion avec:", values.email);
 
+      // First, check if the user exists
+      const { data: userExists } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', values.email)
+        .single();
+
+      if (!userExists) {
+        console.log("Utilisateur non trouvé dans la base de données");
+        toast.error("Aucun compte trouvé avec cet email");
+        return;
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
 
       if (error) {
-        console.error("Erreur de connexion:", error);
+        console.error("Erreur de connexion détaillée:", {
+          message: error.message,
+          status: error.status,
+          name: error.name
+        });
         
         if (error.message.includes("Invalid login credentials")) {
           toast.error("Email ou mot de passe incorrect");
@@ -39,20 +56,23 @@ export const useAuthLogin = () => {
           return;
         }
 
-        toast.error("Une erreur est survenue lors de la connexion");
+        toast.error(`Erreur de connexion: ${error.message}`);
         return;
       }
 
-      if (data.session) {
-        console.log("Connexion réussie, redirection...");
+      if (data?.session) {
+        console.log("Session créée avec succès:", {
+          user: data.session.user.id,
+          email: data.session.user.email
+        });
         toast.success("Connexion réussie !");
         navigate("/");
       } else {
-        console.error("Session non créée après connexion");
+        console.error("Session non créée après connexion réussie");
         toast.error("Erreur inattendue lors de la connexion");
       }
     } catch (error) {
-      console.error("Erreur inattendue:", error);
+      console.error("Erreur inattendue lors de la connexion:", error);
       toast.error("Une erreur inattendue est survenue");
     } finally {
       setIsLoading(false);
