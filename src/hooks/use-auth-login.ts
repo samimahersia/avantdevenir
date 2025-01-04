@@ -26,15 +26,8 @@ export const useAuthLogin = () => {
       });
 
       if (error) {
-        console.error("Supabase login error:", error);
-        
-        if (error.message.includes("Email not confirmed")) {
-          toast.error("Veuillez confirmer votre email avant de vous connecter");
-        } else if (error.message.includes("Invalid login credentials")) {
-          toast.error("Email ou mot de passe incorrect");
-        } else {
-          toast.error("Erreur lors de la connexion");
-        }
+        console.error("Login error:", error.message);
+        toast.error("Email ou mot de passe incorrect");
         return;
       }
 
@@ -44,8 +37,8 @@ export const useAuthLogin = () => {
         navigate("/");
       }
     } catch (error) {
-      console.error("Unexpected login error:", error);
-      toast.error("Erreur inattendue lors de la connexion");
+      console.error("Unexpected error during login:", error);
+      toast.error("Une erreur est survenue lors de la connexion");
     } finally {
       setIsLoading(false);
     }
