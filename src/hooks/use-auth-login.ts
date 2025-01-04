@@ -27,11 +27,17 @@ export const useAuthLogin = () => {
 
       if (error) {
         console.error("Supabase login error:", error);
-        handleAuthError(error);
+        if (error.message.includes("Invalid login credentials")) {
+          toast.error("Email ou mot de passe incorrect");
+        } else if (error.message.includes("Email not confirmed")) {
+          toast.error("Veuillez confirmer votre email avant de vous connecter");
+        } else {
+          toast.error("Erreur lors de la connexion: " + error.message);
+        }
         return;
       }
 
-      if (data.session) {
+      if (data?.session) {
         console.log("Login successful, redirecting to home");
         toast.success("Connexion réussie");
         navigate("/");
@@ -51,19 +57,4 @@ export const useAuthLogin = () => {
     isLoading,
     handleLogin,
   };
-};
-
-const handleAuthError = (error: any) => {
-  console.error("Auth error details:", error);
-  
-  switch (error.message) {
-    case "Invalid login credentials":
-      toast.error("Email ou mot de passe incorrect");
-      break;
-    case "Email not confirmed":
-      toast.error("Veuillez confirmer votre email avant de vous connecter");
-      break;
-    default:
-      toast.error("Erreur lors de la connexion: " + error.message);
-  }
 };
