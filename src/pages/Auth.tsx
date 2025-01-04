@@ -35,7 +35,7 @@ const Auth = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-[#F1F0FB] dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-8 flex flex-col min-h-screen">
         <AuthHeader />
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch mt-8">
