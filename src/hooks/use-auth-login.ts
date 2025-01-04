@@ -63,7 +63,9 @@ export const useAuthLogin = () => {
       });
       
       toast.success("Connexion réussie !");
-      navigate("/");
+      
+      // Redirect to the dashboard after successful login
+      navigate("/dashboard");
 
     } catch (error) {
       console.error("Erreur inattendue lors de la connexion:", error);
