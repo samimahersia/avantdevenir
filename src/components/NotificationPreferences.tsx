@@ -85,7 +85,7 @@ const NotificationPreferences = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="reminder-hours">
+            <Label htmlFor="reminder-hours" className="text-left block">
               Rappel avant rendez-vous (heures)
             </Label>
             <Input
