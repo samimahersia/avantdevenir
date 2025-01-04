@@ -28,17 +28,17 @@ const LoginForm = () => {
         <LoginFormFields form={form} />
         <Button 
           type="submit" 
-          className="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white transition-all duration-300" 
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-sm transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed h-11" 
           disabled={isLoading}
         >
           {isLoading ? (
             <div className="flex items-center justify-center gap-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              <span>Connexion en cours...</span>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              <span className="text-white">Connexion en cours...</span>
             </div>
           ) : (
             <div className="flex items-center justify-center gap-2">
-              <LogIn className="h-4 w-4" />
+              <LogIn className="h-5 w-5" />
               <span>Se connecter</span>
             </div>
           )}
