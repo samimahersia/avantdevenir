@@ -58,7 +58,7 @@ export function UserProfileSection() {
       <div className="flex justify-end">
         <Button
           variant="outline"
-          className="gap-2 text-white"
+          className="gap-2"
           onClick={() => navigate("/auth")}
         >
           <LogOut className="h-4 w-4" />
