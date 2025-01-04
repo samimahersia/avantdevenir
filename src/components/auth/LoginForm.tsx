@@ -19,11 +19,9 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    console.log("Tentative de connexion avec les valeurs:", values);
     try {
       await handleLogin(values);
     } catch (error) {
-      console.error("Erreur lors de la connexion:", error);
       form.setError("root", {
         type: "manual",
         message: "Erreur lors de la connexion. Vérifiez vos identifiants."
