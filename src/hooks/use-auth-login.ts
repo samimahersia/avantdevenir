@@ -78,6 +78,7 @@ export const useAuthLogin = () => {
     } catch (error) {
       console.error("Erreur inattendue lors de la connexion:", error);
       toast.error("Une erreur inattendue est survenue");
+      throw error;
     } finally {
       setIsLoading(false);
     }

@@ -6,7 +6,7 @@ import { useAuthLogin, LoginFormValues, loginSchema } from "@/hooks/use-auth-log
 import { LoginFormFields } from "./LoginFormFields";
 import { Loader2 } from "lucide-react";
 
-export function LoginForm() {
+export const LoginForm = () => {
   const { isLoading, handleLogin } = useAuthLogin();
   
   const form = useForm<LoginFormValues>({
@@ -19,8 +19,16 @@ export function LoginForm() {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    console.log("Soumission du formulaire avec les valeurs:", values);
-    await handleLogin(values);
+    console.log("Tentative de connexion avec les valeurs:", values);
+    try {
+      await handleLogin(values);
+    } catch (error) {
+      console.error("Erreur lors de la connexion:", error);
+      form.setError("root", {
+        type: "manual",
+        message: "Erreur lors de la connexion. Vérifiez vos identifiants."
+      });
+    }
   };
 
   return (
@@ -42,7 +50,13 @@ export function LoginForm() {
             "Se connecter"
           )}
         </Button>
+        
+        {form.formState.errors.root && (
+          <div className="text-red-500 text-sm text-center">
+            {form.formState.errors.root.message}
+          </div>
+        )}
       </form>
     </Form>
   );
-}
+};
