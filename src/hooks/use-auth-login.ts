@@ -21,7 +21,7 @@ export const useAuthLogin = () => {
       setIsLoading(true);
       console.log("Tentative de connexion avec:", values.email);
 
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data: { session }, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
@@ -29,7 +29,7 @@ export const useAuthLogin = () => {
       if (error) {
         console.error("Erreur de connexion:", error);
         
-        if (error.message === "Invalid login credentials") {
+        if (error.message.includes("Invalid login credentials")) {
           toast.error("Email ou mot de passe incorrect. Veuillez vérifier vos identifiants.");
           return;
         }
@@ -43,7 +43,7 @@ export const useAuthLogin = () => {
         return;
       }
 
-      if (data?.session) {
+      if (session) {
         console.log("Connexion réussie, redirection...");
         toast.success("Connexion réussie !");
         navigate("/");
