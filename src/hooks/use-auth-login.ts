@@ -21,19 +21,6 @@ export const useAuthLogin = () => {
       setIsLoading(true);
       console.log("Tentative de connexion avec:", values.email);
 
-      // First, check if the user exists
-      const { data: userExists } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', values.email)
-        .single();
-
-      if (!userExists) {
-        console.log("Utilisateur non trouvé dans la base de données");
-        toast.error("Aucun compte trouvé avec cet email");
-        return;
-      }
-
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
