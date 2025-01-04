@@ -5,7 +5,7 @@ interface HeaderImageProps {
 
 export const HeaderImage = ({ src, alt }: HeaderImageProps) => {
   return (
-    <div className="relative w-full md:w-1/2 h-40 md:h-48 lg:h-80 overflow-hidden rounded-t-lg md:rounded-lg shadow-inner">
+    <div className="relative w-full md:w-[400px] h-40 md:h-[300px] overflow-hidden rounded-lg shadow-inner flex-shrink-0">
       <img
         src="https://images.unsplash.com/photo-1606327054629-64c8b0fd6e4f"
         alt="Agenda numérique en couleur"

@@ -18,15 +18,14 @@ export const PageHeader = ({ userType, setUserType, userRole }: PageHeaderProps)
         </CardTitle>
       </div>
       
-      <div className="w-full max-w-3xl">
+      <div className="w-full max-w-6xl flex flex-col md:flex-row gap-8 items-center">
         <HeaderImage 
           src="/images/consulate-service.jpg"
           alt="Service consulaire"
         />
-      </div>
-      
-      <div className="w-full max-w-3xl">
-        <AboutSection userRole={userRole} />
+        <div className="flex-1">
+          <AboutSection userRole={userRole} />
+        </div>
       </div>
       
       <div className="w-full">
