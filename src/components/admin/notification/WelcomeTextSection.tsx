@@ -91,7 +91,7 @@ const WelcomeTextSection = ({ userRole, welcomeText, onWelcomeTextChange }: Welc
             </div>
           </div>
         ) : (
-          <div className="text-gray-600 whitespace-pre-line">
+          <div className="text-white whitespace-pre-line">
             {welcomeText}
           </div>
         )}
