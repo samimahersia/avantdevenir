@@ -1,10 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { EditAppointmentForm } from "./EditAppointmentForm";
 import { useState } from "react";
+import { EditAppointmentForm } from "./EditAppointmentForm";
+import { AppointmentDetails } from "./AppointmentDetails";
+import { AppointmentActions } from "./AppointmentActions";
 
 interface AppointmentCardProps {
   appointment: any;
@@ -23,21 +21,6 @@ export const AppointmentCard = ({
 }: AppointmentCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "approuve":
-        return "bg-green-500 hover:bg-green-600";
-      case "refuse":
-        return "bg-red-500 hover:bg-red-600";
-      default:
-        return "bg-yellow-500 hover:bg-yellow-600";
-    }
-  };
-
-  const formatDate = (date: string) => {
-    return format(new Date(date), "d MMMM yyyy 'à' HH'h'mm", { locale: fr });
-  };
-
   const handleEdit = async (data: { title: string; description: string }) => {
     await onEdit(appointment.id, data);
     setIsEditing(false);
@@ -47,92 +30,13 @@ export const AppointmentCard = ({
     <Card className="shadow-sm">
       <CardContent className="p-6">
         <div className="flex justify-between">
-          <div className="space-y-2 flex-grow">
-            {/* Établissement */}
-            <div className="text-left">
-              <p className="font-bold text-lg text-gray-900">{appointment.consulates?.name}</p>
-            </div>
-            
-            {/* Service */}
-            <div className="text-left">
-              <p className="font-bold text-gray-900">{appointment.services?.name}</p>
-            </div>
-            
-            {/* Date et heure */}
-            <div className="text-left">
-              <p className="font-bold text-gray-900">{formatDate(appointment.date)}</p>
-            </div>
-            
-            {/* Nom et prénom */}
-            <div className="text-left">
-              <p className="font-bold text-gray-900">
-                {appointment.profiles?.first_name} {appointment.profiles?.last_name}
-              </p>
-            </div>
-            
-            {/* Titre */}
-            <div className="text-left">
-              <p className="text-gray-700">Titre : {appointment.title}</p>
-            </div>
-            
-            {/* Description */}
-            {appointment.description && (
-              <div className="text-left">
-                <p className="text-gray-700">Description : {appointment.description}</p>
-              </div>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-3 ml-6">
-            <Badge className={`${getStatusColor(appointment.status)} mb-2`}>
-              {appointment.status === "approuve"
-                ? "Approuvé"
-                : appointment.status === "refuse"
-                ? "Refusé"
-                : "En attente"}
-            </Badge>
-            
-            <div className="flex flex-col gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setIsEditing(true)}
-                className="w-full"
-              >
-                Modifier
-              </Button>
-              
-              {appointment.status === "en_attente" && (
-                <>
-                  <Button
-                    size="sm"
-                    variant="default"
-                    className="w-full bg-green-500 hover:bg-green-600"
-                    onClick={() => onStatusChange(appointment.id, "approuve")}
-                  >
-                    Approuver
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    className="w-full"
-                    onClick={() => onStatusChange(appointment.id, "refuse")}
-                  >
-                    Refuser
-                  </Button>
-                </>
-              )}
-              
-              <Button
-                size="sm"
-                variant="destructive"
-                className="w-full"
-                onClick={() => onDelete(appointment.id)}
-              >
-                Supprimer
-              </Button>
-            </div>
-          </div>
+          <AppointmentDetails appointment={appointment} />
+          <AppointmentActions
+            status={appointment.status}
+            onStatusChange={(status) => onStatusChange(appointment.id, status)}
+            onEdit={() => setIsEditing(true)}
+            onDelete={() => onDelete(appointment.id)}
+          />
         </div>
       </CardContent>
       

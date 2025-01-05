@@ -17,7 +17,8 @@ const AppointmentManagement = ({ isMobile = false }: AppointmentManagementProps)
         .select(`
           *,
           profiles(first_name, last_name),
-          consulates(name)
+          consulates(name),
+          services(name)
         `)
         .order("date", { ascending: true });
       
