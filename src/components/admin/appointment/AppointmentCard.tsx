@@ -35,7 +35,7 @@ export const AppointmentCard = ({
   };
 
   const formatDate = (date: string) => {
-    return format(new Date(date), "PPP 'à' HH'h'mm", { locale: fr });
+    return format(new Date(date), "d MMMM yyyy 'à' HH'h'mm", { locale: fr });
   };
 
   const handleEdit = async (data: { title: string; description: string }) => {
@@ -49,35 +49,35 @@ export const AppointmentCard = ({
         <div className="flex justify-between">
           <div className="space-y-4 flex-grow">
             {/* Établissement */}
-            <div>
+            <div className="text-left">
               <p className="font-bold text-lg text-gray-900">{appointment.consulates?.name}</p>
             </div>
             
             {/* Service */}
-            <div>
+            <div className="text-left">
               <p className="font-bold text-gray-900">Service : {appointment.services?.name}</p>
             </div>
             
             {/* Date et heure */}
-            <div>
+            <div className="text-left">
               <p className="font-bold text-gray-900">{formatDate(appointment.date)}</p>
             </div>
             
             {/* Nom et prénom */}
-            <div>
+            <div className="text-left">
               <p className="font-bold text-gray-900">
                 {appointment.profiles?.first_name} {appointment.profiles?.last_name}
               </p>
             </div>
             
             {/* Titre */}
-            <div>
+            <div className="text-left">
               <p className="text-gray-700">Titre : {appointment.title}</p>
             </div>
             
             {/* Description */}
             {appointment.description && (
-              <div>
+              <div className="text-left">
                 <p className="text-gray-700">Description : {appointment.description}</p>
               </div>
             )}
