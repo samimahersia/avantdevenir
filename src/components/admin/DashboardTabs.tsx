@@ -22,55 +22,55 @@ const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvail
       <TabsList className="w-full justify-start bg-transparent space-x-1">
         <TabsTrigger 
           value="appointments"
-          className="text-muted-foreground data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
         >
           Rendez-vous
         </TabsTrigger>
         <TabsTrigger 
           value="stats"
-          className="text-muted-foreground data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
         >
           Statistiques
         </TabsTrigger>
         <TabsTrigger 
           value="consulates"
-          className="text-muted-foreground data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
         >
           Organismes
         </TabsTrigger>
         <TabsTrigger 
           value="services"
-          className="text-muted-foreground data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
         >
           Services
         </TabsTrigger>
         <TabsTrigger 
           value="users"
-          className="text-muted-foreground data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
         >
           Utilisateurs
         </TabsTrigger>
         <TabsTrigger 
           value="holidays"
-          className="text-muted-foreground data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
         >
           Jours fériés
         </TabsTrigger>
         <TabsTrigger 
           value="settings"
-          className="text-muted-foreground data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
         >
           Planification
         </TabsTrigger>
         <TabsTrigger 
           value="notifications"
-          className="text-muted-foreground data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
         >
           Notifications
         </TabsTrigger>
         <TabsTrigger 
           value="support"
-          className="text-muted-foreground data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
         >
           Support
         </TabsTrigger>
