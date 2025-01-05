@@ -18,46 +18,63 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Initial session check
-    const checkSession = async () => {
+    const initializeAuth = async () => {
       try {
-        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error('Session check error:', error);
-          toast.error("Erreur lors de la vérification de la session");
-          return;
+        setLoading(true);
+        
+        // Clear any stale tokens
+        const currentSession = await supabase.auth.getSession();
+        if (!currentSession.data.session) {
+          localStorage.removeItem('supabase.auth.token');
+          queryClient.clear();
         }
-        setSession(currentSession);
+
+        // Set up auth state listener
+        const {
+          data: { subscription },
+        } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+          console.log('Auth state changed:', event);
+          
+          if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+            // Clear storage and cache
+            localStorage.removeItem('supabase.auth.token');
+            sessionStorage.clear();
+            queryClient.clear();
+            setSession(null);
+          } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            setSession(currentSession);
+          }
+        });
+
+        // Initial session check
+        const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          throw sessionError;
+        }
+
+        setSession(initialSession);
+
       } catch (error) {
-        console.error('Unexpected error during session check:', error);
-        toast.error("Une erreur inattendue est survenue");
+        console.error('Auth initialization error:', error);
+        toast.error("Erreur d'authentification. Veuillez vous reconnecter.");
+        
+        // Clean up on error
+        localStorage.removeItem('supabase.auth.token');
+        sessionStorage.clear();
+        queryClient.clear();
+        setSession(null);
       } finally {
         setLoading(false);
       }
     };
 
-    checkSession();
+    initializeAuth();
 
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log('Auth state changed:', _event);
-      
-      if (_event === 'TOKEN_REFRESHED') {
-        console.log('Token refreshed successfully');
-      }
-      
-      if (_event === 'SIGNED_OUT') {
-        // Clear any stored tokens
-        localStorage.removeItem('supabase.auth.token');
-        queryClient.clear();
-      }
-
-      setSession(session);
-    });
-
+    // Cleanup subscription on unmount
     return () => {
+      const { subscription } = supabase.auth.onAuthStateChange(() => {});
       subscription.unsubscribe();
     };
   }, []);
