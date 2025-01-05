@@ -44,61 +44,89 @@ export const AppointmentCard = ({
   };
 
   return (
-    <Card className={`${isMobile ? 'p-2' : 'p-4'} shadow-sm`}>
-      <CardContent className={`${isMobile ? 'p-2' : 'p-4'} space-y-4`}>
-        <div className={`flex ${isMobile ? 'flex-col gap-2' : 'justify-between items-start'}`}>
-          <div className="space-y-2 w-full">
-            <p className="font-bold text-gray-900">{appointment.consulates?.name}</p>
-            <p className="text-sm text-gray-600">Service : {appointment.services?.name}</p>
-            <p className="text-sm text-gray-600">{formatDate(appointment.date)}</p>
-            <p className="text-sm text-gray-600">
-              {appointment.profiles?.first_name} {appointment.profiles?.last_name}
-            </p>
-            <p className="text-sm text-gray-600">Titre : {appointment.title}</p>
+    <Card className="shadow-sm">
+      <CardContent className="p-6">
+        <div className="flex justify-between">
+          <div className="space-y-4 flex-grow">
+            {/* Établissement */}
+            <div>
+              <p className="font-bold text-lg text-gray-900">{appointment.consulates?.name}</p>
+            </div>
+            
+            {/* Service */}
+            <div>
+              <p className="font-bold text-gray-900">Service : {appointment.services?.name}</p>
+            </div>
+            
+            {/* Date et heure */}
+            <div>
+              <p className="font-bold text-gray-900">{formatDate(appointment.date)}</p>
+            </div>
+            
+            {/* Nom et prénom */}
+            <div>
+              <p className="font-bold text-gray-900">
+                {appointment.profiles?.first_name} {appointment.profiles?.last_name}
+              </p>
+            </div>
+            
+            {/* Titre */}
+            <div>
+              <p className="text-gray-700">Titre : {appointment.title}</p>
+            </div>
+            
+            {/* Description */}
             {appointment.description && (
-              <p className="text-sm text-gray-500 mt-2">{appointment.description}</p>
+              <div>
+                <p className="text-gray-700">Description : {appointment.description}</p>
+              </div>
             )}
           </div>
-          <div className={`flex ${isMobile ? 'flex-col w-full' : 'flex-col items-end'} gap-2`}>
-            <Badge className={getStatusColor(appointment.status)}>
+
+          <div className="flex flex-col gap-3 ml-6">
+            <Badge className={`${getStatusColor(appointment.status)} mb-2`}>
               {appointment.status === "approuve"
                 ? "Approuvé"
                 : appointment.status === "refuse"
                 ? "Refusé"
                 : "En attente"}
             </Badge>
-            <div className={`flex gap-2 ${isMobile ? 'w-full' : ''}`}>
+            
+            <div className="flex flex-col gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setIsEditing(true)}
+                className="w-full"
+              >
+                Modifier
+              </Button>
+              
               {appointment.status === "en_attente" && (
                 <>
                   <Button
                     size="sm"
                     variant="default"
-                    className="bg-green-500 hover:bg-green-600"
+                    className="w-full bg-green-500 hover:bg-green-600"
                     onClick={() => onStatusChange(appointment.id, "approuve")}
                   >
                     Approuver
                   </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="w-full"
+                    onClick={() => onStatusChange(appointment.id, "refuse")}
+                  >
+                    Refuser
+                  </Button>
                 </>
               )}
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setIsEditing(true)}
-              >
-                Modifier
-              </Button>
-              {appointment.status === "en_attente" && (
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => onStatusChange(appointment.id, "refuse")}
-                >
-                  Refuser
-                </Button>
-              )}
+              
               <Button
                 size="sm"
                 variant="destructive"
+                className="w-full"
                 onClick={() => onDelete(appointment.id)}
               >
                 Supprimer
@@ -107,6 +135,7 @@ export const AppointmentCard = ({
           </div>
         </div>
       </CardContent>
+      
       {isEditing && (
         <EditAppointmentForm
           appointment={appointment}
