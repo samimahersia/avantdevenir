@@ -31,13 +31,13 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
     <div className="flex flex-col p-4 md:p-6 border rounded-xl bg-white dark:bg-white shadow-sm hover:shadow-md transition-shadow">
       <div className="space-y-2 text-left">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-500">Établissement :</span>
+          <span className="font-medium text-gray-500">Organisme :</span>
           <p className="font-bold text-gray-900">{appointment.consulates?.name}</p>
         </div>
         
         <div className="flex items-center gap-2">
           <span className="font-medium text-gray-500">Type de service :</span>
-          <p className="text-gray-900">{appointment.services?.name}</p>
+          <p className="font-bold text-gray-900">{appointment.services?.name}</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -48,8 +48,8 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-500">Patient :</span>
-          <p className="text-gray-900">
+          <span className="font-medium text-gray-500">Nom et prénom :</span>
+          <p className="text-blue-600">
             {appointment.profiles?.first_name} {appointment.profiles?.last_name}
           </p>
         </div>
@@ -61,7 +61,7 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
 
         {appointment.description && (
           <div className="flex items-start gap-2">
-            <span className="font-medium text-gray-500">Informations complémentaires :</span>
+            <span className="font-medium text-gray-500 self-start">Description :</span>
             <p className="text-gray-700">{appointment.description}</p>
           </div>
         )}
