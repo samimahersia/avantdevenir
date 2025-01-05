@@ -47,7 +47,7 @@ export const AppointmentCard = ({
     <Card className="shadow-sm">
       <CardContent className="p-6">
         <div className="flex justify-between">
-          <div className="space-y-4 flex-grow">
+          <div className="space-y-2 flex-grow">
             {/* Établissement */}
             <div className="text-left">
               <p className="font-bold text-lg text-gray-900">{appointment.consulates?.name}</p>
