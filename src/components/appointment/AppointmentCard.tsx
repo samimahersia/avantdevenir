@@ -29,57 +29,68 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
 
   return (
     <div className="flex flex-col p-4 md:p-6 border rounded-xl bg-white dark:bg-white shadow-sm hover:shadow-md transition-shadow">
-      <div className="space-y-2 text-left">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-500">Établissement :</span>
-          <p className="text-gray-900">{appointment.consulates?.name}</p>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-500">Type de service :</span>
-          <p className="text-gray-900">{appointment.services?.name}</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-500">Date et heure :</span>
-          <p className="text-gray-900">
-            {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-500">Patient :</span>
-          <p className="text-gray-900">
-            {appointment.profiles?.first_name} {appointment.profiles?.last_name}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-500">Motif :</span>
-          <p className="text-gray-900">{appointment.title}</p>
-        </div>
-
-        {appointment.description && (
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-500">Informations complémentaires :</span>
-            <p className="text-gray-700">{appointment.description}</p>
+      <div className="flex justify-between">
+        <div className="space-y-3 flex-grow">
+          {/* Établissement */}
+          <div className="text-left">
+            <p className="font-bold text-gray-900">{appointment.consulates?.name}</p>
           </div>
-        )}
-      </div>
+          
+          {/* Type de service */}
+          <div className="text-left">
+            <p className="font-bold text-gray-900">Service : {appointment.services?.name}</p>
+          </div>
 
-      <div className="flex justify-between items-center mt-4">
-        {getStatusBadge(appointment.status)}
-        {canModifyAppointment(appointment) && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-red-600 hover:text-red-700"
-            onClick={() => onCancel(appointment.id)}
-          >
-            <X className="h-4 w-4 mr-2" />
-            <span>Annuler</span>
-          </Button>
-        )}
+          {/* Date et heure */}
+          <div className="text-left">
+            <p className="font-bold text-gray-900">
+              {format(new Date(appointment.date), "EEEE d MMMM yyyy 'à' HH'h'mm", { locale: fr })}
+            </p>
+          </div>
+
+          {/* Nom et prénom */}
+          <div className="text-left">
+            <p className="font-bold text-gray-900">
+              {appointment.profiles?.first_name} {appointment.profiles?.last_name}
+            </p>
+          </div>
+
+          {/* Motif */}
+          <div className="text-left">
+            <p className="text-gray-700">Titre : {appointment.title}</p>
+          </div>
+
+          {/* Description */}
+          {appointment.description && (
+            <div className="text-left">
+              <p className="text-gray-700">Description : {appointment.description}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2 ml-4">
+          {getStatusBadge(appointment.status)}
+          {canModifyAppointment(appointment) && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+              >
+                Modifier
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="w-full"
+                onClick={() => onCancel(appointment.id)}
+              >
+                <X className="h-4 w-4 mr-2" />
+                Annuler
+              </Button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
