@@ -30,7 +30,7 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
   return (
     <div className="flex flex-col p-4 md:p-6 border rounded-xl bg-white dark:bg-white shadow-sm hover:shadow-md transition-shadow">
       <div className="flex justify-between">
-        <div className="space-y-3 flex-grow">
+        <div className="space-y-4 flex-grow">
           {/* Établissement */}
           <div className="text-left">
             <p className="font-bold text-gray-900">{appointment.consulates?.name}</p>
@@ -68,7 +68,7 @@ const AppointmentCard = ({ appointment, onCancel }: AppointmentCardProps) => {
           )}
         </div>
 
-        <div className="flex flex-col gap-2 ml-4">
+        <div className="flex flex-col gap-3 ml-4">
           {getStatusBadge(appointment.status)}
           {canModifyAppointment(appointment) && (
             <>
