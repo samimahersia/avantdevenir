@@ -30,12 +30,10 @@ function App() {
         }
 
         // Set up auth state listener
-        const {
-          data: { subscription },
-        } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
           console.log('Auth state changed:', event);
           
-          if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+          if (event === 'SIGNED_OUT') {
             // Clear storage and cache
             localStorage.removeItem('supabase.auth.token');
             sessionStorage.clear();
@@ -74,8 +72,7 @@ function App() {
 
     // Cleanup subscription on unmount
     return () => {
-      const { subscription } = supabase.auth.onAuthStateChange(() => {});
-      subscription.unsubscribe();
+      supabase.auth.onAuthStateChange(() => {}).data.subscription.unsubscribe();
     };
   }, []);
 
