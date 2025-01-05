@@ -55,7 +55,7 @@ export const AppointmentCard = ({
             
             {/* Service */}
             <div className="text-left">
-              <p className="font-bold text-gray-900">Service : {appointment.services?.name}</p>
+              <p className="font-bold text-gray-900">{appointment.services?.name}</p>
             </div>
             
             {/* Date et heure */}
