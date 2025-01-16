@@ -8,7 +8,6 @@ import NotificationSettings from "./NotificationSettings";
 import TechnicalSupport from "./TechnicalSupport";
 import AppointmentStats from "@/components/AppointmentStats";
 import RecurringAvailabilityForm from "@/components/RecurringAvailabilityForm";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface DashboardTabsProps {
   activeTab: string;
@@ -20,64 +19,62 @@ interface DashboardTabsProps {
 const DashboardTabs = ({ activeTab, onTabChange, isMobile = false, selectedAvailability }: DashboardTabsProps) => {
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-      <ScrollArea className="w-full">
-        <TabsList className="w-full justify-start bg-transparent space-x-1 p-1 h-auto flex-wrap md:flex-nowrap">
-          <TabsTrigger 
-            value="appointments"
-            className="text-sm md:text-base text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors px-2 md:px-4 py-1.5"
-          >
-            Rendez-vous
-          </TabsTrigger>
-          <TabsTrigger 
-            value="stats"
-            className="text-sm md:text-base text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors px-2 md:px-4 py-1.5"
-          >
-            Stats
-          </TabsTrigger>
-          <TabsTrigger 
-            value="consulates"
-            className="text-sm md:text-base text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors px-2 md:px-4 py-1.5"
-          >
-            Organismes
-          </TabsTrigger>
-          <TabsTrigger 
-            value="services"
-            className="text-sm md:text-base text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors px-2 md:px-4 py-1.5"
-          >
-            Services
-          </TabsTrigger>
-          <TabsTrigger 
-            value="users"
-            className="text-sm md:text-base text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors px-2 md:px-4 py-1.5"
-          >
-            Utilisateurs
-          </TabsTrigger>
-          <TabsTrigger 
-            value="holidays"
-            className="text-sm md:text-base text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors px-2 md:px-4 py-1.5"
-          >
-            Jours fériés
-          </TabsTrigger>
-          <TabsTrigger 
-            value="settings"
-            className="text-sm md:text-base text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors px-2 md:px-4 py-1.5"
-          >
-            Planning
-          </TabsTrigger>
-          <TabsTrigger 
-            value="notifications"
-            className="text-sm md:text-base text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors px-2 md:px-4 py-1.5"
-          >
-            Notifs
-          </TabsTrigger>
-          <TabsTrigger 
-            value="support"
-            className="text-sm md:text-base text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors px-2 md:px-4 py-1.5"
-          >
-            Support
-          </TabsTrigger>
-        </TabsList>
-      </ScrollArea>
+      <TabsList className="w-full justify-start bg-transparent space-x-1">
+        <TabsTrigger 
+          value="appointments"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+        >
+          Rendez-vous
+        </TabsTrigger>
+        <TabsTrigger 
+          value="stats"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+        >
+          Statistiques
+        </TabsTrigger>
+        <TabsTrigger 
+          value="consulates"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+        >
+          Organismes
+        </TabsTrigger>
+        <TabsTrigger 
+          value="services"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+        >
+          Services
+        </TabsTrigger>
+        <TabsTrigger 
+          value="users"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+        >
+          Utilisateurs
+        </TabsTrigger>
+        <TabsTrigger 
+          value="holidays"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+        >
+          Jours fériés
+        </TabsTrigger>
+        <TabsTrigger 
+          value="settings"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+        >
+          Planification
+        </TabsTrigger>
+        <TabsTrigger 
+          value="notifications"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+        >
+          Notifications
+        </TabsTrigger>
+        <TabsTrigger 
+          value="support"
+          className="text-white data-[state=active]:text-primary data-[state=active]:font-medium transition-colors"
+        >
+          Support
+        </TabsTrigger>
+      </TabsList>
 
       <TabsContent value="appointments" className="mt-6">
         <AppointmentManagement isMobile={isMobile} />
