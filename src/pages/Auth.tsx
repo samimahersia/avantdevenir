@@ -21,13 +21,18 @@ const Auth = () => {
         
         if (error) {
           console.error("Error checking session:", error);
-          toast.error("Erreur lors de la vérification de la session");
+          if (error.message.includes("refresh_token_not_found")) {
+            // Clear any stale session data
+            await supabase.auth.signOut();
+            localStorage.clear();
+            sessionStorage.clear();
+          }
           return;
         }
 
         if (session) {
           console.log("Active session found, redirecting to dashboard");
-          navigate("/dashboard");
+          navigate("/dashboard", { replace: true });
           return;
         }
 
@@ -44,12 +49,16 @@ const Auth = () => {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("Auth state changed:", _event);
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event);
       
-      if (session) {
+      if (event === 'SIGNED_OUT') {
+        console.log("User signed out, clearing storage");
+        localStorage.clear();
+        sessionStorage.clear();
+      } else if (session) {
         console.log("New session detected, redirecting to dashboard");
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       }
     });
 
